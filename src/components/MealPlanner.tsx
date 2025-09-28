@@ -81,7 +81,8 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({ recipes, onGenerateSho
         </div>
         <Button 
           onClick={() => onGenerateShoppingList(mealPlan)}
-          className="bg-gradient-primary text-white"
+          variant="default"
+          size="lg"
         >
           Generate Shopping List
         </Button>
