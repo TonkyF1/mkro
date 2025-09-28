@@ -56,7 +56,7 @@ export const RecipeFilter = ({
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
-          <SelectContent className="bg-popover border border-border">
+          <SelectContent className="z-[60] bg-popover border border-border shadow-md">
             {categories.map((category) => (
               <SelectItem key={category} value={category}>
                 {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}

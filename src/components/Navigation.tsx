@@ -18,7 +18,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChang
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t z-40 md:static md:border-t-0 md:bg-transparent md:backdrop-blur-none">
+    <nav className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t z-20 md:static md:border-t-0 md:bg-transparent md:backdrop-blur-none h-12">
       <div className="flex justify-around items-center py-2 md:justify-start md:gap-2 md:py-0">
         {navItems.map(({ id, label, icon: Icon }) => (
           <Button
