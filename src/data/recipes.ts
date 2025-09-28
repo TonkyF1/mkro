@@ -320,10 +320,12 @@ export const recipes: Recipe[] = [
     calories: 380,
     protein: 28,
     carbs: 18,
+    fats: 20,
     dietaryTags: ['high-protein', 'omega-3-rich', 'gluten-free'],
     substitution: 'Use cod or halibut for different fish option',
     imageDescription: 'A perfectly cooked salmon fillet with golden herb crust alongside colorful roasted vegetables, plated elegantly with lemon wedges',
-    category: 'dinner'
+    category: 'dinner',
+    estimatedCost: 6.75
   },
   {
     id: 'chickpea-curry',
@@ -345,10 +347,12 @@ export const recipes: Recipe[] = [
     calories: 420,
     protein: 16,
     carbs: 45,
+    fats: 22,
     dietaryTags: ['vegan', 'high-protein', 'gluten-free'],
     substitution: 'Add diced sweet potato for extra vegetables',
     imageDescription: 'A creamy golden curry with chickpeas and spinach in a rustic bowl, garnished with fresh cilantro and served with basmati rice',
-    category: 'dinner'
+    category: 'dinner',
+    estimatedCost: 3.25
   },
   {
     id: 'zucchini-noodle-carbonara',
@@ -369,10 +373,12 @@ export const recipes: Recipe[] = [
     calories: 320,
     protein: 22,
     carbs: 12,
+    fats: 22,
     dietaryTags: ['low-carb', 'high-protein', 'keto-friendly'],
     substitution: 'Use mushrooms instead of bacon for vegetarian version',
     imageDescription: 'Spiralized zucchini noodles tossed with creamy egg sauce and crispy bacon bits, topped with grated parmesan and black pepper',
-    category: 'dinner'
+    category: 'dinner',
+    estimatedCost: 4.90
   },
   {
     id: 'stuffed-portobello-mushrooms',
@@ -394,10 +400,12 @@ export const recipes: Recipe[] = [
     calories: 280,
     protein: 14,
     carbs: 28,
+    fats: 14,
     dietaryTags: ['vegetarian', 'gluten-free'],
     substitution: 'Use vegan cheese for dairy-free option',
     imageDescription: 'Two large portobello mushroom caps stuffed with colorful quinoa mixture and melted cheese, garnished with fresh basil leaves',
-    category: 'dinner'
+    category: 'dinner',
+    estimatedCost: 4.15
   },
   {
     id: 'teriyaki-tofu-stir-fry',
@@ -419,10 +427,12 @@ export const recipes: Recipe[] = [
     calories: 310,
     protein: 18,
     carbs: 22,
+    fats: 18,
     dietaryTags: ['vegan', 'high-protein'],
     substitution: 'Use chicken instead of tofu for non-vegetarian option',
     imageDescription: 'Colorful stir-fried vegetables and golden crispy tofu cubes glazed with teriyaki sauce, garnished with sesame seeds and green onions',
-    category: 'dinner'
+    category: 'dinner',
+    estimatedCost: 3.85
   },
 
   // SNACKS
@@ -445,10 +455,12 @@ export const recipes: Recipe[] = [
     calories: 180,
     protein: 6,
     carbs: 22,
+    fats: 9,
     dietaryTags: ['vegetarian', 'no-bake'],
     substitution: 'Use almond butter for different nutty flavor',
     imageDescription: 'Round chocolate-colored energy balls covered in coconut flakes and chia seeds, arranged on a marble surface with scattered oats',
     category: 'snack',
+    estimatedCost: 2.20,
     image: energyBallsImage
   },
   {
@@ -470,10 +482,12 @@ export const recipes: Recipe[] = [
     calories: 260,
     protein: 12,
     carbs: 32,
+    fats: 10,
     dietaryTags: ['vegetarian', 'high-protein'],
     substitution: 'Use coconut yogurt for dairy-free version',
     imageDescription: 'A clear glass filled with layers of white yogurt, colorful tropical fruits, and golden granola, topped with coconut flakes',
-    category: 'snack'
+    category: 'snack',
+    estimatedCost: 3.45
   },
   {
     id: 'hummus-veggie-wrap',
@@ -495,10 +509,12 @@ export const recipes: Recipe[] = [
     calories: 220,
     protein: 8,
     carbs: 32,
+    fats: 8,
     dietaryTags: ['vegetarian', 'high-fiber'],
     substitution: 'Omit feta for vegan option',
     imageDescription: 'A colorful wrap cut in half showing layers of hummus, fresh vegetables, and cheese, with vegetables scattered around',
-    category: 'snack'
+    category: 'snack',
+    estimatedCost: 2.75
   },
   {
     id: 'apple-cinnamon-chips',
@@ -516,10 +532,12 @@ export const recipes: Recipe[] = [
     calories: 95,
     protein: 0,
     carbs: 25,
+    fats: 0,
     dietaryTags: ['vegan', 'gluten-free', 'fat-free'],
     substitution: 'Try with pears for different flavor',
     imageDescription: 'Golden-brown apple chips arranged on parchment paper, dusted with cinnamon, with fresh apple slices in the background',
-    category: 'snack'
+    category: 'snack',
+    estimatedCost: 1.50
   },
   {
     id: 'spiced-chickpea-crunch',
@@ -540,10 +558,12 @@ export const recipes: Recipe[] = [
     calories: 140,
     protein: 6,
     carbs: 18,
+    fats: 4,
     dietaryTags: ['vegan', 'high-protein', 'gluten-free'],
     substitution: 'Try different spice blends like curry or Italian herbs',
     imageDescription: 'Golden-brown roasted chickpeas scattered on a baking sheet, with colorful spices visible on their crispy surfaces',
-    category: 'snack'
+    category: 'snack',
+    estimatedCost: 1.85
   }
 ];
 

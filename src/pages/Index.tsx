@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { HydrationTracker } from '@/components/HydrationTracker';
 import { RecipeCard } from '@/components/RecipeCard';
 import { RecipeFilter } from '@/components/RecipeFilter';
+import { RecipeDetail } from '@/components/RecipeDetail';
 import { Navigation, NavigationView } from '@/components/Navigation';
 import { MealPlanner } from '@/components/MealPlanner';
 import { ShoppingList } from '@/components/ShoppingList';
@@ -10,8 +11,8 @@ import { recipes, getAllDietaryTags, Recipe } from '@/data/recipes';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Utensils, Heart, Leaf, User, Settings } from 'lucide-react';
-import { UserProfile } from '@/types/user';
-import { loadUserProfile, saveUserProfile } from '@/lib/userProfile';
+import { UserProfile, GOALS } from '@/types/user';
+import { loadUserProfile, calculateDailyWaterGoal, saveUserProfile } from '@/lib/userProfile';
 
 const Index = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
