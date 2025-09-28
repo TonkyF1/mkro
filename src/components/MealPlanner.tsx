@@ -123,7 +123,7 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({ recipes, onGenerateSho
                       </div>
                     ) : (
                       <Button
-                        variant="outline"
+                        variant="solid"
                         size="sm"
                         className="w-full"
                         onClick={() => openRecipeSelector(dayIndex, mealType)}

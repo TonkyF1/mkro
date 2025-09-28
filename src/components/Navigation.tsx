@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Home, Calendar, ShoppingCart, User } from 'lucide-react';
+import { BurgerMenu } from './BurgerMenu';
 
 export type NavigationView = 'home' | 'planner' | 'shopping' | 'profile';
 
@@ -18,25 +19,49 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChang
   ];
 
   return (
-    <nav className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t z-20 md:static md:border-t-0 md:bg-transparent md:backdrop-blur-none h-12">
-      <div className="flex justify-around items-center py-2 md:justify-start md:gap-2 md:py-0">
+    <>
+      {/* Mobile Burger Menu */}
+      <div className="md:hidden">
+        <BurgerMenu currentView={currentView} onViewChange={onViewChange} />
+      </div>
+
+      {/* Desktop Navigation */}
+      <nav className="hidden md:flex md:items-center md:gap-2">
         {navItems.map(({ id, label, icon: Icon }) => (
           <Button
             key={id}
-            variant={currentView === id ? 'default' : 'ghost'}
+            variant={currentView === id ? 'default' : 'solid'}
             size="sm"
             onClick={() => onViewChange(id)}
-            className={`flex flex-col md:flex-row items-center gap-1 min-w-0 px-3 py-2 md:px-4 ${
-              currentView === id 
-                ? 'bg-gradient-primary text-white' 
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
+            className="flex items-center gap-2"
           >
-            <Icon className="h-5 w-5 md:h-4 md:w-4" />
-            <span className="text-xs md:text-sm font-medium">{label}</span>
+            <Icon className="h-4 w-4" />
+            <span className="text-sm font-medium">{label}</span>
           </Button>
         ))}
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t z-20 md:hidden">
+        <div className="flex justify-around items-center py-2">
+          {navItems.map(({ id, label, icon: Icon }) => (
+            <Button
+              key={id}
+              variant="ghost"
+              size="sm"
+              onClick={() => onViewChange(id)}
+              className={`flex flex-col items-center gap-1 min-w-0 px-3 py-2 ${
+                currentView === id 
+                  ? 'text-primary' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Icon className="h-5 w-5" />
+              <span className="text-xs font-medium">{label}</span>
+            </Button>
+          ))}
+        </div>
+      </nav>
+    </>
   );
 };
