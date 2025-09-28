@@ -1,7 +1,8 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Filter, X } from 'lucide-react';
+import { Filter, X, User } from 'lucide-react';
+import { loadUserProfile } from '@/lib/userProfile';
 
 interface RecipeFilterProps {
   categories: string[];
@@ -23,6 +24,10 @@ export const RecipeFilter = ({
   onClearFilters
 }: RecipeFilterProps) => {
   const hasActiveFilters = selectedCategory !== 'all' || selectedTags.length > 0;
+  const userProfile = loadUserProfile();
+  
+  // Get user's preferred dietary tags
+  const userPreferences = userProfile?.dietaryPreferences || [];
   
   return (
     <div className="bg-card border border-border rounded-lg p-4 mb-6">
@@ -61,10 +66,34 @@ export const RecipeFilter = ({
         </Select>
       </div>
       
-      {/* Dietary Tags Filter */}
+      {/* User Profile Preferences */}
+      {userProfile && userPreferences.length > 0 && (
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-2">
+            <User className="h-4 w-4 text-primary" />
+            <label className="text-sm font-medium text-foreground">
+              Your Preferences
+            </label>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {userPreferences.map((tag) => (
+              <Badge
+                key={tag}
+                variant={selectedTags.includes(tag) ? "default" : "secondary"}
+                className="cursor-pointer transition-colors"
+                onClick={() => onTagToggle(tag)}
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* All Dietary Tags Filter */}
       <div>
         <label className="text-sm font-medium text-foreground mb-2 block">
-          Dietary Preferences
+          All Dietary Options
         </label>
         <div className="flex flex-wrap gap-2">
           {dietaryTags.map((tag) => (
@@ -74,7 +103,9 @@ export const RecipeFilter = ({
               className={`cursor-pointer transition-colors ${
                 selectedTags.includes(tag) 
                   ? "bg-primary text-primary-foreground" 
-                  : "border-primary/30 text-primary hover:bg-primary/10"
+                  : userPreferences.includes(tag)
+                    ? "border-primary text-primary hover:bg-primary/10"
+                    : "border-muted-foreground/30 text-muted-foreground hover:border-primary/30 hover:text-primary"
               }`}
               onClick={() => onTagToggle(tag)}
             >

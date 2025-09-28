@@ -1,29 +1,66 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { HydrationTracker } from '@/components/HydrationTracker';
 import { RecipeCard } from '@/components/RecipeCard';
 import { RecipeFilter } from '@/components/RecipeFilter';
 import { RecipeDetail } from '@/components/RecipeDetail';
+import { OnboardingForm } from '@/components/OnboardingForm';
 import { recipes, getAllDietaryTags, Recipe } from '@/data/recipes';
 import { Badge } from '@/components/ui/badge';
-import { Utensils, Heart, Leaf } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Utensils, Heart, Leaf, User, Settings } from 'lucide-react';
+import { UserProfile } from '@/types/user';
+import { loadUserProfile, saveUserProfile } from '@/lib/userProfile';
 
 const Index = () => {
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
   const categories = ['all', 'breakfast', 'lunch', 'dinner', 'snack'];
   const dietaryTags = getAllDietaryTags();
+
+  // Check for existing user profile on mount
+  useEffect(() => {
+    const profile = loadUserProfile();
+    if (profile) {
+      setUserProfile(profile);
+      // Auto-select user's dietary preferences
+      setSelectedTags(profile.dietaryPreferences);
+    } else {
+      setShowOnboarding(true);
+    }
+  }, []);
   
-  // Filter recipes based on selected criteria
+  // Filter recipes based on selected criteria and user profile
   const filteredRecipes = useMemo(() => {
-    return recipes.filter(recipe => {
+    let filtered = recipes.filter(recipe => {
       const categoryMatch = selectedCategory === 'all' || recipe.category === selectedCategory;
       const tagMatch = selectedTags.length === 0 || 
-        selectedTags.every(tag => recipe.dietaryTags.includes(tag));
-      return categoryMatch && tagMatch;
+        selectedTags.some(tag => recipe.dietaryTags.includes(tag));
+      
+      // Filter out recipes with user allergies
+      const allergyMatch = !userProfile?.allergies.length || 
+        !userProfile.allergies.some(allergy => 
+          recipe.dietaryTags.some(tag => tag.includes(allergy)) ||
+          recipe.description.toLowerCase().includes(allergy)
+        );
+      
+      return categoryMatch && tagMatch && allergyMatch;
     });
-  }, [selectedCategory, selectedTags]);
+
+    // Sort recipes - prioritize those matching user preferences
+    if (userProfile?.dietaryPreferences.length) {
+      filtered.sort((a, b) => {
+        const aMatches = a.dietaryTags.filter(tag => userProfile.dietaryPreferences.includes(tag)).length;
+        const bMatches = b.dietaryTags.filter(tag => userProfile.dietaryPreferences.includes(tag)).length;
+        return bMatches - aMatches; // Sort by most matches first
+      });
+    }
+    
+    return filtered;
+  }, [selectedCategory, selectedTags, userProfile]);
   
   const handleTagToggle = (tag: string) => {
     setSelectedTags(prev => 
@@ -35,7 +72,18 @@ const Index = () => {
   
   const handleClearFilters = () => {
     setSelectedCategory('all');
-    setSelectedTags([]);
+    setSelectedTags(userProfile?.dietaryPreferences || []);
+  };
+
+  const handleOnboardingComplete = (profile: UserProfile) => {
+    setUserProfile(profile);
+    saveUserProfile(profile);
+    setSelectedTags(profile.dietaryPreferences);
+    setShowOnboarding(false);
+  };
+
+  const handleEditProfile = () => {
+    setShowOnboarding(true);
   };
   
   const getCategoryStats = () => {
@@ -47,6 +95,11 @@ const Index = () => {
   };
   
   const stats = getCategoryStats();
+
+  // Show onboarding if no user profile
+  if (showOnboarding) {
+    return <OnboardingForm onComplete={handleOnboardingComplete} />;
+  }
   
   if (selectedRecipe) {
     return (
@@ -71,9 +124,28 @@ const Index = () => {
                 Lovable Meals
               </h1>
             </div>
+            {userProfile && (
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <div className="flex items-center gap-2 text-primary">
+                  <User className="h-5 w-5" />
+                  <span className="font-medium">Welcome back, {userProfile.name}!</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleEditProfile}
+                  className="text-sm"
+                >
+                  <Settings className="h-4 w-4 mr-1" />
+                  Edit Profile
+                </Button>
+              </div>
+            )}
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Discover delicious, healthy recipes with complete nutritional information and simple instructions. 
-              Your journey to better eating starts here.
+              {userProfile 
+                ? `Personalized recipes for your ${userProfile.goal.replace('_', ' ')} goal`
+                : 'Discover delicious, healthy recipes with complete nutritional information and simple instructions.'
+              }
             </p>
           </div>
           
