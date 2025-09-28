@@ -7,7 +7,7 @@ import { Navigation, NavigationView } from '@/components/Navigation';
 import { MealPlanner } from '@/components/MealPlanner';
 import { ShoppingList } from '@/components/ShoppingList';
 import { OnboardingForm } from '@/components/OnboardingForm';
-import { recipes, Recipe } from '@/data/recipes';
+import { recipes, Recipe, getAllDietaryTags } from '@/data/recipes';
 import { Button } from '@/components/ui/button';
 import { UserProfile, GOALS } from '@/types/user';
 import { loadUserProfile, calculateDailyWaterGoal, saveUserProfile } from '@/lib/userProfile';
@@ -25,6 +25,19 @@ const Index = () => {
   const [currentView, setCurrentView] = useState<NavigationView>('home');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [mealPlan, setMealPlan] = useState<MealPlan[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  
+  const categories = ['all', 'breakfast', 'lunch', 'dinner', 'snack'];
+  const dietaryTags = getAllDietaryTags();
+
+  // Filter recipes based on selected criteria
+  const filteredRecipes = recipes.filter(recipe => {
+    const categoryMatch = selectedCategory === 'all' || recipe.category === selectedCategory;
+    const tagMatch = selectedTags.length === 0 || 
+      selectedTags.some(tag => recipe.dietaryTags.includes(tag));
+    return categoryMatch && tagMatch;
+  });
 
   // Check for existing user profile on mount
   useEffect(() => {
@@ -33,6 +46,19 @@ const Index = () => {
       setUserProfile(profile);
     }
   }, []);
+
+  const handleTagToggle = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
+  
+  const handleClearFilters = () => {
+    setSelectedCategory('all');
+    setSelectedTags([]);
+  };
 
   const generateShoppingList = (meals: MealPlan[]) => {
     setMealPlan(meals);
@@ -69,8 +95,18 @@ const Index = () => {
             <div className="space-y-8">
               <HydrationTracker />
               
+              <RecipeFilter
+                categories={categories}
+                dietaryTags={dietaryTags}
+                selectedCategory={selectedCategory}
+                selectedTags={selectedTags}
+                onCategoryChange={setSelectedCategory}
+                onTagToggle={handleTagToggle}
+                onClearFilters={handleClearFilters}
+              />
+              
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recipes.map((recipe) => (
+                {filteredRecipes.map((recipe) => (
                   <RecipeCard 
                     key={recipe.id} 
                     recipe={recipe} 
