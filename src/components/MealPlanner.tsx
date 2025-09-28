@@ -95,7 +95,7 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({ recipes, onGenerateSho
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">{day.date}</CardTitle>
                 <div className="text-sm text-muted-foreground">
-                  {dayMacros.calories}kcal • ${dayMacros.cost.toFixed(2)}
+                  {dayMacros.calories}kcal • £{dayMacros.cost.toFixed(2)}
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -118,7 +118,7 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({ recipes, onGenerateSho
                       <div className="space-y-1">
                         <div className="font-medium text-sm">{day[mealType]!.name}</div>
                         <div className="text-xs text-muted-foreground">
-                          {day[mealType]!.calories}kcal • ${day[mealType]!.estimatedCost.toFixed(2)}
+                          {day[mealType]!.calories}kcal • £{day[mealType]!.estimatedCost.toFixed(2)}
                         </div>
                       </div>
                     ) : (
@@ -170,7 +170,7 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({ recipes, onGenerateSho
                         </p>
                         <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
                           <span>{recipe.calories}kcal</span>
-                          <span>${recipe.estimatedCost.toFixed(2)}</span>
+                          <span>£{recipe.estimatedCost.toFixed(2)}</span>
                         </div>
                       </div>
                     </div>

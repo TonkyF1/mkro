@@ -113,7 +113,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ mealPlans, onBack })
               <CardTitle className="flex items-center justify-between">
                 <span>Items ({shoppingItems.length})</span>
                 <span className="text-lg font-bold text-primary">
-                  ${totalCost.toFixed(2)}
+                  £{totalCost.toFixed(2)}
                 </span>
               </CardTitle>
             </CardHeader>
@@ -136,7 +136,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ mealPlans, onBack })
                       </span>
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      ${item.estimatedCost.toFixed(2)}
+                      £{item.estimatedCost.toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -164,10 +164,10 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ mealPlans, onBack })
               </div>
               <div className="flex justify-between text-lg font-bold">
                 <span>Estimated Total:</span>
-                <span className="text-primary">${totalCost.toFixed(2)}</span>
+                <span className="text-primary">£{totalCost.toFixed(2)}</span>
               </div>
               <div className="text-xs text-muted-foreground">
-                *Costs are estimates based on average U.S. grocery prices
+                *Costs are estimates based on average UK grocery prices
               </div>
             </CardContent>
           </Card>
