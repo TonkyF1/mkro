@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Users, Zap } from 'lucide-react';
-import { Recipe } from '@/data/recipes';
+import { Recipe } from '@/hooks/useRecipes';
 import { getRecipeImageUrl, generateSingleRecipeImage } from '@/utils/recipeImageUtils';
 import { useState, useEffect } from 'react';
 
@@ -88,11 +88,11 @@ export const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
-            <span>{recipe.prepTime}</span>
+            <span>{recipe.prepTime || `${recipe.prep_time} min`}</span>
           </div>
           <div className="flex items-center gap-1">
             <Users className="h-3 w-3" />
-            <span>{recipe.servingSize}</span>
+            <span>{recipe.servingSize || `${recipe.servings} serving${recipe.servings > 1 ? 's' : ''}`}</span>
           </div>
           <div className="flex items-center gap-1">
             <Zap className="h-3 w-3" />
@@ -112,7 +112,7 @@ export const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
         
         {/* Dietary Tags */}
         <div className="flex flex-wrap gap-1">
-          {recipe.dietaryTags.slice(0, 3).map((tag) => (
+          {(recipe.dietaryTags || recipe.dietary_tags || []).slice(0, 3).map((tag) => (
             <Badge 
               key={tag} 
               variant="outline" 
@@ -121,9 +121,9 @@ export const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
               {tag}
             </Badge>
           ))}
-          {recipe.dietaryTags.length > 3 && (
+          {(recipe.dietaryTags || recipe.dietary_tags || []).length > 3 && (
             <Badge variant="outline" className="text-xs">
-              +{recipe.dietaryTags.length - 3}
+              +{(recipe.dietaryTags || recipe.dietary_tags || []).length - 3}
             </Badge>
           )}
         </div>

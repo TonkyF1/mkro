@@ -11,7 +11,7 @@ import { OnboardingForm } from '@/components/OnboardingForm';
 import { ImageGenerator } from '@/components/ImageGenerator';
 import MKROCoach from '@/components/MKROCoach';
 import { GeneratedImage } from '@/utils/imageGenerator';
-import { recipes, Recipe, getAllDietaryTags } from '@/data/recipes';
+import { useRecipes, Recipe, getAllDietaryTags, getRecipesByCategory } from '@/hooks/useRecipes';
 import { Button } from '@/components/ui/button';
 import { UserProfile, GOALS } from '@/types/user';
 import { loadUserProfile, calculateDailyWaterGoal, saveUserProfile } from '@/lib/userProfile';
@@ -29,6 +29,7 @@ interface MealPlan {
 
 const Index = () => {
   const { toast } = useToast();
+  const { recipes, loading: recipesLoading, error: recipesError } = useRecipes();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [currentView, setCurrentView] = useState<NavigationView>('home');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
@@ -38,7 +39,7 @@ const Index = () => {
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   
   const categories = ['all', 'breakfast', 'lunch', 'dinner', 'snack'];
-  const dietaryTags = getAllDietaryTags();
+  const dietaryTags = getAllDietaryTags(recipes);
 
   // Create recipes with generated images, prioritizing generated URLs over static imports
   const recipesWithImages = useMemo(() => {
@@ -54,7 +55,7 @@ const Index = () => {
   const filteredRecipes = recipesWithImages.filter(recipe => {
     const categoryMatch = selectedCategory === 'all' || recipe.category === selectedCategory;
     const tagMatch = selectedTags.length === 0 || 
-      selectedTags.some(tag => recipe.dietaryTags.includes(tag));
+      selectedTags.some(tag => (recipe.dietaryTags || recipe.dietary_tags || []).includes(tag));
     return categoryMatch && tagMatch;
   });
 
@@ -181,15 +182,27 @@ const Index = () => {
                   onClearFilters={handleClearFilters}
                 />
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredRecipes.map((recipe) => (
-                    <RecipeCard 
-                      key={recipe.id} 
-                      recipe={recipe} 
-                      onClick={() => setSelectedRecipe(recipe)}
-                    />
-                  ))}
-                </div>
+                {recipesLoading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[...Array(6)].map((_, i) => (
+                      <div key={i} className="h-64 bg-muted animate-pulse rounded-lg"></div>
+                    ))}
+                  </div>
+                ) : recipesError ? (
+                  <div className="text-center py-8">
+                    <p className="text-destructive">Error loading recipes: {recipesError}</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredRecipes.map((recipe) => (
+                      <RecipeCard 
+                        key={recipe.id} 
+                        recipe={recipe} 
+                        onClick={() => setSelectedRecipe(recipe)}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
