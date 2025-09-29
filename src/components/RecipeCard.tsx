@@ -41,9 +41,16 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
     }
   }, [recipe.id, recipe.image, isGenerating]);
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only trigger onClick if it's not from the plus button or modal
+    if (onClick && !e.defaultPrevented) {
+      onClick();
+    }
+  };
+
   return (
     <Card 
-      onClick={onClick}
+      onClick={handleCardClick}
       className="group cursor-pointer transition-all duration-300 hover:shadow-[var(--shadow-elevated)] hover:-translate-y-1 bg-gradient-to-br from-card to-card/80 border-border/50"
     >
       <CardHeader className="p-0">
@@ -84,6 +91,7 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
                 className="h-8 w-8 p-0 bg-background/90 hover:bg-background"
                 onClick={(e) => {
                   e.stopPropagation();
+                  e.preventDefault();
                   setShowMealPlanModal(true);
                 }}
               >
