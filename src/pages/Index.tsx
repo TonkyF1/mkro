@@ -66,6 +66,11 @@ const Index = () => {
     }
   }, []);
 
+  // Scroll to top when view changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentView]);
+
   const handleTagToggle = (tag: string) => {
     setSelectedTags(prev => 
       prev.includes(tag) 
