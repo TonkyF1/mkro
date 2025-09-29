@@ -3,11 +3,9 @@ import { HydrationTracker } from '@/components/HydrationTracker';
 import { RecipeCard } from '@/components/RecipeCard';
 import { RecipeFilter } from '@/components/RecipeFilter';
 import { RecipeDetail } from '@/components/RecipeDetail';
-import { ImageGenerator } from '@/components/ImageGenerator';
 import { useRecipes, Recipe, getAllDietaryTags } from '@/hooks/useRecipes';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useToast } from '@/hooks/use-toast';
-import { GeneratedImage } from '@/utils/imageGenerator';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
@@ -18,7 +16,6 @@ const Recipes = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [generatedImages, setGeneratedImages] = useState<Map<string, string>>(new Map());
 
   const categories = ['all', 'breakfast', 'lunch', 'dinner', 'snack'];
   const dietaryTags = getAllDietaryTags(recipes);
@@ -75,21 +72,6 @@ const Recipes = () => {
     });
   };
 
-  const handleImagesGenerated = (images: GeneratedImage[]) => {
-    const imageMap = new Map<string, string>();
-    images.forEach(img => {
-      imageMap.set(img.recipeId, img.imageUrl);
-    });
-    setGeneratedImages(imageMap);
-  };
-
-  const getRecipeWithImage = (recipe: Recipe): Recipe => {
-    if (generatedImages.has(recipe.id)) {
-      return { ...recipe, image: generatedImages.get(recipe.id) };
-    }
-    return recipe;
-  };
-
   
   useEffect(() => {
     if (selectedRecipe) {
@@ -119,8 +101,6 @@ const Recipes = () => {
       </div>
 
       <HydrationTracker userProfile={profile} />
-
-      <ImageGenerator onImagesGenerated={handleImagesGenerated} />
       
       <RecipeFilter
         categories={categories}
@@ -147,8 +127,8 @@ const Recipes = () => {
           {filteredRecipes.map((recipe) => (
             <RecipeCard 
               key={recipe.id} 
-              recipe={getRecipeWithImage(recipe)} 
-              onClick={() => setSelectedRecipe(getRecipeWithImage(recipe))}
+              recipe={recipe} 
+              onClick={() => setSelectedRecipe(recipe)}
               onAddToMealPlan={addRecipeToMealPlan}
             />
           ))}
