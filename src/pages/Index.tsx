@@ -231,7 +231,7 @@ const Index = () => {
                 <div className="bg-card border border-border p-6 rounded-lg space-y-4">
                   <h3 className="text-lg font-semibold">Recipe Images</h3>
                   <p className="text-sm text-muted-foreground">
-                    Generate professional AI images for all recipes. This will create high-quality food photography that perfectly represents each meal.
+                    Generate professional food photography using Hugging Face FLUX.1-schnell AI model. Creates stunning, restaurant-quality images for all recipes.
                   </p>
                   <ImageGenerator onImagesGenerated={setGeneratedImages} />
                 </div>

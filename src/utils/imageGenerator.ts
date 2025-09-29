@@ -11,8 +11,8 @@ export const generateAllRecipeImages = async (): Promise<{
   failed: string[]; 
   generatedImages: GeneratedImage[] 
 }> => {
-  // Generate images for ALL recipes, not just those without images
-  console.log(`Generating images for ${recipes.length} recipes`);
+  // Generate images for ALL recipes using Hugging Face FLUX model
+  console.log(`Generating images for ${recipes.length} recipes using Hugging Face FLUX.1-schnell`);
   
   const results = {
     success: 0,
@@ -22,7 +22,7 @@ export const generateAllRecipeImages = async (): Promise<{
 
   for (const recipe of recipes) {
     try {
-      console.log(`Generating image for: ${recipe.name}`);
+      console.log(`Generating Hugging Face image for: ${recipe.name}`);
       
       const { data, error } = await supabase.functions.invoke('generate-recipe-image', {
         body: {
@@ -33,7 +33,7 @@ export const generateAllRecipeImages = async (): Promise<{
       });
 
       if (error) {
-        console.error(`Failed to generate image for ${recipe.name}:`, error);
+        console.error(`Failed to generate Hugging Face image for ${recipe.name}:`, error);
         results.failed.push(recipe.name);
         continue;
       }
@@ -45,17 +45,17 @@ export const generateAllRecipeImages = async (): Promise<{
           imageUrl: data.imageUrl
         });
         results.success++;
-        console.log(`Successfully generated image for: ${recipe.name}`);
+        console.log(`Successfully generated Hugging Face image for: ${recipe.name}`);
       } else {
         console.error(`No image URL returned for ${recipe.name}`);
         results.failed.push(recipe.name);
       }
 
-      // Add a small delay to avoid overwhelming the API
+      // Add a small delay to avoid overwhelming the Hugging Face API
       await new Promise(resolve => setTimeout(resolve, 2000));
       
     } catch (error) {
-      console.error(`Error generating image for ${recipe.name}:`, error);
+      console.error(`Error generating Hugging Face image for ${recipe.name}:`, error);
       results.failed.push(recipe.name);
     }
   }

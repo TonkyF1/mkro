@@ -62,15 +62,15 @@ export const ImageGenerator = ({ onImagesGenerated }: ImageGeneratorProps) => {
           </>
         ) : (
           <>
-            <Image className="h-4 w-4 mr-2" />
-            Generate AI Images for All Recipes
+          <Image className="h-4 w-4 mr-2" />
+          Generate AI Images with Hugging Face FLUX
           </>
         )}
       </Button>
       {isGenerating && (
-        <p className="text-sm text-muted-foreground text-center">
-          This process will generate high-quality AI images for all recipes. It may take several minutes to complete.
-        </p>
+      <p className="text-sm text-muted-foreground text-center">
+        Using Hugging Face FLUX.1-schnell model to generate professional food photography. This may take several minutes.
+      </p>
       )}
     </div>
   );

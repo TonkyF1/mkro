@@ -33,9 +33,9 @@ serve(async (req) => {
 
     const hf = new HfInference(Deno.env.get('HUGGINGFACE_API_KEY'))
 
-    // Generate image using FLUX.1-schnell model
+    // Generate image using FLUX.1-schnell model with enhanced food photography prompt
     const image = await hf.textToImage({
-      inputs: `Food photography, high quality, professional lighting, appetizing, clean background, ${imageDescription}`,
+      inputs: `Professional food photography, high resolution, studio lighting, appetizing presentation, clean white background, shallow depth of field, ${imageDescription}, food styling, commercial quality, vibrant colors, Instagram worthy`,
       model: 'black-forest-labs/FLUX.1-schnell',
     })
 
