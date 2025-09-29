@@ -18,7 +18,7 @@ const Header = () => {
             className="h-16 object-contain"
           />
         </div>
-        <p className="mt-2 text-xl font-serif italic text-foreground tracking-wide">
+        <p className="mt-2 text-sm font-serif italic text-foreground tracking-wide">
           Training and Meal Planning Assistant
         </p>
       </div>
