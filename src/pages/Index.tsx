@@ -11,6 +11,9 @@ import { ShoppingList } from '@/components/ShoppingList';
 import DetailedQuestionnaire from '@/components/DetailedQuestionnaire';
 import { ImageGenerator } from '@/components/ImageGenerator';
 import MKROCoach from '@/components/MKROCoach';
+import ProfileDetails from '@/components/ProfileDetails';
+import ExerciseTracker from '@/components/ExerciseTracker';
+import FoodDiary from '@/components/FoodDiary';
 import { GeneratedImage } from '@/utils/imageGenerator';
 import { useRecipes, Recipe, getAllDietaryTags, getRecipesByCategory } from '@/hooks/useRecipes';
 import { Button } from '@/components/ui/button';
@@ -19,7 +22,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useToast } from '@/hooks/use-toast';
 
-type NavigationView = 'home' | 'planner' | 'shopping' | 'profile' | 'mcro-coach';
+type NavigationView = 'home' | 'planner' | 'shopping' | 'profile' | 'mcro-coach' | 'exercise' | 'food-diary';
 
 interface MealPlan {
   date: string;
@@ -241,40 +244,21 @@ const Index = () => {
 
             {currentView === 'mcro-coach' && <MKROCoach />}
 
-            {currentView === 'profile' && (
-              <div className="max-w-2xl mx-auto space-y-6">
-                <div className="bg-card border border-border p-6 rounded-lg space-y-4">
-                  <h2 className="text-2xl font-bold">Profile Settings</h2>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="font-medium">Name:</span> {profile?.name}
-                    </div>
-                    <div>
-                      <span className="font-medium">Age:</span> {profile?.age}
-                    </div>
-                    <div>
-                      <span className="font-medium">Goal:</span> {profile?.goal?.replace('_', ' ')}
-                    </div>
-                    <div>
-                      <span className="font-medium">Daily Water:</span> {profile?.hydration_goal}ml
-                    </div>
-                  </div>
-                  <Button 
-                    onClick={() => window.location.reload()} 
-                    variant="outline"
-                    className="w-full"
-                  >
-                    Edit Profile
-                  </Button>
-                </div>
-                
-                <div className="bg-card border border-border p-6 rounded-lg space-y-4">
-                  <h3 className="text-lg font-semibold">Recipe Images</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Generate professional food photography using Hugging Face FLUX.1-schnell AI model. Creates stunning, restaurant-quality images for all recipes.
-                  </p>
-                  <ImageGenerator onImagesGenerated={setGeneratedImages} />
-                </div>
+            {currentView === 'profile' && profile && (
+              <div className="max-w-4xl mx-auto">
+                <ProfileDetails profile={profile} />
+              </div>
+            )}
+
+            {currentView === 'exercise' && (
+              <div className="max-w-4xl mx-auto">
+                <ExerciseTracker />
+              </div>
+            )}
+
+            {currentView === 'food-diary' && (
+              <div className="max-w-4xl mx-auto">
+                <FoodDiary />
               </div>
             )}
           </>
