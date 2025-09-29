@@ -31,8 +31,8 @@ const PageNavigation: React.FC = () => {
                   "flex flex-col items-center justify-center p-1 sm:p-2 flex-shrink-0 min-w-0 h-auto gap-0.5 text-xs rounded-md transition-colors",
                   isCoach
                     ? isActive
-                      ? "bg-gradient-to-br from-yellow-500 to-yellow-600 text-black"
-                      : "text-black hover:text-yellow-600"
+                      ? "bg-gradient-to-br from-yellow-500 to-yellow-600 text-black dark:text-white"
+                      : "text-black dark:text-white hover:text-yellow-600 dark:hover:text-yellow-500"
                     : isActive 
                       ? "bg-primary text-primary-foreground" 
                       : "hover:bg-accent hover:text-accent-foreground"

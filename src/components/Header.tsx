@@ -1,9 +1,20 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from 'next-themes';
 import mkroLogo from '@/assets/mkro-logo.png';
+import mkroLogoWhite from '@/assets/mkro-logo-white.png';
 
 const Header = () => {
   const navigate = useNavigate();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const currentTheme = mounted ? (theme === 'system' ? resolvedTheme : theme) : 'light';
+  const logoSrc = currentTheme === 'dark' ? mkroLogoWhite : mkroLogo;
 
   return (
     <header className="w-full bg-background border-b border-border">
@@ -13,7 +24,7 @@ const Header = () => {
           onClick={() => navigate('/')}
         >
           <img 
-            src={mkroLogo} 
+            src={logoSrc} 
             alt="MKRO" 
             className="h-16 object-contain"
           />
