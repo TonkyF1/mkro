@@ -1,13 +1,15 @@
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { UserProfile, GOALS, ACTIVITY_LEVELS, BUDGET_OPTIONS, COOKING_TIME_OPTIONS } from '@/types/profile';
-import { DollarSign } from 'lucide-react';
+import { DollarSign, Edit } from 'lucide-react';
 
 interface ProfileDetailsProps {
   profile: UserProfile;
+  onEditClick: () => void;
 }
 
-const ProfileDetails = ({ profile }: ProfileDetailsProps) => {
+const ProfileDetails = ({ profile, onEditClick }: ProfileDetailsProps) => {
   const goalLabel = GOALS.find(g => g.value === profile.goal)?.label;
   const activityLabel = ACTIVITY_LEVELS.find(a => a.value === profile.activity_level)?.label;
   const budgetOption = BUDGET_OPTIONS.find(b => b.value === profile.budget_preference);
@@ -42,6 +44,14 @@ const ProfileDetails = ({ profile }: ProfileDetailsProps) => {
 
   return (
     <div className="space-y-6">
+      {/* Header with Edit Button */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold">Profile Overview</h2>
+        <Button onClick={onEditClick}>
+          <Edit className="h-4 w-4 mr-2" />
+          Edit Profile
+        </Button>
+      </div>
       {/* Basic Info */}
       <Card className="p-6">
         <h3 className="text-xl font-semibold mb-4">Basic Information</h3>

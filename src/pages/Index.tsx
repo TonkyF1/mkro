@@ -14,6 +14,7 @@ import MKROCoach from '@/components/MKROCoach';
 import ProfileDetails from '@/components/ProfileDetails';
 import ExerciseTracker from '@/components/ExerciseTracker';
 import FoodDiary from '@/components/FoodDiary';
+import ProfileEdit from '@/components/ProfileEdit';
 import { GeneratedImage } from '@/utils/imageGenerator';
 import { useRecipes, Recipe, getAllDietaryTags, getRecipesByCategory } from '@/hooks/useRecipes';
 import { Button } from '@/components/ui/button';
@@ -42,6 +43,7 @@ const Index = () => {
   
   console.log('Index component - user:', user, 'authLoading:', authLoading);
   const [currentView, setCurrentView] = useState<NavigationView>('home');
+  const [editingProfile, setEditingProfile] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [mealPlan, setMealPlan] = useState<MealPlan[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -246,7 +248,17 @@ const Index = () => {
 
             {currentView === 'profile' && profile && (
               <div className="max-w-4xl mx-auto">
-                <ProfileDetails profile={profile} />
+                {editingProfile ? (
+                  <ProfileEdit 
+                    profile={profile} 
+                    onBack={() => setEditingProfile(false)} 
+                  />
+                ) : (
+                  <ProfileDetails 
+                    profile={profile} 
+                    onEditClick={() => setEditingProfile(true)} 
+                  />
+                )}
               </div>
             )}
 
