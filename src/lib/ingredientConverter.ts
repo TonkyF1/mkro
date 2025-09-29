@@ -3,6 +3,24 @@ export interface ProductMapping {
   productName: string;
   retailerSuggestions: string[];
   gramsPerUnit: number;
+  isLiquid?: boolean;
+}
+
+// List of liquid ingredients
+export const liquidIngredients = [
+  'milk', 'skim milk', 'whole milk', 'almond milk', 'coconut milk', 'soy milk', 'oat milk',
+  'water', 'oil', 'olive oil', 'vegetable oil', 'coconut oil', 'sesame oil',
+  'broth', 'stock', 'chicken broth', 'vegetable broth', 'beef broth',
+  'juice', 'lemon juice', 'lime juice', 'orange juice',
+  'sauce', 'soy sauce', 'worcestershire sauce', 'fish sauce', 'hot sauce',
+  'vinegar', 'balsamic vinegar', 'apple cider vinegar', 'white vinegar',
+  'wine', 'red wine', 'white wine', 'cooking wine',
+  'cream', 'heavy cream', 'light cream', 'half and half'
+];
+
+export function isLiquid(ingredient: string): boolean {
+  const lowerIngredient = ingredient.toLowerCase();
+  return liquidIngredients.some(liquid => lowerIngredient.includes(liquid));
 }
 
 export const ingredientToGramMapping: Record<string, number> = {

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ShoppingCart, Download, Check, MapPin, Store } from 'lucide-react';
 import { Recipe } from '@/data/recipes';
-import { convertIngredientToGrams, getProductMapping } from '@/lib/ingredientConverter';
+import { convertIngredientToGrams, getProductMapping, isLiquid } from '@/lib/ingredientConverter';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTrial } from '@/hooks/useTrial';
@@ -91,12 +91,23 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ mealPlans, onBack })
 
     return Array.from(ingredientMap.entries()).map(([ingredient, data]) => {
       const productMapping = getProductMapping(ingredient);
+      const liquid = isLiquid(ingredient);
+      
+      // Convert grams to ml for liquids (1g ≈ 1ml for water-based liquids)
+      const displayQuantity = liquid ? data.gramQuantity : data.gramQuantity;
+      const unit = liquid 
+        ? (displayQuantity >= 1000 ? 'L' : 'ml')
+        : 'g';
+      const displayValue = liquid && displayQuantity >= 1000
+        ? (displayQuantity / 1000).toFixed(2)
+        : displayQuantity;
+      
       return {
         ingredient,
         productName: productMapping?.productName || ingredient,
         gramQuantity: data.gramQuantity,
         retailerSuggestions: productMapping?.retailerSuggestions || [],
-        quantity: `${data.gramQuantity}g`,
+        quantity: `${displayValue}${unit}`,
         checked: false,
         estimatedCost: data.cost
       };
@@ -200,7 +211,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ mealPlans, onBack })
 
   const exportList = () => {
     const listText = shoppingItems
-      .map(item => `${item.checked ? '✓' : '☐'} ${item.productName} (${item.gramQuantity}g total)${item.retailerSuggestions.length > 0 ? ` - Available: ${item.retailerSuggestions[0]}` : ''}`)
+      .map(item => `${item.checked ? '✓' : '☐'} ${item.productName} (${item.quantity} total)${item.retailerSuggestions.length > 0 ? ` - Available: ${item.retailerSuggestions[0]}` : ''}`)
       .join('\n');
     
     const blob = new Blob([listText], { type: 'text/plain' });
@@ -286,7 +297,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ mealPlans, onBack })
                           </span>
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {item.gramQuantity}g needed
+                          {item.quantity} needed
                         </div>
                         {item.retailerSuggestions.length > 0 && (
                           <div className="text-xs text-muted-foreground">
