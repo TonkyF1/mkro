@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import PageNavigation from '@/components/PageNavigation';
 import TrialBanner from '@/components/TrialBanner';
@@ -10,9 +10,14 @@ import { UserProfile } from '@/types/profile';
 
 const MainLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const authHook = useAuth();
   const { user = null, loading: authLoading = true } = authHook || {};
   const { profile, loading: profileLoading, saveProfile } = useUserProfile();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!authLoading && !user) {

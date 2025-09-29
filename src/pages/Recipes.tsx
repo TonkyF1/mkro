@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { HydrationTracker } from '@/components/HydrationTracker';
 import { RecipeCard } from '@/components/RecipeCard';
 import { RecipeFilter } from '@/components/RecipeFilter';
@@ -71,6 +71,13 @@ const Recipes = () => {
       description: `${recipe.name} has been added to your shopping list.`
     });
   };
+
+  
+  useEffect(() => {
+    if (selectedRecipe) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [selectedRecipe]);
 
   if (selectedRecipe) {
     return (
