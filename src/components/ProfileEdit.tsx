@@ -34,12 +34,10 @@ const ProfileEdit = ({ profile, onBack }: ProfileEditProps) => {
     setLoading(true);
     try {
       await saveProfile(formData);
-      toast({
-        title: 'Success',
-        description: 'Profile updated successfully!',
-      });
-      onBack();
+      // Success toast is shown by the hook
+      onBack(); // Navigate back immediately after successful save
     } catch (error) {
+      // Error handling is done by the hook
       console.error('Error saving profile:', error);
     } finally {
       setLoading(false);

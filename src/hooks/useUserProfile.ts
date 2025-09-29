@@ -47,6 +47,9 @@ export const useUserProfile = () => {
     if (!user) return;
 
     try {
+      // Optimistically update the local state first
+      setProfile({ ...profileData, user_id: user.id } as UserProfile);
+
       const { error } = await supabase
         .from('profiles')
         .upsert({
@@ -58,7 +61,7 @@ export const useUserProfile = () => {
 
       if (error) throw error;
 
-      // Fetch the updated profile to get the correct data
+      // Fetch the updated profile to ensure we have the latest data
       await fetchProfile();
       
       toast({
@@ -66,6 +69,8 @@ export const useUserProfile = () => {
         description: 'Profile saved successfully!',
       });
     } catch (error) {
+      // Revert optimistic update on error
+      await fetchProfile();
       console.error('Error saving profile:', error);
       toast({
         variant: 'destructive',
