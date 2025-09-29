@@ -3,7 +3,7 @@ import { useTrial } from '@/hooks/useTrial';
 import { Badge } from '@/components/ui/badge';
 import { Clock } from 'lucide-react';
 
-const TrialBanner = () => {
+export const TrialBanner = () => {
   const { isInTrial, daysLeft, isDevelopmentMode } = useTrial();
 
   if (isDevelopmentMode || !isInTrial) return null;
