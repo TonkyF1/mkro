@@ -20,18 +20,18 @@ const PageNavigation: React.FC<PageNavigationProps> = ({ currentView, onViewChan
 
   return (
     <nav className="w-full bg-muted/50 border-b border-border">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center space-x-1 py-2">
+      <div className="container mx-auto px-2 sm:px-4">
+        <div className="flex items-center justify-between sm:justify-start sm:space-x-1 py-2 overflow-x-auto">
           {navItems.map(({ id, label, icon: Icon }) => (
             <Button
               key={id}
               variant={currentView === id ? 'default' : 'ghost'}
               size="sm"
               onClick={() => onViewChange(id)}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0 min-w-0"
             >
-              <Icon className="w-4 h-4" />
-              <span>{label}</span>
+              <Icon className="w-4 h-4 flex-shrink-0" />
+              <span className="hidden sm:inline text-xs sm:text-sm truncate">{label}</span>
             </Button>
           ))}
         </div>
