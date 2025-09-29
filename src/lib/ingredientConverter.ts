@@ -155,26 +155,74 @@ export const productMappings: Record<string, ProductMapping> = {
   }
 };
 
+// Parse quantity multiplier from ingredient string
+function parseQuantity(ingredient: string): number {
+  // Match patterns like: "1/4 cup", "2 tbsp", "1.5 oz", etc.
+  const fractionMatch = ingredient.match(/^(\d+)\/(\d+)/);
+  if (fractionMatch) {
+    return parseInt(fractionMatch[1]) / parseInt(fractionMatch[2]);
+  }
+  
+  const decimalMatch = ingredient.match(/^(\d+\.?\d*)/);
+  if (decimalMatch) {
+    return parseFloat(decimalMatch[1]);
+  }
+  
+  return 1; // Default to 1 if no quantity found
+}
+
 export function convertIngredientToGrams(ingredient: string): number {
-  const cleanIngredient = ingredient.toLowerCase()
-    .replace(/^\d+\s*(cups?|tbsp|tsp|oz|lbs?|g|kg|slices?|can|bunch|medium|large|small)\s*/g, '')
+  const lowerIngredient = ingredient.toLowerCase();
+  
+  // Extract quantity multiplier
+  const multiplier = parseQuantity(lowerIngredient);
+  
+  // Clean ingredient name
+  const cleanIngredient = lowerIngredient
+    .replace(/^\d+\.?\d*\s*/g, '') // Remove leading numbers
+    .replace(/^\d+\/\d+\s*/g, '') // Remove fractions
+    .replace(/\s*(cups?|tbsp|tsp|oz|lbs?|g|kg|slices?|can|bunch|medium|large|small)\s*/g, ' ')
     .replace(/[^\w\s]/g, '')
     .trim();
   
-  // Try exact match first
+  // Base amount per unit for common measurements
+  const measurementUnits: Record<string, number> = {
+    'cup': 240,
+    'cups': 240,
+    'tbsp': 15,
+    'tsp': 5,
+    'oz': 28,
+    'lb': 454,
+    'lbs': 454,
+    'slice': 25,
+    'slices': 25,
+    'clove': 3,
+    'medium': 100,
+    'large': 150,
+    'small': 50,
+  };
+  
+  // Check if ingredient specifies a measurement unit
+  for (const [unit, grams] of Object.entries(measurementUnits)) {
+    if (lowerIngredient.includes(unit)) {
+      return Math.round(multiplier * grams);
+    }
+  }
+  
+  // Try exact match in base mapping
   if (ingredientToGramMapping[cleanIngredient]) {
-    return ingredientToGramMapping[cleanIngredient];
+    return Math.round(multiplier * ingredientToGramMapping[cleanIngredient]);
   }
   
   // Try partial matches for compound ingredients
   for (const [key, grams] of Object.entries(ingredientToGramMapping)) {
     if (cleanIngredient.includes(key) || key.includes(cleanIngredient)) {
-      return grams;
+      return Math.round(multiplier * grams);
     }
   }
   
   // Default fallback
-  return 100;
+  return Math.round(multiplier * 100);
 }
 
 export function getProductMapping(ingredient: string): ProductMapping | null {
