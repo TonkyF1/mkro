@@ -15,7 +15,7 @@ const Header = () => {
           <img 
             src={mkroLogo} 
             alt="MKRO" 
-            className="h-32 object-contain"
+            className="h-16 object-contain"
           />
         </div>
       </div>
