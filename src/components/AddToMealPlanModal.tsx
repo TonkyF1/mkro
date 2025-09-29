@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Popover, PopoverContent } from '@/components/ui/popover';
 import { Recipe } from '@/hooks/useRecipes';
 import { Calendar, Utensils, X } from 'lucide-react';
 
@@ -10,6 +11,7 @@ interface AddToMealPlanModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (day: string, mealType: string) => void;
+  triggerRef?: React.RefObject<HTMLElement>;
 }
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -20,7 +22,7 @@ const MEAL_TYPES = [
   { value: 'snack', label: 'Snack' }
 ];
 
-export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddToMealPlanModalProps) => {
+export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm, triggerRef }: AddToMealPlanModalProps) => {
   const [selectedDay, setSelectedDay] = useState<string>('');
   const [selectedMealType, setSelectedMealType] = useState<string>('');
 
@@ -42,23 +44,22 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
   };
 
   return (
-    <div 
-      className="fixed inset-0 z-50"
-      onClick={handleClose}
-    >
-      <div 
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 max-w-[90vw]"
-        onClick={(e) => e.stopPropagation()}
+    <Popover open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+      <PopoverContent 
+        className="w-80 p-0 pointer-events-auto z-50" 
+        align="center"
+        side="top"
+        sideOffset={8}
       >
-        <Card className="bg-background border shadow-lg">
+        <Card className="border-0 shadow-none">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-primary" />
                 Add to Meal Plan
               </CardTitle>
-              <Button variant="ghost" size="sm" onClick={handleClose}>
-                <X className="h-4 w-4" />
+              <Button variant="ghost" size="sm" onClick={handleClose} className="h-6 w-6 p-0">
+                <X className="h-3 w-3" />
               </Button>
             </div>
           </CardHeader>
@@ -125,7 +126,7 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
             </div>
           </CardContent>
         </Card>
-      </div>
-    </div>
+      </PopoverContent>
+    </Popover>
   );
 };

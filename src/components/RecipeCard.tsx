@@ -5,7 +5,8 @@ import { Clock, Users, Zap, Plus } from 'lucide-react';
 import { Recipe } from '@/hooks/useRecipes';
 import { getRecipeImageUrl, generateSingleRecipeImage } from '@/utils/recipeImageUtils';
 import { AddToMealPlanModal } from '@/components/AddToMealPlanModal';
-import { useState, useEffect } from 'react';
+import { PopoverTrigger } from '@/components/ui/popover';
+import { useState, useEffect, useRef } from 'react';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -17,6 +18,7 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
   const [imageUrl, setImageUrl] = useState<string | null>(recipe.image || null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showMealPlanModal, setShowMealPlanModal] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Try to get image from storage on mount
   useEffect(() => {
@@ -85,18 +87,21 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
           </div>
           {onAddToMealPlan && (
             <div className="absolute bottom-2 right-2">
-              <Button
-                size="sm"
-                variant="secondary"
-                className="h-8 w-8 p-0 bg-background/90 hover:bg-background"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setShowMealPlanModal(true);
-                }}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
+              <PopoverTrigger asChild>
+                <Button
+                  ref={buttonRef}
+                  size="sm"
+                  variant="secondary"
+                  className="h-8 w-8 p-0 bg-background/90 hover:bg-background"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setShowMealPlanModal(true);
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
             </div>
           )}
         </div>
@@ -160,6 +165,7 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
         recipe={recipe}
         isOpen={showMealPlanModal}
         onClose={() => setShowMealPlanModal(false)}
+        triggerRef={buttonRef}
         onConfirm={(day, mealType) => {
           if (onAddToMealPlan) {
             onAddToMealPlan(recipe, day, mealType);
