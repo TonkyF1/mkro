@@ -252,6 +252,7 @@ const Index = () => {
                   <ProfileEdit 
                     profile={profile} 
                     onBack={() => setEditingProfile(false)} 
+                    onSave={saveProfile}
                   />
                 ) : (
                   <ProfileDetails 

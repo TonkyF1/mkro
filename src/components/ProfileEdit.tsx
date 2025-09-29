@@ -7,18 +7,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
 import { UserProfile, GOALS, ACTIVITY_LEVELS, BUDGET_OPTIONS, COOKING_TIME_OPTIONS, DIETARY_OPTIONS, ALLERGY_OPTIONS, KITCHEN_EQUIPMENT } from '@/types/profile';
-import { useUserProfile } from '@/hooks/useUserProfile';
-import { useToast } from '@/hooks/use-toast';
+// Removed unused hooks
 import { ArrowLeft, Save } from 'lucide-react';
 
 interface ProfileEditProps {
   profile: UserProfile;
   onBack: () => void;
+  onSave: (data: UserProfile) => Promise<void>;
 }
 
-const ProfileEdit = ({ profile, onBack }: ProfileEditProps) => {
-  const { saveProfile } = useUserProfile();
-  const { toast } = useToast();
+const ProfileEdit = ({ profile, onBack, onSave }: ProfileEditProps) => {
   const [formData, setFormData] = useState<UserProfile>({
     ...profile,
     dietary_preferences: profile.dietary_preferences || [],
@@ -33,7 +31,7 @@ const ProfileEdit = ({ profile, onBack }: ProfileEditProps) => {
   const handleSave = async () => {
     setLoading(true);
     try {
-      await saveProfile(formData);
+      await onSave(formData);
       // Success toast is shown by the hook
       onBack(); // Navigate back immediately after successful save
     } catch (error) {
