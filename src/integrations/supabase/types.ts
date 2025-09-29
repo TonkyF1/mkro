@@ -14,6 +14,147 @@ export type Database = {
   }
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          activity_level: string | null
+          age: number | null
+          allergies: string[] | null
+          budget_preference: string | null
+          completed_at: string | null
+          cooking_time_preference: string | null
+          created_at: string
+          dietary_preferences: string[] | null
+          eating_out_frequency: string | null
+          goal: string | null
+          health_conditions: string[] | null
+          height: number | null
+          height_unit: string | null
+          hydration_goal: number | null
+          id: string
+          kitchen_equipment: string[] | null
+          meal_frequency: number | null
+          motivation_factors: string[] | null
+          name: string | null
+          sleep_hours: number | null
+          stress_level: number | null
+          supplement_usage: string[] | null
+          target_carbs: number | null
+          target_fats: number | null
+          target_protein: number | null
+          updated_at: string
+          user_id: string
+          weight: number | null
+          weight_unit: string | null
+        }
+        Insert: {
+          activity_level?: string | null
+          age?: number | null
+          allergies?: string[] | null
+          budget_preference?: string | null
+          completed_at?: string | null
+          cooking_time_preference?: string | null
+          created_at?: string
+          dietary_preferences?: string[] | null
+          eating_out_frequency?: string | null
+          goal?: string | null
+          health_conditions?: string[] | null
+          height?: number | null
+          height_unit?: string | null
+          hydration_goal?: number | null
+          id?: string
+          kitchen_equipment?: string[] | null
+          meal_frequency?: number | null
+          motivation_factors?: string[] | null
+          name?: string | null
+          sleep_hours?: number | null
+          stress_level?: number | null
+          supplement_usage?: string[] | null
+          target_carbs?: number | null
+          target_fats?: number | null
+          target_protein?: number | null
+          updated_at?: string
+          user_id: string
+          weight?: number | null
+          weight_unit?: string | null
+        }
+        Update: {
+          activity_level?: string | null
+          age?: number | null
+          allergies?: string[] | null
+          budget_preference?: string | null
+          completed_at?: string | null
+          cooking_time_preference?: string | null
+          created_at?: string
+          dietary_preferences?: string[] | null
+          eating_out_frequency?: string | null
+          goal?: string | null
+          health_conditions?: string[] | null
+          height?: number | null
+          height_unit?: string | null
+          hydration_goal?: number | null
+          id?: string
+          kitchen_equipment?: string[] | null
+          meal_frequency?: number | null
+          motivation_factors?: string[] | null
+          name?: string | null
+          sleep_hours?: number | null
+          stress_level?: number | null
+          supplement_usage?: string[] | null
+          target_carbs?: number | null
+          target_fats?: number | null
+          target_protein?: number | null
+          updated_at?: string
+          user_id?: string
+          weight?: number | null
+          weight_unit?: string | null
+        }
+        Relationships: []
+      }
+      recipes: {
+        Row: {
+          calories: number
+          carbs: number
+          created_at: string | null
+          dietary_tags: string[]
+          fats: number
+          id: string
+          ingredients: string[]
+          instructions: string
+          name: string
+          prep_time: number
+          protein: number
+          servings: number
+        }
+        Insert: {
+          calories: number
+          carbs: number
+          created_at?: string | null
+          dietary_tags: string[]
+          fats: number
+          id?: string
+          ingredients: string[]
+          instructions: string
+          name: string
+          prep_time: number
+          protein: number
+          servings: number
+        }
+        Update: {
+          calories?: number
+          carbs?: number
+          created_at?: string | null
+          dietary_tags?: string[]
+          fats?: number
+          id?: string
+          ingredients?: string[]
+          instructions?: string
+          name?: string
+          prep_time?: number
+          protein?: number
+          servings?: number
+        }
+        Relationships: []
+      }
       shopping_results: {
         Row: {
           created_at: string

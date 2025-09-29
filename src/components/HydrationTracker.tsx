@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Droplets, Plus } from 'lucide-react';
-import { loadUserProfile, calculateDailyWaterGoal } from '@/lib/userProfile';
+import { UserProfile } from '@/types/profile';
 
 interface HydrationTrackerProps {
+  userProfile?: UserProfile | null;
   className?: string;
 }
 
-export const HydrationTracker = ({ className = '' }: HydrationTrackerProps) => {
+export const HydrationTracker = ({ userProfile, className = '' }: HydrationTrackerProps) => {
   const [intake, setIntake] = useState(0);
   const [goal, setGoal] = useState(2000); // Default goal
   
@@ -25,11 +26,9 @@ export const HydrationTracker = ({ className = '' }: HydrationTrackerProps) => {
       localStorage.setItem('hydration-date', today);
     }
     
-    // Calculate goal based on user profile
-    const userProfile = loadUserProfile();
-    if (userProfile) {
-      const personalizedGoal = calculateDailyWaterGoal(userProfile.weight, userProfile.weightUnit);
-      setGoal(personalizedGoal);
+    // Set goal based on user profile
+    if (userProfile?.hydration_goal) {
+      setGoal(userProfile.hydration_goal);
     }
   }, []);
   

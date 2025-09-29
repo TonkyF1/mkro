@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { HydrationTracker } from '@/components/HydrationTracker';
 import { RecipeCard } from '@/components/RecipeCard';
 import { RecipeFilter } from '@/components/RecipeFilter';
@@ -7,14 +8,15 @@ import Header from '@/components/Header';
 import PageNavigation from '@/components/PageNavigation';
 import { MealPlanner } from '@/components/MealPlanner';
 import { ShoppingList } from '@/components/ShoppingList';
-import { OnboardingForm } from '@/components/OnboardingForm';
+import DetailedQuestionnaire from '@/components/DetailedQuestionnaire';
 import { ImageGenerator } from '@/components/ImageGenerator';
 import MKROCoach from '@/components/MKROCoach';
 import { GeneratedImage } from '@/utils/imageGenerator';
 import { useRecipes, Recipe, getAllDietaryTags, getRecipesByCategory } from '@/hooks/useRecipes';
 import { Button } from '@/components/ui/button';
-import { UserProfile, GOALS } from '@/types/user';
-import { loadUserProfile, calculateDailyWaterGoal, saveUserProfile } from '@/lib/userProfile';
+import { UserProfile } from '@/types/profile';
+import { useAuth } from '@/hooks/useAuth';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { useToast } from '@/hooks/use-toast';
 
 type NavigationView = 'home' | 'planner' | 'shopping' | 'profile' | 'mcro-coach';
@@ -28,9 +30,11 @@ interface MealPlan {
 }
 
 const Index = () => {
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+  const { profile, loading: profileLoading, saveProfile } = useUserProfile();
   const { toast } = useToast();
   const { recipes, loading: recipesLoading, error: recipesError } = useRecipes();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [currentView, setCurrentView] = useState<NavigationView>('home');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [mealPlan, setMealPlan] = useState<MealPlan[]>([]);
@@ -61,11 +65,10 @@ const Index = () => {
 
   // Check for existing user profile on mount
   useEffect(() => {
-    const profile = loadUserProfile();
-    if (profile) {
-      setUserProfile(profile);
+    if (!authLoading && !user) {
+      navigate('/auth');
     }
-  }, []);
+  }, [user, authLoading, navigate]);
 
   // Scroll to top when view changes
   useEffect(() => {
@@ -90,9 +93,12 @@ const Index = () => {
     setCurrentView('shopping');
   };
 
-  const handleOnboardingComplete = (profile: UserProfile) => {
-    setUserProfile(profile);
-    saveUserProfile(profile);
+  const handleOnboardingComplete = async (profileData: UserProfile) => {
+    try {
+      await saveProfile(profileData);
+    } catch (error) {
+      console.error('Failed to save profile:', error);
+    }
   };
 
   const handleAddToShoppingList = (recipe: Recipe) => {
@@ -141,8 +147,16 @@ const Index = () => {
   };
 
   // Show onboarding if no user profile
-  if (!userProfile) {
-    return <OnboardingForm onComplete={handleOnboardingComplete} />;
+  if (authLoading || profileLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  if (!user) {
+    return null; // Will redirect to auth
+  }
+
+  if (!profile || !profile.completed_at) {
+    return <DetailedQuestionnaire onComplete={handleOnboardingComplete} initialData={profile || {}} />;
   }
 
   return (
@@ -161,7 +175,7 @@ const Index = () => {
           <>
             <div className="mb-6 w-full flex flex-col items-center justify-center text-center">
   <h1 className="text-2xl font-bold text-foreground mb-2">
-    Welcome back, {userProfile.name.toUpperCase()}!
+    Welcome back, {profile?.name?.toUpperCase()}!
   </h1>
   <p className="text-muted-foreground">
     Ready to plan your nutritious meals?
@@ -170,7 +184,7 @@ const Index = () => {
 
             {currentView === 'home' && (
               <div className="space-y-6">
-                <HydrationTracker />
+                <HydrationTracker userProfile={profile} />
                 
                 <RecipeFilter
                   categories={categories}
@@ -228,16 +242,16 @@ const Index = () => {
                   <h2 className="text-2xl font-bold">Profile Settings</h2>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="font-medium">Name:</span> {userProfile.name}
+                      <span className="font-medium">Name:</span> {profile?.name}
                     </div>
                     <div>
-                      <span className="font-medium">Age:</span> {userProfile.age}
+                      <span className="font-medium">Age:</span> {profile?.age}
                     </div>
                     <div>
-                      <span className="font-medium">Goal:</span> {GOALS.find(g => g.value === userProfile.goal)?.label}
+                      <span className="font-medium">Goal:</span> {profile?.goal?.replace('_', ' ')}
                     </div>
                     <div>
-                      <span className="font-medium">Daily Water:</span> {calculateDailyWaterGoal(userProfile.weight, userProfile.weightUnit)}ml
+                      <span className="font-medium">Daily Water:</span> {profile?.hydration_goal}ml
                     </div>
                   </div>
                   <Button 
