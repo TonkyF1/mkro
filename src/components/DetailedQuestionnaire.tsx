@@ -127,24 +127,369 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-6">
-                <div className="text-center">
-                  <h2 className="text-2xl font-bold mb-2">Let's get started!</h2>
-                  <p className="text-muted-foreground">Complete your personalized profile</p>
-                </div>
-                
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>What's your name?</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your full name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {currentStep === 1 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Let's get started!</h2>
+                      <p className="text-muted-foreground">First, tell us your name</p>
+                    </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>What's your name?</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter your full name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
+
+                {currentStep === 2 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Basic Information</h2>
+                      <p className="text-muted-foreground">Help us understand your physical profile</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="age"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Age</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="height"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Height ({form.watch('height_unit')})</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="weight"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Weight ({form.watch('weight_unit')})</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </>
+                )}
+
+                {currentStep === 3 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Health Goals</h2>
+                      <p className="text-muted-foreground">What's your primary health objective?</p>
+                    </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="goal"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Primary Goal</FormLabel>
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              className="flex flex-col space-y-2"
+                            >
+                              {GOALS.map((goal) => (
+                                <div key={goal.value} className="flex items-center space-x-2">
+                                  <RadioGroupItem value={goal.value} id={goal.value} />
+                                  <Label htmlFor={goal.value}>{goal.label}</Label>
+                                </div>
+                              ))}
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
+
+                {currentStep === 4 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Activity Level</h2>
+                      <p className="text-muted-foreground">How active are you on a typical day?</p>
+                    </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="activity_level"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Activity Level</FormLabel>
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              className="flex flex-col space-y-2"
+                            >
+                              {ACTIVITY_LEVELS.map((level) => (
+                                <div key={level.value} className="flex items-center space-x-2">
+                                  <RadioGroupItem value={level.value} id={level.value} />
+                                  <Label htmlFor={level.value}>{level.label}</Label>
+                                </div>
+                              ))}
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
+
+                {currentStep === 5 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Dietary Preferences</h2>
+                      <p className="text-muted-foreground">Select all that apply to you</p>
+                    </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="dietary_preferences"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel>Dietary Preferences</FormLabel>
+                          <div className="grid grid-cols-2 gap-2">
+                            {DIETARY_OPTIONS.map((option) => (
+                              <FormField
+                                key={option}
+                                control={form.control}
+                                name="dietary_preferences"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.includes(option)}
+                                        onCheckedChange={(checked) => {
+                                          const updatedValue = checked
+                                            ? [...(field.value || []), option]
+                                            : (field.value || []).filter((value) => value !== option);
+                                          field.onChange(updatedValue);
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <FormLabel className="text-sm capitalize">{option.replace('-', ' ')}</FormLabel>
+                                  </FormItem>
+                                )}
+                              />
+                            ))}
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
+
+                {currentStep === 6 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Allergies & Restrictions</h2>
+                      <p className="text-muted-foreground">Let us know about any food allergies</p>
+                    </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="allergies"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel>Food Allergies</FormLabel>
+                          <div className="grid grid-cols-2 gap-2">
+                            {ALLERGY_OPTIONS.map((option) => (
+                              <FormField
+                                key={option}
+                                control={form.control}
+                                name="allergies"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.includes(option)}
+                                        onCheckedChange={(checked) => {
+                                          const updatedValue = checked
+                                            ? [...(field.value || []), option]
+                                            : (field.value || []).filter((value) => value !== option);
+                                          field.onChange(updatedValue);
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <FormLabel className="text-sm capitalize">{option.replace('-', ' ')}</FormLabel>
+                                  </FormItem>
+                                )}
+                              />
+                            ))}
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
+
+                {currentStep === 7 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Cooking Preferences</h2>
+                      <p className="text-muted-foreground">Help us tailor recipes to your lifestyle</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="cooking_time_preference"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Preferred Cooking Time</FormLabel>
+                            <FormControl>
+                              <RadioGroup
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                className="flex flex-col space-y-2"
+                              >
+                                {COOKING_TIME_OPTIONS.map((option) => (
+                                  <div key={option.value} className="flex items-center space-x-2">
+                                    <RadioGroupItem value={option.value} id={option.value} />
+                                    <Label htmlFor={option.value}>{option.label}</Label>
+                                  </div>
+                                ))}
+                              </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="budget_preference"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Budget Preference</FormLabel>
+                            <FormControl>
+                              <RadioGroup
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                className="flex flex-col space-y-2"
+                              >
+                                {BUDGET_OPTIONS.map((option) => (
+                                  <div key={option.value} className="flex items-center space-x-2">
+                                    <RadioGroupItem value={option.value} id={option.value} />
+                                    <Label htmlFor={option.value}>{option.label}</Label>
+                                  </div>
+                                ))}
+                              </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </>
+                )}
+
+                {currentStep === 8 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Final Details</h2>
+                      <p className="text-muted-foreground">Just a few more details to personalize your experience</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="meal_frequency"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Preferred Meals Per Day: {field.value}</FormLabel>
+                            <FormControl>
+                              <Slider
+                                min={2}
+                                max={6}
+                                step={1}
+                                value={[field.value]}
+                                onValueChange={(value) => field.onChange(value[0])}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="sleep_hours"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Average Sleep Hours: {field.value}</FormLabel>
+                            <FormControl>
+                              <Slider
+                                min={4}
+                                max={12}
+                                step={0.5}
+                                value={[field.value]}
+                                onValueChange={(value) => field.onChange(value[0])}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="stress_level"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Stress Level (1-10): {field.value}</FormLabel>
+                            <FormControl>
+                              <Slider
+                                min={1}
+                                max={10}
+                                step={1}
+                                value={[field.value]}
+                                onValueChange={(value) => field.onChange(value[0])}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
               
               <div className="flex justify-between pt-6">
@@ -159,10 +504,17 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                   Previous
                 </Button>
                 
-                <Button type="submit" className="flex items-center">
-                  Complete Setup
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
+                {currentStep < totalSteps ? (
+                  <Button type="button" onClick={nextStep} className="flex items-center">
+                    Next
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button type="submit" className="flex items-center">
+                    Complete Setup
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </form>
           </Form>
