@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      shopping_results: {
+        Row: {
+          created_at: string
+          estimated_price: number | null
+          gram_quantity: number
+          id: string
+          ingredient_type: string
+          product_name: string
+          store_availability: Json | null
+          store_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          estimated_price?: number | null
+          gram_quantity: number
+          id?: string
+          ingredient_type: string
+          product_name: string
+          store_availability?: Json | null
+          store_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          estimated_price?: number | null
+          gram_quantity?: number
+          id?: string
+          ingredient_type?: string
+          product_name?: string
+          store_availability?: Json | null
+          store_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
