@@ -50,15 +50,17 @@ export const useRecipes = () => {
     const fetchRecipes = async () => {
       try {
         setLoading(true);
-        const { data, error } = await supabase
-          .rpc('get_all_recipes') as { data: DatabaseRecipe[] | null, error: any };
+        // Use a generic query that will work regardless of types
+        const response = await supabase
+          .from('recipes' as any)
+          .select('*');
 
-        if (error) {
-          throw error;
+        if (response.error) {
+          throw response.error;
         }
 
         // Transform database recipes to match component expectations
-        const transformedRecipes: Recipe[] = (data || []).map((recipe: DatabaseRecipe) => ({
+        const transformedRecipes: Recipe[] = (response.data || []).map((recipe: any) => ({
           ...recipe,
           // Create legacy compatibility fields
           description: `A delicious ${recipe.name.toLowerCase()} recipe with ${recipe.calories} calories`,
@@ -86,14 +88,15 @@ export const useRecipes = () => {
   const refetchRecipes = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .rpc('get_all_recipes') as { data: DatabaseRecipe[] | null, error: any };
+      const response = await supabase
+        .from('recipes' as any)
+        .select('*');
 
-      if (error) {
-        throw error;
+      if (response.error) {
+        throw response.error;
       }
 
-      const transformedRecipes: Recipe[] = (data || []).map((recipe: DatabaseRecipe) => ({
+      const transformedRecipes: Recipe[] = (response.data || []).map((recipe: any) => ({
         ...recipe,
         description: `A delicious ${recipe.name.toLowerCase()} recipe with ${recipe.calories} calories`,
         prepTime: `${recipe.prep_time} minutes`,
