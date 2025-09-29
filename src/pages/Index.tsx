@@ -9,6 +9,7 @@ import { MealPlanner } from '@/components/MealPlanner';
 import { ShoppingList } from '@/components/ShoppingList';
 import { OnboardingForm } from '@/components/OnboardingForm';
 import { ImageGenerator } from '@/components/ImageGenerator';
+import MCROCoach from '@/components/MCROCoach';
 import { GeneratedImage } from '@/utils/imageGenerator';
 import { recipes, Recipe, getAllDietaryTags } from '@/data/recipes';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,7 @@ import { UserProfile, GOALS } from '@/types/user';
 import { loadUserProfile, calculateDailyWaterGoal, saveUserProfile } from '@/lib/userProfile';
 import { useToast } from '@/hooks/use-toast';
 
-type NavigationView = 'home' | 'planner' | 'shopping' | 'profile';
+type NavigationView = 'home' | 'planner' | 'shopping' | 'profile' | 'mcro-coach';
 
 interface MealPlan {
   date: string;
@@ -200,6 +201,8 @@ const Index = () => {
                 onBack={() => setCurrentView('planner')}
               />
             )}
+
+            {currentView === 'mcro-coach' && <MCROCoach />}
 
             {currentView === 'profile' && (
               <div className="max-w-2xl mx-auto space-y-6">

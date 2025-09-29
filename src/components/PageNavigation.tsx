@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Home, Calendar, ShoppingCart, User } from 'lucide-react';
+import { Home, Calendar, ShoppingCart, User, Bot } from 'lucide-react';
 
-type NavigationView = 'home' | 'planner' | 'shopping' | 'profile';
+type NavigationView = 'home' | 'planner' | 'shopping' | 'profile' | 'mcro-coach';
 
 interface PageNavigationProps {
   currentView: NavigationView;
@@ -14,6 +14,7 @@ const PageNavigation: React.FC<PageNavigationProps> = ({ currentView, onViewChan
     { id: 'home', label: 'Recipes', icon: Home },
     { id: 'planner', label: 'Meal Planner', icon: Calendar },
     { id: 'shopping', label: 'Shopping List', icon: ShoppingCart },
+    { id: 'mcro-coach', label: 'MCRO Coach', icon: Bot },
     { id: 'profile', label: 'Profile', icon: User },
   ];
 
