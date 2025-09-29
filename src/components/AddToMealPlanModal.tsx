@@ -23,6 +23,7 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
   const [selectedDay, setSelectedDay] = useState<string>('');
   const [selectedMealType, setSelectedMealType] = useState<string>('');
 
+  // Lock body scroll only when the LEFT PANEL is open (not for dropdowns)
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('no-scroll');
@@ -34,11 +35,18 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
     };
   }, [isOpen]);
 
+  // Close with ESC only if NO select popover is open
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        handleClose();
-      }
+      if (e.key !== 'Escape' || !isOpen) return;
+
+      // If a Radix Select content is open, let it handle Escape first
+      const selectOpen =
+        document.querySelector('[data-state="open"][data-radix-select-content]') ||
+        document.querySelector('[role="listbox"][data-state="open"]');
+
+      if (selectOpen) return; // don't close the panel; the dropdown will consume ESC
+      handleClose();
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
@@ -63,11 +71,13 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
 
   return (
     <>
-      <div 
+      <div
         className="fixed inset-0 bg-black/50 z-40 animate-fade-in"
         onClick={handleClose}
       />
-      <div className="meal-plan-panel fixed top-0 left-0 h-full w-full max-w-sm bg-background shadow-xl z-50 animate-slide-in-left overflow-y-auto">
+      <div
+        className="meal-plan-panel fixed top-0 left-0 h-full w-full max-w-sm bg-background shadow-xl z-50 animate-slide-in-left overflow-y-auto"
+      >
         <div className="sticky top-0 bg-background border-b p-4 z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -96,22 +106,24 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
               <label className="text-sm font-medium text-foreground mb-2 block">
                 Select Day
               </label>
-              <Select 
-                value={selectedDay} 
+              <Select
+                value={selectedDay}
                 onValueChange={setSelectedDay}
+                modal={false} // <<< prevent body scroll lock / big modal; keep popover inline
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose a day..." />
                 </SelectTrigger>
-                <SelectContent 
+                <SelectContent
                   className="panel-popover z-[60]"
                   position="popper"
                   sideOffset={4}
                   align="start"
-                  onCloseAutoFocus={(e) => e.preventDefault()}
                   avoidCollisions={false}
+                  onCloseAutoFocus={(e) => e.preventDefault()} // avoid page scroll on close
+                  // data-radix-select-content is added by Radix; used in ESC guard above
                 >
-                  {DAYS.map(day => (
+                  {DAYS.map((day) => (
                     <SelectItem key={day} value={day}>
                       {day}
                     </SelectItem>
@@ -124,22 +136,23 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
               <label className="text-sm font-medium text-foreground mb-2 block">
                 Select Meal Type
               </label>
-              <Select 
-                value={selectedMealType} 
+              <Select
+                value={selectedMealType}
                 onValueChange={setSelectedMealType}
+                modal={false} // <<< same as above
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose meal type..." />
                 </SelectTrigger>
-                <SelectContent 
+                <SelectContent
                   className="panel-popover z-[60]"
                   position="popper"
                   sideOffset={4}
                   align="start"
-                  onCloseAutoFocus={(e) => e.preventDefault()}
                   avoidCollisions={false}
+                  onCloseAutoFocus={(e) => e.preventDefault()}
                 >
-                  {MEAL_TYPES.map(meal => (
+                  {MEAL_TYPES.map((meal) => (
                     <SelectItem key={meal.value} value={meal.value}>
                       {meal.label}
                     </SelectItem>
@@ -153,8 +166,8 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
             <Button variant="outline" onClick={handleClose} className="flex-1">
               Cancel
             </Button>
-            <Button 
-              onClick={handleConfirm} 
+            <Button
+              onClick={handleConfirm}
               disabled={!selectedDay || !selectedMealType}
               className="flex-1"
             >
