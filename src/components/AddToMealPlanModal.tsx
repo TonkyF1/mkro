@@ -42,8 +42,8 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-md bg-background">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 will-change-transform">
+      <Card className="w-full max-w-md bg-background transform-gpu backface-hidden">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
