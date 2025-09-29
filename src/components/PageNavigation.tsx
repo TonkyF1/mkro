@@ -21,7 +21,7 @@ const PageNavigation: React.FC<PageNavigationProps> = ({ currentView, onViewChan
   return (
     <nav className="w-full bg-muted/50 border-b border-border">
       <div className="container mx-auto px-2 sm:px-4">
-        <div className="flex items-center justify-between sm:justify-start sm:space-x-1 py-2 overflow-x-auto">
+        <div className="flex items-center justify-center space-x-1 py-2 overflow-x-auto">
           {navItems.map(({ id, label, icon: Icon }) => (
             <Button
               key={id}
