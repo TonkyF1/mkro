@@ -7,7 +7,7 @@ import { useRecipes, Recipe, getAllDietaryTags } from '@/hooks/useRecipes';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useToast } from '@/hooks/use-toast';
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const Recipes = () => {
   const { profile } = useUserProfile();
@@ -41,30 +41,30 @@ const Recipes = () => {
   };
 
   const addRecipeToMealPlan = (recipe: Recipe, day: string, mealType: string) => {
-    // Load or initialize meal plan with proper structure
     const stored = localStorage.getItem('mealPlan');
-    let mealPlan;
-    
-    if (stored) {
-      mealPlan = JSON.parse(stored);
-    } else {
-      // Initialize with all days
-      mealPlan = DAYS.map(d => ({ date: d }));
-    }
-    
-    // Find the day index
+    let existing: any[] = [];
+    try {
+      const parsed = stored ? JSON.parse(stored) : [];
+      if (Array.isArray(parsed)) existing = parsed;
+    } catch {}
+
+    // Normalize to a 7-day structure
+    const normalized = DAYS.map(d => {
+      const match = existing.find((x: any) => x && x.date === d) || {};
+      return { date: d, ...match };
+    });
+
     const dayIndex = DAYS.indexOf(day);
     if (dayIndex === -1) return;
-    
-    // Update the specific day and meal type
-    const updatedMealPlan = mealPlan.map((mealDay: any, index: number) =>
-      index === dayIndex 
+
+    const updatedMealPlan = normalized.map((mealDay: any, index: number) =>
+      index === dayIndex
         ? { ...mealDay, [mealType]: recipe }
         : mealDay
     );
-    
+
     localStorage.setItem('mealPlan', JSON.stringify(updatedMealPlan));
-    
+
     toast({
       title: "Recipe Added!",
       description: `${recipe.name} has been added to ${day} ${mealType}.`
