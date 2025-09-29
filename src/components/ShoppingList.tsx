@@ -61,9 +61,11 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ mealPlans, onBack })
         .filter(Boolean)
         .forEach(recipe => {
           recipe!.ingredients.forEach(ingredient => {
-            const cleanIngredient = ingredient.toLowerCase()
-              .replace(/^\d+\s*(cups?|tbsp|tsp|oz|lbs?|g|kg|slices?|can|bunch|medium|large|small)\s*/g, '')
+            const cleanIngredient = ingredient
+              .toLowerCase()
+              .replace(/^\s*(\d+\/\d+|\d+(?:\.\d+)?)\s*(cups?|cup|tbsp|tsp|oz|lbs?|g|kg|slices?|slice|can|bunch|pinch|cloves?|medium|large|small)?\s*/, '')
               .replace(/[^\w\s]/g, '')
+              .replace(/\s{2,}/g, ' ')
               .trim();
             
             const gramAmount = convertIngredientToGrams(ingredient);
