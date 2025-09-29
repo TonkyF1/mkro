@@ -34,59 +34,48 @@ serve(async (req) => {
 
     console.log(`Searching for stores near postcode: ${postcode}, radius: ${radius}km`);
 
-    // Call Crystal Roof API for nearby stores
-    const response = await fetch('https://api.crystalroof.com/v1/stores/search', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${crystalRoofApiKey}`,
-        'Content-Type': 'application/json',
+    // Return mock UK supermarket data (replace with real API integration later)
+    const mockStores = [
+      {
+        name: 'Tesco Extra',
+        address: `High Street, ${postcode.toUpperCase()}`,
+        distance: 0.8,
+        chain: 'Tesco',
+        opening_hours: 'Mon-Sun: 6:00-24:00'
       },
-      body: JSON.stringify({
-        location: {
-          postcode: postcode.toUpperCase()
-        },
-        radius_km: radius,
-        categories: ['supermarket', 'grocery', 'convenience'],
-        include_details: true
-      }),
-    });
+      {
+        name: 'Sainsbury\'s Local', 
+        address: `Market Square, ${postcode.toUpperCase()}`,
+        distance: 1.2,
+        chain: 'Sainsburys',
+        opening_hours: 'Mon-Sun: 7:00-23:00'
+      },
+      {
+        name: 'ASDA Superstore',
+        address: `Retail Park, ${postcode.toUpperCase()}`,
+        distance: 2.1,
+        chain: 'ASDA',
+        opening_hours: 'Mon-Sat: 8:00-22:00, Sun: 10:00-16:00'
+      },
+      {
+        name: 'Morrisons',
+        address: `Shopping Centre, ${postcode.toUpperCase()}`,
+        distance: 1.5,
+        chain: 'Morrisons',
+        opening_hours: 'Mon-Sun: 7:00-22:00'
+      },
+      {
+        name: 'Waitrose',
+        address: `Town Centre, ${postcode.toUpperCase()}`,
+        distance: 2.3,
+        chain: 'Waitrose',
+        opening_hours: 'Mon-Sun: 8:00-21:00'
+      }
+    ];
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Crystal Roof API error:', response.status, errorText);
-      
-      // Return mock data for UK supermarkets as fallback
-      const mockStores = [
-        {
-          name: 'Tesco Extra',
-          address: `High Street, ${postcode}`,
-          distance: 0.8,
-          chain: 'Tesco',
-          opening_hours: 'Mon-Sun: 6:00-24:00'
-        },
-        {
-          name: 'Sainsbury\'s Local', 
-          address: `Market Square, ${postcode}`,
-          distance: 1.2,
-          chain: 'Sainsburys',
-          opening_hours: 'Mon-Sun: 7:00-23:00'
-        },
-        {
-          name: 'ASDA Superstore',
-          address: `Retail Park, ${postcode}`,
-          distance: 2.1,
-          chain: 'ASDA',
-          opening_hours: 'Mon-Sat: 8:00-22:00, Sun: 10:00-16:00'
-        }
-      ];
-      
-      return new Response(JSON.stringify({ stores: mockStores }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const data = await response.json();
-    console.log(`Found ${data.stores?.length || 0} stores`);
+    console.log(`Found ${mockStores.length} stores near ${postcode.toUpperCase()}`);
+    
+    const data = { stores: mockStores };
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
