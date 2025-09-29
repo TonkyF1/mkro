@@ -1,27 +1,38 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Clock, Users, Zap, ArrowLeft, Lightbulb } from 'lucide-react';
+import { Clock, Users, Zap, ArrowLeft, Lightbulb, ShoppingCart } from 'lucide-react';
 import { Recipe } from '@/data/recipes';
 
 interface RecipeDetailProps {
   recipe: Recipe;
   onBack: () => void;
+  onAddToShoppingList: (recipe: Recipe) => void;
 }
 
-export const RecipeDetail = ({ recipe, onBack }: RecipeDetailProps) => {
+export const RecipeDetail = ({ recipe, onBack, onAddToShoppingList }: RecipeDetailProps) => {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <Button 
-          variant="ghost" 
-          onClick={onBack}
-          className="mb-4 -ml-4 text-primary hover:bg-primary/10"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Recipes
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <Button 
+            variant="ghost" 
+            onClick={onBack}
+            className="-ml-4 text-primary hover:bg-primary/10"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Recipes
+          </Button>
+          
+          <Button 
+            onClick={() => onAddToShoppingList(recipe)}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            <ShoppingCart className="h-4 w-4 mr-2" />
+            Add to Shopping List
+          </Button>
+        </div>
         
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Recipe Image */}

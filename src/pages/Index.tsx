@@ -12,6 +12,7 @@ import { recipes, Recipe, getAllDietaryTags } from '@/data/recipes';
 import { Button } from '@/components/ui/button';
 import { UserProfile, GOALS } from '@/types/user';
 import { loadUserProfile, calculateDailyWaterGoal, saveUserProfile } from '@/lib/userProfile';
+import { useToast } from '@/hooks/use-toast';
 
 type NavigationView = 'home' | 'planner' | 'shopping' | 'profile';
 
@@ -24,6 +25,7 @@ interface MealPlan {
 }
 
 const Index = () => {
+  const { toast } = useToast();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [currentView, setCurrentView] = useState<NavigationView>('home');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
@@ -73,6 +75,51 @@ const Index = () => {
     saveUserProfile(profile);
   };
 
+  const handleAddToShoppingList = (recipe: Recipe) => {
+    // Add recipe to the next available day or create a new day
+    const today = new Date().toISOString().split('T')[0];
+    const existingMeals = mealPlan.find(day => day.date === today);
+    
+    if (existingMeals) {
+      // Find the next empty meal slot or create a new day
+      if (!existingMeals.breakfast) {
+        setMealPlan(prev => prev.map(day => 
+          day.date === today ? { ...day, breakfast: recipe } : day
+        ));
+      } else if (!existingMeals.lunch) {
+        setMealPlan(prev => prev.map(day => 
+          day.date === today ? { ...day, lunch: recipe } : day
+        ));
+      } else if (!existingMeals.dinner) {
+        setMealPlan(prev => prev.map(day => 
+          day.date === today ? { ...day, dinner: recipe } : day
+        ));
+      } else if (!existingMeals.snack) {
+        setMealPlan(prev => prev.map(day => 
+          day.date === today ? { ...day, snack: recipe } : day
+        ));
+      } else {
+        // Create a new day
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+        setMealPlan(prev => [...prev, { date: tomorrowStr, breakfast: recipe }]);
+      }
+    } else {
+      // Create a new day with this recipe
+      setMealPlan(prev => [...prev, { date: today, breakfast: recipe }]);
+    }
+    
+    // Switch to shopping view
+    setCurrentView('shopping');
+    
+    // Show success toast
+    toast({
+      title: "Recipe Added!",
+      description: `${recipe.name} has been added to your shopping list.`
+    });
+  };
+
   // Show onboarding if no user profile
   if (!userProfile) {
     return <OnboardingForm onComplete={handleOnboardingComplete} />;
@@ -88,6 +135,7 @@ const Index = () => {
           <RecipeDetail 
             recipe={selectedRecipe} 
             onBack={() => setSelectedRecipe(null)} 
+            onAddToShoppingList={handleAddToShoppingList}
           />
         ) : (
           <>
