@@ -18,13 +18,21 @@ const MKROCoach = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const sendCoachingMessage = async (message: string) => {
+  const sendCoachingMessage = async (userInput: string, history: ChatMessage[]) => {
     setIsLoading(true);
 
     try {
+      // Build the full prompt with conversation history
+      let prompt = `You are MKRO, an AI PT & Nutrition Coach. Provide helpful, personalized advice on fitness, training, and nutrition.
+
+Conversation history:`;
+      history.forEach(msg => {
+        prompt += `\n${msg.type === 'user' ? 'User' : 'Coach'}: ${msg.content}`;
+      });
+      prompt += `\nCoach:`;
 
       const { data, error } = await supabase.functions.invoke('hf-proxy', {
-        body: { prompt: message }
+        body: { prompt }
       });
 
       if (error) {
@@ -39,7 +47,7 @@ const MKROCoach = () => {
 
       const coachMessage: ChatMessage = {
         type: 'coach',
-        content: data?.text || 'Sorry, I had trouble processing your request. Please try again.',
+        content: data?.text?.trim() || 'Sorry, I had trouble processing your request. Please try again.',
         timestamp: new Date()
       };
 
@@ -65,10 +73,13 @@ const MKROCoach = () => {
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    // Add user message to history first
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setCurrentMessage('');
-    
-    await sendCoachingMessage(currentMessage);
+
+    // Send with updated history
+    await sendCoachingMessage(currentMessage, updatedMessages);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
