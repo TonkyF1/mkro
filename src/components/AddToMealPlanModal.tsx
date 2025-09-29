@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Recipe } from '@/hooks/useRecipes';
 import { Calendar, Utensils, X } from 'lucide-react';
 
@@ -24,6 +23,27 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
   const [selectedDay, setSelectedDay] = useState<string>('');
   const [selectedMealType, setSelectedMealType] = useState<string>('');
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        handleClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleConfirm = () => {
@@ -42,20 +62,25 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-md bg-background">
-        <CardHeader>
+    <>
+      <div 
+        className="fixed inset-0 bg-black/50 z-40 animate-fade-in"
+        onClick={handleClose}
+      />
+      <div className="meal-plan-panel fixed top-0 left-0 h-full w-full max-w-sm bg-background shadow-xl z-50 animate-slide-in-left overflow-y-auto">
+        <div className="sticky top-0 bg-background border-b p-4 z-10">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
-              Add to Meal Plan
-            </CardTitle>
+              <h2 className="text-lg font-semibold">Add to Meal Plan</h2>
+            </div>
             <Button variant="ghost" size="sm" onClick={handleClose}>
               <X className="h-4 w-4" />
             </Button>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        </div>
+
+        <div className="p-4 space-y-4">
           <div className="p-3 bg-muted/50 rounded-lg">
             <div className="flex items-center gap-2 mb-1">
               <Utensils className="h-4 w-4 text-primary" />
@@ -66,16 +91,25 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div>
               <label className="text-sm font-medium text-foreground mb-2 block">
                 Select Day
               </label>
-              <Select value={selectedDay} onValueChange={setSelectedDay}>
+              <Select 
+                value={selectedDay} 
+                onValueChange={setSelectedDay}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose a day..." />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent 
+                  className="panel-popover"
+                  position="popper"
+                  sideOffset={4}
+                  onCloseAutoFocus={(e) => e.preventDefault()}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {DAYS.map(day => (
                     <SelectItem key={day} value={day}>
                       {day}
@@ -89,11 +123,20 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
               <label className="text-sm font-medium text-foreground mb-2 block">
                 Select Meal Type
               </label>
-              <Select value={selectedMealType} onValueChange={setSelectedMealType}>
+              <Select 
+                value={selectedMealType} 
+                onValueChange={setSelectedMealType}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose meal type..." />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent 
+                  className="panel-popover"
+                  position="popper"
+                  sideOffset={4}
+                  onCloseAutoFocus={(e) => e.preventDefault()}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {MEAL_TYPES.map(meal => (
                     <SelectItem key={meal.value} value={meal.value}>
                       {meal.label}
@@ -116,8 +159,8 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
               Add to Plan
             </Button>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </div>
+    </>
   );
 };
