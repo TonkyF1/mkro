@@ -29,28 +29,25 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
   const handleConfirm = () => {
     if (selectedDay && selectedMealType) {
       onConfirm(selectedDay, selectedMealType);
-      onClose();
       setSelectedDay('');
       setSelectedMealType('');
+      onClose();
     }
   };
 
   const handleClose = () => {
-    onClose();
     setSelectedDay('');
     setSelectedMealType('');
+    onClose();
   };
 
   return (
     <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 will-change-transform"
-      onClick={(e) => {
-        e.stopPropagation();
-        handleClose();
-      }}
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+      onClick={handleClose}
     >
       <Card 
-        className="w-full max-w-md bg-background transform-gpu backface-hidden"
+        className="w-full max-w-md bg-background"
         onClick={(e) => e.stopPropagation()}
       >
         <CardHeader>
@@ -59,7 +56,12 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
               <Calendar className="h-5 w-5 text-primary" />
               Add to Meal Plan
             </CardTitle>
-            <Button variant="ghost" size="sm" onClick={handleClose}>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleClose}
+              className="h-8 w-8 p-0"
+            >
               <X className="h-4 w-4" />
             </Button>
           </div>
