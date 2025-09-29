@@ -53,19 +53,20 @@ export const HydrationTracker = ({ className = '' }: HydrationTrackerProps) => {
   };
 
   return (
-    <div className={`bg-gradient-to-r from-hydration/10 to-hydration/5 rounded-xl p-6 border border-hydration/20 ${className}`}>
-      <div className="flex items-center gap-3 mb-4">
-        <Droplets className="h-6 w-6 text-hydration" />
-        <h2 className="text-xl font-bold text-foreground">Daily Hydration</h2>
+    <div className={`bg-gradient-to-r from-hydration/10 to-hydration/5 rounded-lg p-4 border border-hydration/20 ${className}`}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Droplets className="h-5 w-5 text-hydration" />
+          <h3 className="text-lg font-semibold text-foreground">Daily Hydration</h3>
+        </div>
+        <div className="text-sm text-muted-foreground">
+          {intake}ml / {goal}ml
+        </div>
       </div>
       
       {/* Progress Bar */}
-      <div className="mb-4">
-        <div className="flex justify-between text-sm text-muted-foreground mb-2">
-          <span>{intake}ml</span>
-          <span>{goal}ml goal</span>
-        </div>
-        <div className="w-full bg-secondary rounded-full h-3 overflow-hidden">
+      <div className="mb-3">
+        <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
           <div 
             className="h-full bg-gradient-to-r from-hydration to-hydration/80 transition-all duration-500 ease-out rounded-full"
             style={{ width: `${progressPercentage}%` }}
@@ -74,30 +75,30 @@ export const HydrationTracker = ({ className = '' }: HydrationTrackerProps) => {
       </div>
       
       {/* Add Water Buttons */}
-      <div className="flex gap-3 mb-4">
+      <div className="flex gap-2 mb-3">
         <Button 
           variant="outline" 
           size="sm"
           onClick={() => addWater(250)}
-          className="flex-1 border-hydration/30 hover:bg-hydration/10"
+          className="flex-1 border-hydration/30 hover:bg-hydration/10 text-xs"
         >
-          <Plus className="h-4 w-4 mr-1" />
+          <Plus className="h-3 w-3 mr-1" />
           +250ml
         </Button>
         <Button 
           variant="outline" 
           size="sm"
           onClick={() => addWater(500)}
-          className="flex-1 border-hydration/30 hover:bg-hydration/10"
+          className="flex-1 border-hydration/30 hover:bg-hydration/10 text-xs"
         >
-          <Plus className="h-4 w-4 mr-1" />
+          <Plus className="h-3 w-3 mr-1" />
           +500ml
         </Button>
       </div>
       
       {/* Reminder Message */}
       <div className="text-center">
-        <p className="text-sm font-medium text-hydration">
+        <p className="text-xs font-medium text-hydration">
           {getReminderMessage()}
         </p>
       </div>
