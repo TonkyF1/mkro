@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { generateMissingRecipeImages, GeneratedImage } from '@/utils/imageGenerator';
+import { generateAllRecipeImages, GeneratedImage } from '@/utils/imageGenerator';
 import { Loader2, Image } from 'lucide-react';
 
 interface ImageGeneratorProps {
@@ -16,7 +16,12 @@ export const ImageGenerator = ({ onImagesGenerated }: ImageGeneratorProps) => {
     setIsGenerating(true);
     
     try {
-      const results = await generateMissingRecipeImages();
+      toast({
+        title: "Image generation started",
+        description: "This may take a few minutes. Please don't close the app.",
+      });
+
+      const results = await generateAllRecipeImages();
       
       toast({
         title: "Image generation complete!",
@@ -43,23 +48,30 @@ export const ImageGenerator = ({ onImagesGenerated }: ImageGeneratorProps) => {
   };
 
   return (
-    <Button 
-      onClick={handleGenerateImages} 
-      disabled={isGenerating}
-      variant="outline"
-      className="w-full"
-    >
-      {isGenerating ? (
-        <>
-          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-          Generating Images...
-        </>
-      ) : (
-        <>
-          <Image className="h-4 w-4 mr-2" />
-          Generate Missing Recipe Images
-        </>
+    <div className="space-y-4">
+      <Button 
+        onClick={handleGenerateImages} 
+        disabled={isGenerating}
+        variant="outline"
+        className="w-full"
+      >
+        {isGenerating ? (
+          <>
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            Generating All Recipe Images...
+          </>
+        ) : (
+          <>
+            <Image className="h-4 w-4 mr-2" />
+            Generate AI Images for All Recipes
+          </>
+        )}
+      </Button>
+      {isGenerating && (
+        <p className="text-sm text-muted-foreground text-center">
+          This process will generate high-quality AI images for all recipes. It may take several minutes to complete.
+        </p>
       )}
-    </Button>
+    </div>
   );
 };

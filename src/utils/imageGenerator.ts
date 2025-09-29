@@ -3,16 +3,16 @@ import { recipes } from "@/data/recipes";
 
 export interface GeneratedImage {
   recipeId: string;
-  imageData: string;
+  imageUrl: string;
 }
 
-export const generateMissingRecipeImages = async (): Promise<{ 
+export const generateAllRecipeImages = async (): Promise<{ 
   success: number; 
   failed: string[]; 
   generatedImages: GeneratedImage[] 
 }> => {
-  const recipesWithoutImages = recipes.filter(recipe => !recipe.image);
-  console.log(`Found ${recipesWithoutImages.length} recipes without images`);
+  // Generate images for ALL recipes, not just those without images
+  console.log(`Generating images for ${recipes.length} recipes`);
   
   const results = {
     success: 0,
@@ -20,14 +20,15 @@ export const generateMissingRecipeImages = async (): Promise<{
     generatedImages: [] as GeneratedImage[]
   };
 
-  for (const recipe of recipesWithoutImages) {
+  for (const recipe of recipes) {
     try {
       console.log(`Generating image for: ${recipe.name}`);
       
       const { data, error } = await supabase.functions.invoke('generate-recipe-image', {
         body: {
           imageDescription: recipe.imageDescription,
-          recipeName: recipe.name
+          recipeName: recipe.name,
+          recipeId: recipe.id
         }
       });
 
@@ -37,21 +38,21 @@ export const generateMissingRecipeImages = async (): Promise<{
         continue;
       }
 
-      if (data?.image) {
-        // Store the generated image data
+      if (data?.imageUrl) {
+        // Store the generated image URL
         results.generatedImages.push({
           recipeId: recipe.id,
-          imageData: data.image
+          imageUrl: data.imageUrl
         });
         results.success++;
         console.log(`Successfully generated image for: ${recipe.name}`);
       } else {
-        console.error(`No image data returned for ${recipe.name}`);
+        console.error(`No image URL returned for ${recipe.name}`);
         results.failed.push(recipe.name);
       }
 
       // Add a small delay to avoid overwhelming the API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
     } catch (error) {
       console.error(`Error generating image for ${recipe.name}:`, error);

@@ -39,12 +39,12 @@ const Index = () => {
   const categories = ['all', 'breakfast', 'lunch', 'dinner', 'snack'];
   const dietaryTags = getAllDietaryTags();
 
-  // Create recipes with generated images
+  // Create recipes with generated images, prioritizing generated URLs over static imports
   const recipesWithImages = useMemo(() => {
     return recipes.map(recipe => {
       const generatedImage = generatedImages.find(img => img.recipeId === recipe.id);
       return generatedImage 
-        ? { ...recipe, image: generatedImage.imageData }
+        ? { ...recipe, image: generatedImage.imageUrl }
         : recipe;
     });
   }, [generatedImages]);
@@ -231,7 +231,7 @@ const Index = () => {
                 <div className="bg-card border border-border p-6 rounded-lg space-y-4">
                   <h3 className="text-lg font-semibold">Recipe Images</h3>
                   <p className="text-sm text-muted-foreground">
-                    Generate AI images for recipes that don't have pictures yet.
+                    Generate professional AI images for all recipes. This will create high-quality food photography that perfectly represents each meal.
                   </p>
                   <ImageGenerator onImagesGenerated={setGeneratedImages} />
                 </div>
