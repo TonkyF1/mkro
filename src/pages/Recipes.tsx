@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { HydrationTracker } from '@/components/HydrationTracker';
 import { RecipeCard } from '@/components/RecipeCard';
 import { RecipeFilter } from '@/components/RecipeFilter';
 import { RecipeDetail } from '@/components/RecipeDetail';
@@ -111,8 +110,6 @@ const Recipes = () => {
           Ready to plan your nutritious meals?
         </p>
       </div>
-
-      <HydrationTracker userProfile={profile} />
       
       <RecipeFilter
         categories={categories}
