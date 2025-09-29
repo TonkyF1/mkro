@@ -22,15 +22,20 @@ const PageNavigation: React.FC = () => {
         <div className="flex items-center justify-around py-2 w-full">
           {navItems.map(({ path, label, shortLabel, icon: Icon }) => {
             const isActive = location.pathname === path;
+            const isCoach = path === '/coach';
             return (
               <NavLink
                 key={path}
                 to={path}
                 className={cn(
                   "flex flex-col items-center justify-center p-1 sm:p-2 flex-shrink-0 min-w-0 h-auto gap-0.5 text-xs rounded-md transition-colors",
-                  isActive 
-                    ? "bg-primary text-primary-foreground" 
-                    : "hover:bg-accent hover:text-accent-foreground"
+                  isCoach
+                    ? isActive
+                      ? "bg-gradient-to-br from-yellow-500 to-yellow-600 text-black"
+                      : "text-black hover:text-yellow-600"
+                    : isActive 
+                      ? "bg-primary text-primary-foreground" 
+                      : "hover:bg-accent hover:text-accent-foreground"
                 )}
               >
                 <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
