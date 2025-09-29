@@ -55,7 +55,7 @@ const Index = () => {
   const filteredRecipes = recipesWithImages.filter(recipe => {
     const categoryMatch = selectedCategory === 'all' || recipe.category === selectedCategory;
     const tagMatch = selectedTags.length === 0 || 
-      selectedTags.some(tag => (recipe.dietaryTags || recipe.dietary_tags || []).includes(tag));
+      selectedTags.some(tag => recipe.dietaryTags.includes(tag));
     return categoryMatch && tagMatch;
   });
 
