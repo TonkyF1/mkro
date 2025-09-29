@@ -7,6 +7,8 @@ import { Recipe } from '@/data/recipes';
 import { convertIngredientToGrams, getProductMapping } from '@/lib/ingredientConverter';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTrial } from '@/hooks/useTrial';
+import UpgradePrompt from './UpgradePrompt';
 
 interface MealPlan {
   date: string;
@@ -41,6 +43,7 @@ interface Store {
 
 export const ShoppingList: React.FC<ShoppingListProps> = ({ mealPlans, onBack }) => {
   const { toast } = useToast();
+  const { canUseFeature, isDevelopmentMode } = useTrial();
   const [nearbyStores, setNearbyStores] = useState<Store[]>([]);
   const [isLoadingStores, setIsLoadingStores] = useState(false);
   const [postcode, setPostcode] = useState('');
@@ -206,6 +209,16 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ mealPlans, onBack })
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  // Show upgrade prompt if trial expired and not in development
+  if (!canUseFeature('shopping') && !isDevelopmentMode) {
+    return (
+      <UpgradePrompt 
+        feature="Shopping List Generator" 
+        description="Your free trial has ended. Upgrade to Premium to continue using the shopping list generator."
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
