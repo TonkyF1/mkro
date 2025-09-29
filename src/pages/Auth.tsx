@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,86 +22,87 @@ const signInSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
-type SignUpFormData = z.infer<typeof signUpSchema>;
-type SignInFormData = z.infer<typeof signInSchema>;
-
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const signUpForm = useForm<SignUpFormData>({
+  const signUpForm = useForm({
     resolver: zodResolver(signUpSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-    },
+    defaultValues: { name: '', email: '', password: '' },
   });
 
-  const signInForm = useForm<SignInFormData>({
+  const signInForm = useForm({
     resolver: zodResolver(signInSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   });
 
-  console.log('Auth component state - isSignUp:', isSignUp, 'isLoading:', isLoading);
-
+  // Check auth state on mount and redirect if already signed in
   useEffect(() => {
-    console.log('Auth component mounted');
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Check if user has completed questionnaire
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('user_id')
+          .eq('user_id', user.id)
+          .single();
+        navigate(profile ? '/' : '/questionnaire');
+      }
+    };
+    checkAuth();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('Auth state change:', event, session);
-      if (event === 'SIGNED_IN') {
-        navigate('/');
+      if (event === 'SIGNED_IN' && session) {
+        // Check if questionnaire is completed
+        supabase
+          .from('user_profiles')
+          .select('user_id')
+          .eq('user_id', session.user.id)
+          .single()
+          .then(({ data }) => {
+            navigate(data ? '/' : '/questionnaire');
+          });
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const onSignUp = async (data: SignUpFormData) => {
+  const onSignUp = async (data) => {
     setIsLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/`;
-      
+      const redirectUrl = `${window.location.origin}/questionnaire`;
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
           emailRedirectTo: redirectUrl,
-          data: {
-            name: data.name,
-          },
+          data: { name: data.name },
         },
       });
 
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Sign up failed",
-          description: error.message,
-        });
-      } else {
-        toast({
-          title: "Check your email",
-          description: "We've sent you a confirmation link to complete your registration.",
-        });
-      }
+      if (error) throw error;
+      toast({
+        title: 'Check your email',
+        description: 'We’ve sent you a confirmation link to complete your registration.',
+      });
     } catch (error) {
       toast({
-        variant: "destructive",
-        title: "An error occurred",
-        description: "Please try again later.",
+        variant: 'destructive',
+        title: 'Sign up failed',
+        description: error.message,
       });
     } finally {
       setIsLoading(false);
+      signUpForm.reset();
     }
   };
 
-  const onSignIn = async (data: SignInFormData) => {
+  const onSignIn = async (data) => {
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -109,22 +110,27 @@ const Auth = () => {
         password: data.password,
       });
 
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Sign in failed",
-          description: error.message,
-        });
-      }
+      if (error) throw error;
+      toast({
+        title: 'Sign in successful',
+        description: 'Welcome back!',
+      });
     } catch (error) {
       toast({
-        variant: "destructive",
-        title: "An error occurred",
-        description: "Please try again later.",
+        variant: 'destructive',
+        title: 'Sign in failed',
+        description: error.message,
       });
     } finally {
       setIsLoading(false);
+      signInForm.reset();
     }
+  };
+
+  const toggleAuthMode = () => {
+    setIsSignUp(!isSignUp);
+    signUpForm.reset();
+    signInForm.reset();
   };
 
   return (
@@ -135,15 +141,14 @@ const Auth = () => {
             {isSignUp ? 'Create Your Account' : 'Welcome Back'}
           </CardTitle>
           <CardDescription>
-            {isSignUp 
-              ? 'Join us to start your personalized nutrition journey' 
-              : 'Sign in to access your personalized meal plans'
-            }
+            {isSignUp
+              ? 'Join us to start your personalized nutrition journey'
+              : 'Sign in to access your personalized meal plans'}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {isSignUp ? (
-            <Form {...signUpForm}>
+            <Form {...signUpForm} key="signup-form">
               <form onSubmit={signUpForm.handleSubmit(onSignUp)} className="space-y-4">
                 <FormField
                   control={signUpForm.control}
@@ -152,7 +157,7 @@ const Auth = () => {
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your full name" {...field} />
+                        <Input placeholder="Enter your full name" {...field} disabled={isLoading} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -165,7 +170,7 @@ const Auth = () => {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="Enter your email" {...field} />
+                        <Input type="email" placeholder="Enter your email" {...field} disabled={isLoading} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -178,7 +183,7 @@ const Auth = () => {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Create a password" {...field} />
+                        <Input type="password" placeholder="Create a password" {...field} disabled={isLoading} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -191,7 +196,7 @@ const Auth = () => {
               </form>
             </Form>
           ) : (
-            <Form {...signInForm}>
+            <Form {...signInForm} key="signin-form">
               <form onSubmit={signInForm.handleSubmit(onSignIn)} className="space-y-4">
                 <FormField
                   control={signInForm.control}
@@ -200,7 +205,7 @@ const Auth = () => {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="Enter your email" {...field} />
+                        <Input type="email" placeholder="Enter your email" {...field} disabled={isLoading} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -213,7 +218,7 @@ const Auth = () => {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Enter your password" {...field} />
+                        <Input type="password" placeholder="Enter your password" {...field} disabled={isLoading} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -226,24 +231,9 @@ const Auth = () => {
               </form>
             </Form>
           )}
-          
           <div className="mt-6 text-center">
-            <Button
-              variant="link"
-              onClick={() => {
-                console.log('Switching auth mode from', isSignUp, 'to', !isSignUp);
-                setIsSignUp(!isSignUp);
-                // Reset both forms when switching
-                signUpForm.reset();
-                signInForm.reset();
-                setIsLoading(false);
-              }}
-              disabled={isLoading}
-            >
-              {isSignUp 
-                ? 'Already have an account? Sign in' 
-                : "Don't have an account? Sign up"
-              }
+            <Button variant="link" onClick={toggleAuthMode} disabled={isLoading}>
+              {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
             </Button>
           </div>
         </CardContent>
