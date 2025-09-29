@@ -4,7 +4,14 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import MainLayout from "./layouts/MainLayout";
+import Recipes from "./pages/Recipes";
+import Planner from "./pages/Planner";
+import Shopping from "./pages/Shopping";
+import Profile from "./pages/Profile";
+import Coach from "./pages/Coach";
+import Exercise from "./pages/Exercise";
+import FoodDiaryPage from "./pages/FoodDiaryPage";
 import Auth from "./pages/Auth";
 import Questionnaire from "./pages/Questionnaire";
 import NotFound from "./pages/NotFound";
@@ -35,9 +42,17 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/questionnaire" element={<Questionnaire />} />
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Recipes />} />
+              <Route path="/planner" element={<Planner />} />
+              <Route path="/shopping" element={<Shopping />} />
+              <Route path="/exercise" element={<Exercise />} />
+              <Route path="/food-diary" element={<FoodDiaryPage />} />
+              <Route path="/coach" element={<Coach />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
