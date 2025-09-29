@@ -158,9 +158,9 @@ const Index = () => {
           />
         ) : (
           <>
-            <div className="mb-6 w-full flex flex-col items-center justify-center text-center">
-  <h1 className="text-2xl font-bold text-foreground mb-2 text-capitalize">
-    Welcome back, {userProfile.name || 'Guest'}!
+            <div className="mb-6">
+  <h1 className="text-2xl font-bold text-foreground mb-2">
+    Welcome back, {userProfile.name}!
   </h1>
   <p className="text-muted-foreground">
     Ready to plan your nutritious meals?
