@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useTrial } from '@/hooks/useTrial';
 import UpgradePrompt from './UpgradePrompt';
 import { Send, Bot, User } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ChatMessage {
   id: string;
@@ -14,6 +15,77 @@ interface ChatMessage {
   content: string;
   timestamp: Date;
 }
+
+const formatCoachMessage = (text: string) => {
+  const lines = text.split('\n');
+  const formatted: JSX.Element[] = [];
+  
+  lines.forEach((line, index) => {
+    const trimmedLine = line.trim();
+    
+    // Skip empty lines
+    if (!trimmedLine) {
+      formatted.push(<div key={index} className="h-3" />);
+      return;
+    }
+    
+    // Detect headings (all caps or ending with colon)
+    if (trimmedLine === trimmedLine.toUpperCase() || trimmedLine.endsWith(':')) {
+      formatted.push(
+        <h3 key={index} className="font-bold text-base mt-4 mb-2 first:mt-0 border-b-2 border-primary/20 pb-1">
+          {trimmedLine}
+        </h3>
+      );
+      return;
+    }
+    
+    // Detect bullet points
+    if (trimmedLine.match(/^[-•*]\s/)) {
+      const content = trimmedLine.replace(/^[-•*]\s/, '');
+      formatted.push(
+        <li key={index} className="ml-4 mb-2 leading-relaxed">
+          {formatInlineText(content)}
+        </li>
+      );
+      return;
+    }
+    
+    // Detect numbered lists
+    if (trimmedLine.match(/^\d+\.\s/)) {
+      const content = trimmedLine.replace(/^\d+\.\s/, '');
+      formatted.push(
+        <li key={index} className="ml-4 mb-2 list-decimal leading-relaxed">
+          {formatInlineText(content)}
+        </li>
+      );
+      return;
+    }
+    
+    // Regular paragraph
+    formatted.push(
+      <p key={index} className="mb-3 leading-relaxed">
+        {formatInlineText(trimmedLine)}
+      </p>
+    );
+  });
+  
+  return <div className="space-y-1">{formatted}</div>;
+};
+
+const formatInlineText = (text: string) => {
+  // Bold text between **asterisks** or __underscores__
+  const parts = text.split(/(\*\*[^*]+\*\*|__[^_]+__)/g);
+  
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-bold text-primary">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('__') && part.endsWith('__')) {
+      return <u key={i} className="underline decoration-2 underline-offset-2">{part.slice(2, -2)}</u>;
+    }
+    return <span key={i}>{part}</span>;
+  });
+};
 
 const MKROCoach = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -134,12 +206,15 @@ const MKROCoach = () => {
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bot className="w-6 h-6 text-primary" />
-            MKRO - Your AI PT & Nutrition Coach
+          <CardTitle className="flex items-center gap-3 text-2xl">
+            <Bot className="w-8 h-8 text-primary" />
+            <div className="flex flex-col gap-1">
+              <span className="font-bold">MKRO</span>
+              <span className="text-sm font-normal text-muted-foreground">Your AI PT & Nutrition Coach</span>
+            </div>
             {!isDevelopmentMode && promptsRemaining <= 5 && promptsRemaining > 0 && (
-              <span className="text-sm text-muted-foreground">
-                ({promptsRemaining} prompts left)
+              <span className="text-sm text-muted-foreground ml-auto">
+                {promptsRemaining} prompts left
               </span>
             )}
           </CardTitle>
@@ -148,10 +223,11 @@ const MKROCoach = () => {
           <div className="space-y-4">
             <div className="h-96 overflow-y-auto border rounded-lg p-4 space-y-4 bg-muted/20">
               {messages.length === 0 && (
-                <div className="text-center text-muted-foreground py-8">
-                  <Bot className="w-12 h-12 mx-auto mb-2 text-primary" />
-                  <p>Hi! I'm MKRO, your AI PT & Nutrition Coach.</p>
-                  <p>Start chatting to get your personalized fitness plan!</p>
+                <div className="text-center text-muted-foreground py-12">
+                  <Bot className="w-16 h-16 mx-auto mb-4 text-primary" />
+                  <h2 className="text-xl font-bold mb-2 text-foreground">Hi! I'm MKRO</h2>
+                  <p className="text-base mb-1">Your AI PT & Nutrition Coach</p>
+                  <p className="text-sm">Start chatting to get your personalized fitness plan!</p>
                 </div>
               )}
               {messages.map((message) => (
@@ -164,9 +240,20 @@ const MKROCoach = () => {
                         <Bot className="w-4 h-4 text-secondary-foreground" />
                       )}
                     </div>
-                    <div className={`rounded-lg p-3 ${message.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card border'}`}>
-                      <pre className="whitespace-pre-wrap text-sm font-sans">{message.content}</pre>
-                      <div className="text-xs opacity-70 mt-2">
+                    <div className={cn(
+                      "rounded-lg p-4",
+                      message.type === 'user' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-card border shadow-sm'
+                    )}>
+                      {message.type === 'user' ? (
+                        <p className="text-sm leading-relaxed">{message.content}</p>
+                      ) : (
+                        <div className="text-sm">
+                          {formatCoachMessage(message.content)}
+                        </div>
+                      )}
+                      <div className="text-xs opacity-70 mt-3 pt-2 border-t border-current/10">
                         {message.timestamp.toLocaleTimeString()}
                       </div>
                     </div>
