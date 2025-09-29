@@ -2,29 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  overscroll-behavior: contain;
-}
-
-.no-scroll {
-  overflow: hidden !important;
-  padding-right: calc(100vw - 100%);
-  position: fixed;
-  width: 100%;
-}
-
-.meal-plan-panel {
-  position: fixed;
-  z-index: 50;
-  will-change: transform;
-  backface-visibility: hidden;
-}
-
-.panel-popover {
-  z-index: 60 !important;
-}
-
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */

@@ -31,7 +31,6 @@ export type Database = {
           height_unit: string | null
           hydration_goal: number | null
           id: string
-          is_premium: boolean | null
           kitchen_equipment: string[] | null
           meal_frequency: number | null
           motivation_factors: string[] | null
@@ -42,8 +41,6 @@ export type Database = {
           target_carbs: number | null
           target_fats: number | null
           target_protein: number | null
-          trial_prompts_used: number | null
-          trial_start_date: string | null
           updated_at: string
           user_id: string
           weight: number | null
@@ -65,7 +62,6 @@ export type Database = {
           height_unit?: string | null
           hydration_goal?: number | null
           id?: string
-          is_premium?: boolean | null
           kitchen_equipment?: string[] | null
           meal_frequency?: number | null
           motivation_factors?: string[] | null
@@ -76,8 +72,6 @@ export type Database = {
           target_carbs?: number | null
           target_fats?: number | null
           target_protein?: number | null
-          trial_prompts_used?: number | null
-          trial_start_date?: string | null
           updated_at?: string
           user_id: string
           weight?: number | null
@@ -99,7 +93,6 @@ export type Database = {
           height_unit?: string | null
           hydration_goal?: number | null
           id?: string
-          is_premium?: boolean | null
           kitchen_equipment?: string[] | null
           meal_frequency?: number | null
           motivation_factors?: string[] | null
@@ -110,8 +103,6 @@ export type Database = {
           target_carbs?: number | null
           target_fats?: number | null
           target_protein?: number | null
-          trial_prompts_used?: number | null
-          trial_start_date?: string | null
           updated_at?: string
           user_id?: string
           weight?: number | null

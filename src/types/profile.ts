@@ -28,9 +28,6 @@ export interface UserProfile {
   completed_at?: string;
   created_at?: string;
   updated_at?: string;
-  trial_start_date?: string;
-  trial_prompts_used?: number;
-  is_premium?: boolean;
 }
 
 export const GOALS = [

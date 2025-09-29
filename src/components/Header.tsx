@@ -1,17 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import mkroLogo from '@/assets/mkro-logo.png';
 
 const Header = () => {
-  const navigate = useNavigate();
-
   return (
     <header className="w-full bg-background border-b border-border">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div 
-          className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => navigate('/')}
-        >
+        <div className="flex items-center space-x-3">
           <img 
             src={mkroLogo} 
             alt="MKRO Logo" 
