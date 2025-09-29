@@ -45,7 +45,7 @@ const Auth = () => {
       if (user) {
         // Check if user has completed questionnaire
         const { data: profile } = await supabase
-          .from('user_profiles')
+          .from('profiles')
           .select('user_id')
           .eq('user_id', user.id)
           .single();
@@ -59,7 +59,7 @@ const Auth = () => {
       if (event === 'SIGNED_IN' && session) {
         // Check if questionnaire is completed
         supabase
-          .from('user_profiles')
+          .from('profiles')
           .select('user_id')
           .eq('user_id', session.user.id)
           .single()
