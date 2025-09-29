@@ -52,11 +52,15 @@ export const useUserProfile = () => {
         .upsert({
           user_id: user.id,
           ...profileData,
+        }, {
+          onConflict: 'user_id'
         });
 
       if (error) throw error;
 
-      setProfile({ ...profileData, user_id: user.id } as UserProfile);
+      // Fetch the updated profile to get the correct data
+      await fetchProfile();
+      
       toast({
         title: 'Success',
         description: 'Profile saved successfully!',
