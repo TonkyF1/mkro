@@ -19,7 +19,7 @@ const PageNavigation: React.FC = () => {
   return (
     <nav className="w-full bg-muted/50 border-b border-border">
       <div className="container mx-auto px-1 sm:px-4">
-        <div className="flex items-center justify-center space-x-0.5 sm:space-x-1 py-2 overflow-x-auto">
+        <div className="flex items-center justify-around py-2 w-full">
           {navItems.map(({ path, label, shortLabel, icon: Icon }) => {
             const isActive = location.pathname === path;
             return (
