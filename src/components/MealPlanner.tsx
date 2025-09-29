@@ -15,38 +15,45 @@ interface MealPlan {
 interface MealPlannerProps {
   recipes: Recipe[];
   onGenerateShoppingList: (meals: MealPlan[]) => void;
+  initialMealPlan?: MealPlan[];
+  onMealPlanChange?: (mealPlan: MealPlan[]) => void;
 }
 
 const MEAL_SLOTS = ['breakfast', 'lunch', 'dinner', 'snack'] as const;
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-export const MealPlanner: React.FC<MealPlannerProps> = ({ recipes, onGenerateShoppingList }) => {
+export const MealPlanner: React.FC<MealPlannerProps> = ({ 
+  recipes, 
+  onGenerateShoppingList, 
+  initialMealPlan,
+  onMealPlanChange 
+}) => {
   const [mealPlan, setMealPlan] = useState<MealPlan[]>(
-    DAYS.map(day => ({ date: day }))
+    initialMealPlan || DAYS.map(day => ({ date: day }))
   );
   const [selectedSlot, setSelectedSlot] = useState<{ dayIndex: number; mealType: string } | null>(null);
   const [showRecipeSelector, setShowRecipeSelector] = useState(false);
 
   const addRecipeToSlot = (recipe: Recipe, dayIndex: number, mealType: string) => {
-    setMealPlan(prev => 
-      prev.map((day, index) =>
-        index === dayIndex 
-          ? { ...day, [mealType]: recipe }
-          : day
-      )
+    const updatedPlan = mealPlan.map((day, index) =>
+      index === dayIndex 
+        ? { ...day, [mealType]: recipe }
+        : day
     );
+    setMealPlan(updatedPlan);
+    onMealPlanChange?.(updatedPlan);
     setShowRecipeSelector(false);
     setSelectedSlot(null);
   };
 
   const removeRecipeFromSlot = (dayIndex: number, mealType: string) => {
-    setMealPlan(prev =>
-      prev.map((day, index) =>
-        index === dayIndex
-          ? { ...day, [mealType]: undefined }
-          : day
-      )
+    const updatedPlan = mealPlan.map((day, index) =>
+      index === dayIndex
+        ? { ...day, [mealType]: undefined }
+        : day
     );
+    setMealPlan(updatedPlan);
+    onMealPlanChange?.(updatedPlan);
   };
 
   const calculateDayMacros = (day: MealPlan) => {
@@ -116,10 +123,21 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({ recipes, onGenerateSho
                     </div>
                     
                     {day[mealType] ? (
-                      <div className="space-y-1">
-                        <div className="font-medium text-sm">{day[mealType]!.name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {day[mealType]!.calories}kcal • £{day[mealType]!.estimatedCost.toFixed(2)}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          {day[mealType]!.image && (
+                            <img 
+                              src={day[mealType]!.image} 
+                              alt={day[mealType]!.name}
+                              className="w-8 h-8 rounded object-cover"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <div className="font-medium text-sm">{day[mealType]!.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {day[mealType]!.calories}kcal • £{day[mealType]!.estimatedCost.toFixed(2)}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ) : (

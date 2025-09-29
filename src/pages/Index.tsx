@@ -33,6 +33,21 @@ interface MealPlan {
   snack?: Recipe;
 }
 
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+// Persistent storage helper functions
+const saveMealPlanToStorage = (mealPlan: MealPlan[]) => {
+  localStorage.setItem('mealPlan', JSON.stringify(mealPlan));
+};
+
+const loadMealPlanFromStorage = (): MealPlan[] => {
+  const stored = localStorage.getItem('mealPlan');
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  return DAYS.map(day => ({ date: day }));
+};
+
 const Index = () => {
   const navigate = useNavigate();
   const authHook = useAuth();
@@ -45,7 +60,7 @@ const Index = () => {
   const [currentView, setCurrentView] = useState<NavigationView>('home');
   const [editingProfile, setEditingProfile] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
-  const [mealPlan, setMealPlan] = useState<MealPlan[]>([]);
+  const [mealPlan, setMealPlan] = useState<MealPlan[]>(() => loadMealPlanFromStorage());
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
@@ -100,7 +115,27 @@ const Index = () => {
 
   const generateShoppingList = (meals: MealPlan[]) => {
     setMealPlan(meals);
+    saveMealPlanToStorage(meals);
     setCurrentView('shopping');
+  };
+
+  const addRecipeToMealPlan = (recipe: Recipe, day: string, mealType: string) => {
+    const dayIndex = DAYS.indexOf(day);
+    if (dayIndex === -1) return;
+
+    const updatedMealPlan = mealPlan.map((mealDay, index) =>
+      index === dayIndex 
+        ? { ...mealDay, [mealType]: recipe }
+        : mealDay
+    );
+    
+    setMealPlan(updatedMealPlan);
+    saveMealPlanToStorage(updatedMealPlan);
+    
+    toast({
+      title: "Recipe Added!",
+      description: `${recipe.name} has been added to ${day} ${mealType}.`
+    });
   };
 
   const handleOnboardingComplete = async (profileData: UserProfile) => {
@@ -223,6 +258,7 @@ const Index = () => {
                         key={recipe.id} 
                         recipe={recipe} 
                         onClick={() => setSelectedRecipe(recipe)}
+                        onAddToMealPlan={addRecipeToMealPlan}
                       />
                     ))}
                   </div>
@@ -234,6 +270,11 @@ const Index = () => {
               <MealPlanner 
                 recipes={recipesWithImages} 
                 onGenerateShoppingList={generateShoppingList}
+                initialMealPlan={mealPlan}
+                onMealPlanChange={(updatedPlan) => {
+                  setMealPlan(updatedPlan);
+                  saveMealPlanToStorage(updatedPlan);
+                }}
               />
             )}
 

@@ -1,18 +1,22 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Users, Zap } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Clock, Users, Zap, Plus } from 'lucide-react';
 import { Recipe } from '@/hooks/useRecipes';
 import { getRecipeImageUrl, generateSingleRecipeImage } from '@/utils/recipeImageUtils';
+import { AddToMealPlanModal } from '@/components/AddToMealPlanModal';
 import { useState, useEffect } from 'react';
 
 interface RecipeCardProps {
   recipe: Recipe;
   onClick?: () => void;
+  onAddToMealPlan?: (recipe: Recipe, day: string, mealType: string) => void;
 }
 
-export const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
+export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps) => {
   const [imageUrl, setImageUrl] = useState<string | null>(recipe.image || null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showMealPlanModal, setShowMealPlanModal] = useState(false);
 
   // Try to get image from storage on mount
   useEffect(() => {
@@ -67,11 +71,26 @@ export const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
               )}
             </div>
           )}
-          <div className="absolute top-2 right-2">
+          <div className="absolute top-2 right-2 flex gap-2">
             <Badge variant="secondary" className="bg-background/90 text-foreground">
               {recipe.category}
             </Badge>
           </div>
+          {onAddToMealPlan && (
+            <div className="absolute bottom-2 right-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                className="h-8 w-8 p-0 bg-background/90 hover:bg-background"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMealPlanModal(true);
+                }}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
       </CardHeader>
       
@@ -128,6 +147,17 @@ export const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
           )}
         </div>
       </CardContent>
+      
+      <AddToMealPlanModal
+        recipe={recipe}
+        isOpen={showMealPlanModal}
+        onClose={() => setShowMealPlanModal(false)}
+        onConfirm={(day, mealType) => {
+          if (onAddToMealPlan) {
+            onAddToMealPlan(recipe, day, mealType);
+          }
+        }}
+      />
     </Card>
   );
 };
