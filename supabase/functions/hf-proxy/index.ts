@@ -22,7 +22,7 @@ serve(async (req) => {
       );
     }
 
-    console.log('Processing MCRO coaching request');
+    console.log('Processing MKRO coaching request');
 
     const huggingFaceApiKey = Deno.env.get('HUGGINGFACE_API_KEY');
     if (!huggingFaceApiKey) {
@@ -56,8 +56,8 @@ serve(async (req) => {
       const errorText = await response.text();
       console.error('Error details:', errorText);
       
-      // Fallback response for MCRO
-      const fallbackResponse = `Hello! I'm MCRO, your AI PT & Nutrition Coach. I'm currently having some technical difficulties, but I'm here to help you achieve your fitness goals.
+      // Fallback response for MKRO
+      const fallbackResponse = `Hello! I'm MKRO, your AI PT & Nutrition Coach. I'm currently having some technical difficulties, but I'm here to help you achieve your fitness goals.
 
 To get started, I'd like to know:
 1. What's your main fitness goal? (fat loss, muscle gain, performance, maintenance)
@@ -91,9 +91,9 @@ Once I have this information, I can create a personalized training and nutrition
       }
     }
 
-    // If no valid response, provide a structured MCRO response
+    // If no valid response, provide a structured MKRO response
     if (!generatedText) {
-      generatedText = `I'm MCRO, your AI PT & Nutrition Coach! I'm here to help you achieve your fitness goals with personalized training and nutrition plans.
+      generatedText = `I'm MKRO, your AI PT & Nutrition Coach! I'm here to help you achieve your fitness goals with personalized training and nutrition plans.
 
 Based on your message, I'd like to gather some information to create the best plan for you.
 

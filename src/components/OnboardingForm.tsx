@@ -102,13 +102,13 @@ export const OnboardingForm = ({ onComplete }: OnboardingFormProps) => {
       <Card className="w-full max-w-2xl p-8">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Utensils className="h-8 w-8 text-primary" />
+            <img src="/src/assets/mkro-logo.png" alt="MKRO Logo" className="h-12 w-auto" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Welcome to Lovable Meals
+              Welcome to MKRO
             </h1>
           </div>
-          <p className="text-muted-foreground">
-            Let's personalize your nutrition journey
+          <p className="text-muted-foreground text-lg">
+            Your AI-powered personal trainer and nutrition coach. Get personalized workout plans, meal guidance, and expert coaching tailored just for you.
           </p>
           <div className="flex justify-center mt-4">
             {[1, 2, 3, 4].map((s) => (

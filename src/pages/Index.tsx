@@ -9,7 +9,7 @@ import { MealPlanner } from '@/components/MealPlanner';
 import { ShoppingList } from '@/components/ShoppingList';
 import { OnboardingForm } from '@/components/OnboardingForm';
 import { ImageGenerator } from '@/components/ImageGenerator';
-import MCROCoach from '@/components/MCROCoach';
+import MKROCoach from '@/components/MKROCoach';
 import { GeneratedImage } from '@/utils/imageGenerator';
 import { recipes, Recipe, getAllDietaryTags } from '@/data/recipes';
 import { Button } from '@/components/ui/button';
@@ -202,7 +202,7 @@ const Index = () => {
               />
             )}
 
-            {currentView === 'mcro-coach' && <MCROCoach />}
+            {currentView === 'mcro-coach' && <MKROCoach />}
 
             {currentView === 'profile' && (
               <div className="max-w-2xl mx-auto space-y-6">

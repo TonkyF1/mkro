@@ -14,7 +14,7 @@ const PageNavigation: React.FC<PageNavigationProps> = ({ currentView, onViewChan
     { id: 'home', label: 'Recipes', icon: Home },
     { id: 'planner', label: 'Meal Planner', icon: Calendar },
     { id: 'shopping', label: 'Shopping List', icon: ShoppingCart },
-    { id: 'mcro-coach', label: 'MCRO Coach', icon: Bot },
+    { id: 'mcro-coach', label: 'MKRO Coach', icon: Bot },
     { id: 'profile', label: 'Profile', icon: User },
   ];
 

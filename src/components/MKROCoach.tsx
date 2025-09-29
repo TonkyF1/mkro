@@ -16,7 +16,7 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-const MCROCoach = () => {
+const MKROCoach = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +50,7 @@ const MCROCoach = () => {
 
     try {
       // Construct the coaching prompt
-      const prompt = `You are MCRO, a UK PT & nutrition coach. Always tailor to the individual. Use UK units.
+      const prompt = `You are MKRO, a UK PT & nutrition coach. Always tailor to the individual. Use UK units.
 
 User message: ${currentMessage}
 
@@ -120,7 +120,7 @@ Rules:
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bot className="w-6 h-6 text-primary" />
-            MCRO - Your AI PT & Nutrition Coach
+            MKRO - Your AI PT & Nutrition Coach
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -280,7 +280,7 @@ Rules:
               {messages.length === 0 && (
                 <div className="text-center text-muted-foreground py-8">
                   <Bot className="w-12 h-12 mx-auto mb-2 text-primary" />
-                  <p>Hi! I'm MCRO, your AI PT & Nutrition Coach.</p>
+                  <p>Hi! I'm MKRO, your AI PT & Nutrition Coach.</p>
                   <p>Start chatting to get your personalized fitness plan!</p>
                 </div>
               )}
@@ -327,7 +327,7 @@ Rules:
                 value={currentMessage}
                 onChange={(e) => setCurrentMessage(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="Ask MCRO about training, nutrition, or get your personalized plan..."
+                placeholder="Ask MKRO about training, nutrition, or get your personalized plan..."
                 className="flex-1 min-h-[60px] resize-none"
                 disabled={isLoading}
               />
@@ -347,4 +347,4 @@ Rules:
   );
 };
 
-export default MCROCoach;
+export default MKROCoach;
