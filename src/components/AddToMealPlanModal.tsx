@@ -104,11 +104,12 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
                   <SelectValue placeholder="Choose a day..." />
                 </SelectTrigger>
                 <SelectContent 
-                  className="panel-popover"
+                  className="panel-popover z-[60]"
                   position="popper"
                   sideOffset={4}
+                  align="start"
                   onCloseAutoFocus={(e) => e.preventDefault()}
-                  onClick={(e) => e.stopPropagation()}
+                  avoidCollisions={false}
                 >
                   {DAYS.map(day => (
                     <SelectItem key={day} value={day}>
@@ -131,11 +132,12 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
                   <SelectValue placeholder="Choose meal type..." />
                 </SelectTrigger>
                 <SelectContent 
-                  className="panel-popover"
+                  className="panel-popover z-[60]"
                   position="popper"
                   sideOffset={4}
+                  align="start"
                   onCloseAutoFocus={(e) => e.preventDefault()}
-                  onClick={(e) => e.stopPropagation()}
+                  avoidCollisions={false}
                 >
                   {MEAL_TYPES.map(meal => (
                     <SelectItem key={meal.value} value={meal.value}>
