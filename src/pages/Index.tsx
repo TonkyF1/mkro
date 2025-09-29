@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { HydrationTracker } from '@/components/HydrationTracker';
 import { RecipeCard } from '@/components/RecipeCard';
 import { RecipeFilter } from '@/components/RecipeFilter';
@@ -9,6 +9,7 @@ import { MealPlanner } from '@/components/MealPlanner';
 import { ShoppingList } from '@/components/ShoppingList';
 import { OnboardingForm } from '@/components/OnboardingForm';
 import { ImageGenerator } from '@/components/ImageGenerator';
+import { GeneratedImage } from '@/utils/imageGenerator';
 import { recipes, Recipe, getAllDietaryTags } from '@/data/recipes';
 import { Button } from '@/components/ui/button';
 import { UserProfile, GOALS } from '@/types/user';
@@ -33,12 +34,23 @@ const Index = () => {
   const [mealPlan, setMealPlan] = useState<MealPlan[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   
   const categories = ['all', 'breakfast', 'lunch', 'dinner', 'snack'];
   const dietaryTags = getAllDietaryTags();
 
+  // Create recipes with generated images
+  const recipesWithImages = useMemo(() => {
+    return recipes.map(recipe => {
+      const generatedImage = generatedImages.find(img => img.recipeId === recipe.id);
+      return generatedImage 
+        ? { ...recipe, image: generatedImage.imageData }
+        : recipe;
+    });
+  }, [generatedImages]);
+
   // Filter recipes based on selected criteria
-  const filteredRecipes = recipes.filter(recipe => {
+  const filteredRecipes = recipesWithImages.filter(recipe => {
     const categoryMatch = selectedCategory === 'all' || recipe.category === selectedCategory;
     const tagMatch = selectedTags.length === 0 || 
       selectedTags.some(tag => recipe.dietaryTags.includes(tag));
@@ -177,7 +189,7 @@ const Index = () => {
 
             {currentView === 'planner' && (
               <MealPlanner 
-                recipes={recipes} 
+                recipes={recipesWithImages} 
                 onGenerateShoppingList={generateShoppingList}
               />
             )}
@@ -221,7 +233,7 @@ const Index = () => {
                   <p className="text-sm text-muted-foreground">
                     Generate AI images for recipes that don't have pictures yet.
                   </p>
-                  <ImageGenerator />
+                  <ImageGenerator onImagesGenerated={setGeneratedImages} />
                 </div>
               </div>
             )}

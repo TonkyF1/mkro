@@ -1,13 +1,23 @@
 import { supabase } from "@/integrations/supabase/client";
 import { recipes } from "@/data/recipes";
 
-export const generateMissingRecipeImages = async (): Promise<{ success: number; failed: string[] }> => {
+export interface GeneratedImage {
+  recipeId: string;
+  imageData: string;
+}
+
+export const generateMissingRecipeImages = async (): Promise<{ 
+  success: number; 
+  failed: string[]; 
+  generatedImages: GeneratedImage[] 
+}> => {
   const recipesWithoutImages = recipes.filter(recipe => !recipe.image);
   console.log(`Found ${recipesWithoutImages.length} recipes without images`);
   
   const results = {
     success: 0,
-    failed: [] as string[]
+    failed: [] as string[],
+    generatedImages: [] as GeneratedImage[]
   };
 
   for (const recipe of recipesWithoutImages) {
@@ -28,8 +38,11 @@ export const generateMissingRecipeImages = async (): Promise<{ success: number; 
       }
 
       if (data?.image) {
-        // Store the base64 image in the recipe object
-        recipe.image = data.image;
+        // Store the generated image data
+        results.generatedImages.push({
+          recipeId: recipe.id,
+          imageData: data.image
+        });
         results.success++;
         console.log(`Successfully generated image for: ${recipe.name}`);
       } else {

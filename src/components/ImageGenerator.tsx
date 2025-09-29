@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { generateMissingRecipeImages } from '@/utils/imageGenerator';
+import { generateMissingRecipeImages, GeneratedImage } from '@/utils/imageGenerator';
 import { Loader2, Image } from 'lucide-react';
 
-export const ImageGenerator = () => {
+interface ImageGeneratorProps {
+  onImagesGenerated: (images: GeneratedImage[]) => void;
+}
+
+export const ImageGenerator = ({ onImagesGenerated }: ImageGeneratorProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
@@ -23,8 +27,8 @@ export const ImageGenerator = () => {
         console.warn('Failed to generate images for:', results.failed);
       }
       
-      // Trigger a page refresh to show the new images
-      window.location.reload();
+      // Pass the generated images to the parent component
+      onImagesGenerated(results.generatedImages);
       
     } catch (error) {
       console.error('Error during image generation:', error);
