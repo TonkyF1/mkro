@@ -39,48 +39,18 @@ serve(async (req) => {
       model: 'black-forest-labs/FLUX.1-schnell',
     })
 
-    // Convert the blob to array buffer for storage
+    // Convert the blob to base64 string
     const arrayBuffer = await image.arrayBuffer()
-    const imageFile = new Uint8Array(arrayBuffer)
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
+    const imageBase64 = `data:image/png;base64,${base64}`
 
-    // Create a filename for the image
-    const fileName = `${recipeId}.png`
-    
-    console.log(`Uploading image to storage: ${fileName}`)
-
-    // Upload image to Supabase storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('recipe-images')
-      .upload(fileName, imageFile, {
-        contentType: 'image/png',
-        upsert: true
-      })
-
-    if (uploadError) {
-      console.error('Storage upload error:', uploadError)
-      return new Response(
-        JSON.stringify({ 
-          error: 'Failed to upload image to storage', 
-          details: uploadError.message,
-          success: false 
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-      )
-    }
-
-    // Get the public URL for the uploaded image
-    const { data: publicUrlData } = supabase.storage
-      .from('recipe-images')
-      .getPublicUrl(fileName)
-
-    const imageUrl = publicUrlData.publicUrl
-
-    console.log(`Successfully generated and stored image for recipe: ${recipeName}`)
-    console.log(`Image URL: ${imageUrl}`)
+    console.log(`Successfully generated image for recipe: ${recipeName}`)
+    console.log(`Image Base64 length: ${base64.length}`)
 
     return new Response(
       JSON.stringify({ 
-        imageUrl,
+        image_base64: base64,
+        imageUrl: imageBase64,
         recipeName,
         recipeId,
         success: true 

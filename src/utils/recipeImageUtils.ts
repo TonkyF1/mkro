@@ -1,11 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
+import placeholderImage from '@/assets/meal-placeholder.png';
 
 export const getRecipeImageUrl = (recipeId: string): string => {
-  const { data } = supabase.storage
-    .from('recipe-images')
-    .getPublicUrl(`${recipeId}.png`);
-  
-  return data.publicUrl;
+  return placeholderImage; // Fallback to placeholder for now
 };
 
 export const generateSingleRecipeImage = async (recipe: { id: string; name: string; imageDescription: string }) => {
@@ -22,12 +19,13 @@ export const generateSingleRecipeImage = async (recipe: { id: string; name: stri
 
     if (error) {
       console.error(`Failed to generate Hugging Face image for ${recipe.name}:`, error);
-      return null;
+      return placeholderImage;
     }
 
-    return data?.imageUrl || null;
+    // Use base64 data if available, otherwise fallback to placeholder
+    return data?.image_base64 ? `data:image/png;base64,${data.image_base64}` : placeholderImage;
   } catch (error) {
     console.error(`Error generating Hugging Face image for ${recipe.name}:`, error);
-    return null;
+    return placeholderImage;
   }
 };
