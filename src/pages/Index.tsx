@@ -31,10 +31,13 @@ interface MealPlan {
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const authHook = useAuth();
+  const { user = null, loading: authLoading = true } = authHook || {};
   const { profile, loading: profileLoading, saveProfile } = useUserProfile();
   const { toast } = useToast();
   const { recipes, loading: recipesLoading, error: recipesError } = useRecipes();
+  
+  console.log('Index component - user:', user, 'authLoading:', authLoading);
   const [currentView, setCurrentView] = useState<NavigationView>('home');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [mealPlan, setMealPlan] = useState<MealPlan[]>([]);
@@ -65,7 +68,9 @@ const Index = () => {
 
   // Check for existing user profile on mount
   useEffect(() => {
+    console.log('Auth check effect - authLoading:', authLoading, 'user:', user);
     if (!authLoading && !user) {
+      console.log('Redirecting to auth page');
       navigate('/auth');
     }
   }, [user, authLoading, navigate]);

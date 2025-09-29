@@ -48,8 +48,12 @@ const Auth = () => {
     },
   });
 
+  console.log('Auth component state - isSignUp:', isSignUp, 'isLoading:', isLoading);
+
   useEffect(() => {
+    console.log('Auth component mounted');
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state change:', event, session);
       if (session?.user) {
         navigate('/');
       }
@@ -226,7 +230,14 @@ const Auth = () => {
           <div className="mt-6 text-center">
             <Button
               variant="link"
-              onClick={() => setIsSignUp(!isSignUp)}
+              onClick={() => {
+                console.log('Switching auth mode from', isSignUp, 'to', !isSignUp);
+                setIsSignUp(!isSignUp);
+                // Reset both forms when switching
+                signUpForm.reset();
+                signInForm.reset();
+                setIsLoading(false);
+              }}
               disabled={isLoading}
             >
               {isSignUp 
