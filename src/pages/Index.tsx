@@ -49,7 +49,7 @@ const Index = () => {
         ? { ...recipe, image: generatedImage.imageUrl }
         : recipe;
     });
-  }, [generatedImages]);
+  }, [recipes, generatedImages]);
 
   // Filter recipes based on selected criteria
   const filteredRecipes = recipesWithImages.filter(recipe => {

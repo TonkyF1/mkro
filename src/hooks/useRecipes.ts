@@ -69,10 +69,11 @@ export const useRecipes = () => {
           dietaryTags: recipe.dietary_tags,
           substitution: 'Check ingredients for possible substitutions',
           imageDescription: `A beautiful image of ${recipe.name.toLowerCase()}`,
-          category: 'lunch' as const, // Default category
+          category: 'breakfast' as const, // Set all to breakfast so they show by default
           estimatedCost: Math.round((recipe.calories / 100) * 2.5) // Rough cost estimation
         }));
 
+        console.log('Transformed recipes:', transformedRecipes);
         setRecipes(transformedRecipes);
       } catch (err) {
         console.error('Error fetching recipes:', err);
@@ -104,7 +105,7 @@ export const useRecipes = () => {
         dietaryTags: recipe.dietary_tags,
         substitution: 'Check ingredients for possible substitutions',
         imageDescription: `A beautiful image of ${recipe.name.toLowerCase()}`,
-        category: 'lunch' as const,
+        category: 'breakfast' as const, // Set all to breakfast so they show by default
         estimatedCost: Math.round((recipe.calories / 100) * 2.5)
       }));
 
