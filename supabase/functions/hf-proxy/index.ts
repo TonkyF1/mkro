@@ -24,35 +24,38 @@ serve(async (req) => {
 
     console.log('Processing MKRO coaching request');
 
-    const huggingFaceApiKey = Deno.env.get('HUGGINGFACE_API_KEY');
-    if (!huggingFaceApiKey) {
-      console.error('HUGGINGFACE_API_KEY not found');
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openaiApiKey) {
+      console.error('OPENAI_API_KEY not found');
       return new Response(
         JSON.stringify({ error: 'API key not configured' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
 
-    // Use Hugging Face's conversational model for coaching
-    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', {
+    // Use OpenAI's GPT model for coaching
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${huggingFaceApiKey}`,
+        'Authorization': `Bearer ${openaiApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: 1000,
-          temperature: 0.7,
-          do_sample: true,
-          repetition_penalty: 1.1
-        }
+        model: 'gpt-4o-mini',
+        messages: [
+          { 
+            role: 'system', 
+            content: 'You are MKRO, a professional UK Personal Trainer and Nutrition Coach. Always provide evidence-based advice tailored to the individual. Use UK units (kg, cm, etc.). Be concise, practical, and motivational.' 
+          },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 1500,
+        temperature: 0.7
       }),
     });
 
     if (!response.ok) {
-      console.error('Hugging Face API error:', response.status);
+      console.error('OpenAI API error:', response.status);
       const errorText = await response.text();
       console.error('Error details:', errorText);
       
@@ -78,22 +81,10 @@ Once I have this information, I can create a personalized training and nutrition
     }
 
     const data = await response.json();
-    console.log('Hugging Face response received');
+    console.log('OpenAI response received');
 
     // Extract the generated text
-    let generatedText = '';
-    if (Array.isArray(data) && data.length > 0 && data[0].generated_text) {
-      generatedText = data[0].generated_text;
-      // Remove the original prompt from the response if it's included
-      const promptIndex = generatedText.indexOf(prompt);
-      if (promptIndex !== -1) {
-        generatedText = generatedText.substring(promptIndex + prompt.length).trim();
-      }
-    }
-
-    // If no valid response, provide a structured MKRO response
-    if (!generatedText) {
-      generatedText = `I'm MKRO, your AI PT & Nutrition Coach! I'm here to help you achieve your fitness goals with personalized training and nutrition plans.
+    const generatedText = data.choices?.[0]?.message?.content || `I'm MKRO, your AI PT & Nutrition Coach! I'm here to help you achieve your fitness goals with personalized training and nutrition plans.
 
 Based on your message, I'd like to gather some information to create the best plan for you.
 
@@ -106,7 +97,6 @@ Based on your message, I'd like to gather some information to create the best pl
 • Share your fitness goals and current stats
 • Describe your training schedule and equipment
 • Mention any injuries or dietary restrictions`;
-    }
 
     return new Response(
       JSON.stringify({ text: generatedText }),
@@ -114,7 +104,7 @@ Based on your message, I'd like to gather some information to create the best pl
     );
 
   } catch (error) {
-    console.error('Error in hf-proxy function:', error);
+    console.error('Error in MKRO coaching function:', error);
     return new Response(
       JSON.stringify({ 
         error: 'Internal server error', 
