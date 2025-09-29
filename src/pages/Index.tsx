@@ -8,6 +8,7 @@ import PageNavigation from '@/components/PageNavigation';
 import { MealPlanner } from '@/components/MealPlanner';
 import { ShoppingList } from '@/components/ShoppingList';
 import { OnboardingForm } from '@/components/OnboardingForm';
+import { ImageGenerator } from '@/components/ImageGenerator';
 import { recipes, Recipe, getAllDietaryTags } from '@/data/recipes';
 import { Button } from '@/components/ui/button';
 import { UserProfile, GOALS } from '@/types/user';
@@ -189,7 +190,7 @@ const Index = () => {
             )}
 
             {currentView === 'profile' && (
-              <div className="max-w-2xl mx-auto">
+              <div className="max-w-2xl mx-auto space-y-6">
                 <div className="bg-card border border-border p-6 rounded-lg space-y-4">
                   <h2 className="text-2xl font-bold">Profile Settings</h2>
                   <div className="grid grid-cols-2 gap-4 text-sm">
@@ -213,6 +214,14 @@ const Index = () => {
                   >
                     Edit Profile
                   </Button>
+                </div>
+                
+                <div className="bg-card border border-border p-6 rounded-lg space-y-4">
+                  <h3 className="text-lg font-semibold">Recipe Images</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Generate AI images for recipes that don't have pictures yet.
+                  </p>
+                  <ImageGenerator />
                 </div>
               </div>
             )}
