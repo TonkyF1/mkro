@@ -7,7 +7,7 @@ const Header = () => {
 
   return (
     <header className="w-full bg-background border-b border-border">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-center">
+      <div className="container mx-auto px-4 py-4 flex flex-col items-center justify-center">
         <div 
           className="cursor-pointer hover:opacity-80 transition-opacity"
           onClick={() => navigate('/')}
@@ -18,6 +18,9 @@ const Header = () => {
             className="h-16 object-contain"
           />
         </div>
+        <p className="mt-2 text-xl font-serif italic text-foreground tracking-wide">
+          Training and Meal Planning Assistant
+        </p>
       </div>
     </header>
   );
