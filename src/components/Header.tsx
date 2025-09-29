@@ -26,10 +26,10 @@ const Header = () => {
           <img 
             src={logoSrc} 
             alt="MKRO" 
-            className="h-16 object-contain"
+            className="h-24 sm:h-28 object-contain"
           />
         </div>
-        <p className="mt-2 text-sm font-serif italic text-foreground tracking-wide">
+        <p className="mt-2 text-base sm:text-lg font-serif italic text-foreground tracking-wide">
           Training and Meal Planning Assistant
         </p>
       </div>
