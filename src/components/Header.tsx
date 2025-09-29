@@ -15,8 +15,11 @@ const Header = () => {
           <img 
             src={mkroLogo} 
             alt="MKRO" 
-            className="h-12 object-contain"
+            className="h-12 object-contain mb-2"
           />
+          <p className="text-sm font-light text-black" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            Your Personal Nutrition Journey
+          </p>
         </div>
       </div>
     </header>
