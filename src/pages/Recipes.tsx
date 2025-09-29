@@ -41,10 +41,22 @@ const Recipes = () => {
   };
 
   const addRecipeToMealPlan = (recipe: Recipe, day: string, mealType: string) => {
-    const mealPlan = JSON.parse(localStorage.getItem('mealPlan') || '[]');
+    // Load or initialize meal plan with proper structure
+    const stored = localStorage.getItem('mealPlan');
+    let mealPlan;
+    
+    if (stored) {
+      mealPlan = JSON.parse(stored);
+    } else {
+      // Initialize with all days
+      mealPlan = DAYS.map(d => ({ date: d }));
+    }
+    
+    // Find the day index
     const dayIndex = DAYS.indexOf(day);
     if (dayIndex === -1) return;
-
+    
+    // Update the specific day and meal type
     const updatedMealPlan = mealPlan.map((mealDay: any, index: number) =>
       index === dayIndex 
         ? { ...mealDay, [mealType]: recipe }

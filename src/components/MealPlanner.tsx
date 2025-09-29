@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Plus, Trash2, ChefHat } from 'lucide-react';
@@ -33,6 +33,13 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
   );
   const [selectedSlot, setSelectedSlot] = useState<{ dayIndex: number; mealType: string } | null>(null);
   const [showRecipeSelector, setShowRecipeSelector] = useState(false);
+
+  // Update meal plan when initialMealPlan changes
+  useEffect(() => {
+    if (initialMealPlan) {
+      setMealPlan(initialMealPlan);
+    }
+  }, [initialMealPlan]);
 
   const addRecipeToSlot = (recipe: Recipe, dayIndex: number, mealType: string) => {
     const updatedPlan = mealPlan.map((day, index) =>

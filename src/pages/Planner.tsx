@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MealPlanner } from '@/components/MealPlanner';
 import { useRecipes } from '@/hooks/useRecipes';
@@ -21,6 +21,24 @@ const Planner = () => {
   const navigate = useNavigate();
   const { recipes } = useRecipes();
   const [mealPlan, setMealPlan] = useState(() => loadMealPlanFromStorage());
+
+  // Reload meal plan from storage whenever the component mounts or becomes visible
+  useEffect(() => {
+    const reloadMealPlan = () => {
+      const updatedPlan = loadMealPlanFromStorage();
+      setMealPlan(updatedPlan);
+    };
+
+    // Reload on mount
+    reloadMealPlan();
+
+    // Also reload when window becomes visible (tab switching)
+    window.addEventListener('focus', reloadMealPlan);
+    
+    return () => {
+      window.removeEventListener('focus', reloadMealPlan);
+    };
+  }, []);
 
   const generateShoppingList = (meals: any) => {
     setMealPlan(meals);
