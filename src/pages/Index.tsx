@@ -6,6 +6,7 @@ import { RecipeFilter } from '@/components/RecipeFilter';
 import { RecipeDetail } from '@/components/RecipeDetail';
 import Header from '@/components/Header';
 import PageNavigation from '@/components/PageNavigation';
+import TrialBanner from '@/components/TrialBanner';
 import { MealPlanner } from '@/components/MealPlanner';
 import { ShoppingList } from '@/components/ShoppingList';
 import DetailedQuestionnaire from '@/components/DetailedQuestionnaire';
@@ -207,6 +208,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <TrialBanner />
       <PageNavigation currentView={currentView} onViewChange={setCurrentView} />
       
       <div className="container mx-auto px-4 py-6">

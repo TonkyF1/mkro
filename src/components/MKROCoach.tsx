@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTrial } from '@/hooks/useTrial';
+import UpgradePrompt from './UpgradePrompt';
 import { Send, Bot, User } from 'lucide-react';
 
 interface ChatMessage {
@@ -19,6 +21,7 @@ const MKROCoach = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { canUseFeature, promptsRemaining, incrementPromptUsage, isDevelopmentMode, isTrialExpired } = useTrial();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -90,7 +93,11 @@ const MKROCoach = () => {
   };
 
   const sendMessage = async () => {
-    if (!currentMessage.trim()) return;
+    if (!currentMessage.trim() || isLoading) return;
+
+    // Check if user can send more prompts
+    const canSend = await incrementPromptUsage();
+    if (!canSend) return;
 
     const userMessage: ChatMessage = {
       id: `${Date.now()}-${Math.random()}`,
@@ -113,6 +120,16 @@ const MKROCoach = () => {
     }
   };
 
+  // Show upgrade prompt if trial expired and not in development
+  if (!canUseFeature('coach') && !isDevelopmentMode) {
+    return (
+      <UpgradePrompt 
+        feature="MKRO Coach" 
+        description="Your free trial has ended. Upgrade to Premium to continue getting personalized coaching advice."
+      />
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <Card>
@@ -120,6 +137,11 @@ const MKROCoach = () => {
           <CardTitle className="flex items-center gap-2">
             <Bot className="w-6 h-6 text-primary" />
             MKRO - Your AI PT & Nutrition Coach
+            {!isDevelopmentMode && promptsRemaining <= 5 && promptsRemaining > 0 && (
+              <span className="text-sm text-muted-foreground">
+                ({promptsRemaining} prompts left)
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
