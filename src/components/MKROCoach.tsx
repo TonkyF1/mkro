@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Send, Bot, User } from 'lucide-react';
 
 interface ChatMessage {
+  id: string;
   type: 'user' | 'coach';
   content: string;
   timestamp: Date;
@@ -17,26 +18,30 @@ const MKROCoach = () => {
   const [currentMessage, setCurrentMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const sendCoachingMessage = async (userInput: string, history: ChatMessage[]) => {
     setIsLoading(true);
-
     try {
-      // Build the full prompt with conversation history
-      let prompt = `You are MKRO, an AI PT & Nutrition Coach. Provide helpful, personalized advice on fitness, training, and nutrition.
-
-Conversation history:`;
-      history.forEach(msg => {
+      let prompt = `Conversation history:`;
+      const recentHistory = history.slice(-3);
+      recentHistory.forEach(msg => {
         prompt += `\n${msg.type === 'user' ? 'User' : 'Coach'}: ${msg.content}`;
       });
-      prompt += `\nCoach:`;
+      prompt += `\nUser: ${userInput}\nCoach:`;
+
+      console.log('Sending prompt to Supabase:', prompt);
 
       const { data, error } = await supabase.functions.invoke('hf-proxy', {
         body: { prompt }
       });
 
       if (error) {
-        console.error('Error calling coach function:', error);
+        console.error('Supabase function error:', error);
         toast({
           title: "Error",
           description: "Failed to get coaching response. Please try again.",
@@ -45,9 +50,29 @@ Conversation history:`;
         return;
       }
 
+      const coachResponse = data?.text?.trim();
+      if (!coachResponse) {
+        console.error('Empty response from Supabase:', data);
+        throw new Error('Empty response from AI');
+      }
+
+      console.log('Received response:', coachResponse);
+
+      const isRepetitive = messages.some(msg => msg.type === 'coach' && msg.content === coachResponse);
+      if (isRepetitive) {
+        console.warn('Repetitive response detected:', coachResponse);
+        toast({
+          title: "Warning",
+          description: "Received a repetitive response. Please try rephrasing your question.",
+          variant: "default"
+        });
+        return;
+      }
+
       const coachMessage: ChatMessage = {
+        id: `${Date.now()}-${Math.random()}`,
         type: 'coach',
-        content: data?.text?.trim() || 'Sorry, I had trouble processing your request. Please try again.',
+        content: coachResponse,
         timestamp: new Date()
       };
 
@@ -68,17 +93,16 @@ Conversation history:`;
     if (!currentMessage.trim()) return;
 
     const userMessage: ChatMessage = {
+      id: `${Date.now()}-${Math.random()}`,
       type: 'user',
       content: currentMessage,
       timestamp: new Date()
     };
 
-    // Add user message to history first
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setCurrentMessage('');
 
-    // Send with updated history
     await sendCoachingMessage(currentMessage, updatedMessages);
   };
 
@@ -99,8 +123,6 @@ Conversation history:`;
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          
-          {/* Chat Messages */}
           <div className="space-y-4">
             <div className="h-96 overflow-y-auto border rounded-lg p-4 space-y-4 bg-muted/20">
               {messages.length === 0 && (
@@ -110,67 +132,7 @@ Conversation history:`;
                   <p>Start chatting to get your personalized fitness plan!</p>
                 </div>
               )}
-              
-              {messages.map((message, index) => (
-                <div key={index} className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+              {messages.map((message) => (
+                <div key={message.id} className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`flex gap-2 max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${message.type === 'user' ? 'bg-primary' : 'bg-secondary'}`}>
-                      {message.type === 'user' ? (
-                        <User className="w-4 h-4 text-primary-foreground" />
-                      ) : (
-                        <Bot className="w-4 h-4 text-secondary-foreground" />
-                      )}
-                    </div>
-                    <div className={`rounded-lg p-3 ${message.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-card border'}`}>
-                      <pre className="whitespace-pre-wrap text-sm font-sans">{message.content}</pre>
-                      <div className="text-xs opacity-70 mt-2">
-                        {message.timestamp.toLocaleTimeString()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              {isLoading && (
-                <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-                    <Bot className="w-4 h-4 text-secondary-foreground" />
-                  </div>
-                  <div className="bg-card border rounded-lg p-3">
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Message Input */}
-            <div className="flex gap-2">
-              <Textarea
-                value={currentMessage}
-                onChange={(e) => setCurrentMessage(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="Ask MKRO about training, nutrition, or get your personalized plan..."
-                className="flex-1 min-h-[60px] resize-none"
-                disabled={isLoading}
-              />
-              <Button 
-                onClick={sendMessage}
-                disabled={!currentMessage.trim() || isLoading}
-                size="lg"
-                className="px-6"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </div>
-          <div ref={messagesEndRef} />
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-export default MKROCoach;
+                    <div className={`w-
