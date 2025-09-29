@@ -44,7 +44,7 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
   return (
     <div 
       className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-      onClick={handleClose}
+      onClick={(e) => { e.stopPropagation(); handleClose(); }}
     >
       <Card 
         className="w-full max-w-md bg-background"
