@@ -2,7 +2,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { UserProfile, GOALS, ACTIVITY_LEVELS, BUDGET_OPTIONS, COOKING_TIME_OPTIONS } from '@/types/profile';
-import { DollarSign, Edit } from 'lucide-react';
+import { DollarSign, Edit, Sun, Moon, Monitor } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 interface ProfileDetailsProps {
   profile: UserProfile;
@@ -10,6 +11,7 @@ interface ProfileDetailsProps {
 }
 
 const ProfileDetails = ({ profile, onEditClick }: ProfileDetailsProps) => {
+  const { theme, setTheme } = useTheme();
   const goalLabel = GOALS.find(g => g.value === profile.goal)?.label;
   const activityLabel = ACTIVITY_LEVELS.find(a => a.value === profile.activity_level)?.label;
   const budgetOption = BUDGET_OPTIONS.find(b => b.value === profile.budget_preference);
@@ -78,6 +80,41 @@ const ProfileDetails = ({ profile, onEditClick }: ProfileDetailsProps) => {
           </div>
         </div>
       </Card>
+
+      {/* Theme Settings */}
+      <Card className="p-6">
+        <h3 className="text-xl font-semibold mb-4">Theme Settings</h3>
+        <div className="space-y-3">
+          <span className="text-sm text-muted-foreground block">Appearance</span>
+          <div className="flex gap-3">
+            <Button
+              variant={theme === 'light' ? 'default' : 'outline'}
+              onClick={() => setTheme('light')}
+              className="flex-1"
+            >
+              <Sun className="h-4 w-4 mr-2" />
+              Light
+            </Button>
+            <Button
+              variant={theme === 'dark' ? 'default' : 'outline'}
+              onClick={() => setTheme('dark')}
+              className="flex-1"
+            >
+              <Moon className="h-4 w-4 mr-2" />
+              Dark
+            </Button>
+            <Button
+              variant={theme === 'system' ? 'default' : 'outline'}
+              onClick={() => setTheme('system')}
+              className="flex-1"
+            >
+              <Monitor className="h-4 w-4 mr-2" />
+              System
+            </Button>
+          </div>
+        </div>
+      </Card>
+
 
       {/* Goals & Activity */}
       <Card className="p-6">
