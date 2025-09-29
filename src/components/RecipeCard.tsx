@@ -6,7 +6,7 @@ import { Clock, Users, Zap, Plus } from 'lucide-react';
 import { Recipe } from '@/hooks/useRecipes';
 import { getRecipeImageUrl, generateSingleRecipeImage } from '@/utils/recipeImageUtils';
 import { AddToMealPlanModal } from '@/components/AddToMealPlanModal';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -17,8 +17,6 @@ interface RecipeCardProps {
 export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps) => {
   const [imageUrl, setImageUrl] = useState<string | null>(recipe.image || null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [showMealPlanModal, setShowMealPlanModal] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Try to get image from storage on mount
   useEffect(() => {
@@ -88,10 +86,9 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
             </div>
             {onAddToMealPlan && (
               <div className="absolute bottom-2 right-2">
-                <Popover open={showMealPlanModal} onOpenChange={setShowMealPlanModal}>
+                <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      ref={buttonRef}
                       size="sm"
                       variant="secondary"
                       className="h-8 w-8 p-0 bg-background/90 hover:bg-background"
@@ -105,9 +102,6 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
                   </PopoverTrigger>
                   <AddToMealPlanModal
                     recipe={recipe}
-                    isOpen={showMealPlanModal}
-                    onClose={() => setShowMealPlanModal(false)}
-                    triggerRef={buttonRef}
                     onConfirm={(day, mealType) => {
                       if (onAddToMealPlan) {
                         onAddToMealPlan(recipe, day, mealType);

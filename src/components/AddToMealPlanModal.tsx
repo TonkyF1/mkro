@@ -8,10 +8,7 @@ import { Calendar, Utensils, X } from 'lucide-react';
 
 interface AddToMealPlanModalProps {
   recipe: Recipe;
-  isOpen: boolean;
-  onClose: () => void;
   onConfirm: (day: string, mealType: string) => void;
-  triggerRef?: React.RefObject<HTMLElement>;
 }
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -22,25 +19,16 @@ const MEAL_TYPES = [
   { value: 'snack', label: 'Snack' }
 ];
 
-export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm, triggerRef }: AddToMealPlanModalProps) => {
+export const AddToMealPlanModal = ({ recipe, onConfirm }: AddToMealPlanModalProps) => {
   const [selectedDay, setSelectedDay] = useState<string>('');
   const [selectedMealType, setSelectedMealType] = useState<string>('');
-
-  if (!isOpen) return null;
 
   const handleConfirm = () => {
     if (selectedDay && selectedMealType) {
       onConfirm(selectedDay, selectedMealType);
-      onClose();
       setSelectedDay('');
       setSelectedMealType('');
     }
-  };
-
-  const handleClose = () => {
-    onClose();
-    setSelectedDay('');
-    setSelectedMealType('');
   };
 
   return (
@@ -52,15 +40,10 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm, trigger
     >
         <Card className="border-0 shadow-none">
           <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-primary" />
-                Add to Meal Plan
-              </CardTitle>
-              <Button variant="ghost" size="sm" onClick={handleClose} className="h-6 w-6 p-0">
-                <X className="h-3 w-3" />
-              </Button>
-            </div>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-primary" />
+              Add to Meal Plan
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 pt-0">
             <div className="p-2 bg-muted/50 rounded">
@@ -112,13 +95,10 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm, trigger
             </div>
 
             <div className="flex gap-2 pt-2">
-              <Button variant="outline" onClick={handleClose} className="flex-1 h-8 text-xs">
-                Cancel
-              </Button>
               <Button 
                 onClick={handleConfirm} 
                 disabled={!selectedDay || !selectedMealType}
-                className="flex-1 h-8 text-xs"
+                className="w-full h-8 text-xs"
               >
                 Add to Plan
               </Button>
