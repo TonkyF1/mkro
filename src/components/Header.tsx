@@ -7,7 +7,7 @@ const Header = () => {
 
   return (
     <header className="w-full bg-background border-b border-border">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-center">
         <div 
           className="cursor-pointer hover:opacity-80 transition-opacity"
           onClick={() => navigate('/')}
@@ -15,11 +15,8 @@ const Header = () => {
           <img 
             src={mkroLogo} 
             alt="MKRO" 
-            className="h-12 object-contain mb-2"
+            className="h-16 object-contain"
           />
-          <p className="text-sm font-light text-black" style={{ fontFamily: 'Poppins, sans-serif' }}>
-            Your Personal Nutrition Journey
-          </p>
         </div>
       </div>
     </header>
