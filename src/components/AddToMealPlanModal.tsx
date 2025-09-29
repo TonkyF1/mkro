@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Popover, PopoverContent } from '@/components/ui/popover';
+import { PopoverContent } from '@/components/ui/popover';
 import { Recipe } from '@/hooks/useRecipes';
 import { Calendar, Utensils, X } from 'lucide-react';
 
@@ -44,13 +44,12 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm, trigger
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <PopoverContent 
-        className="w-80 p-0 pointer-events-auto z-50" 
-        align="center"
-        side="top"
-        sideOffset={8}
-      >
+    <PopoverContent 
+      className="w-80 p-0 pointer-events-auto z-50" 
+      align="center"
+      side="top"
+      sideOffset={8}
+    >
         <Card className="border-0 shadow-none">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
@@ -126,7 +125,6 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm, trigger
             </div>
           </CardContent>
         </Card>
-      </PopoverContent>
-    </Popover>
+    </PopoverContent>
   );
 };
