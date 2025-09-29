@@ -109,7 +109,6 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
               <Select
                 value={selectedDay}
                 onValueChange={setSelectedDay}
-                modal={false} // <<< prevent body scroll lock / big modal; keep popover inline
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose a day..." />
@@ -139,7 +138,6 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
               <Select
                 value={selectedMealType}
                 onValueChange={setSelectedMealType}
-                modal={false} // <<< same as above
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose meal type..." />
