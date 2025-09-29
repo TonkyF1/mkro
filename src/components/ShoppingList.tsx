@@ -209,22 +209,23 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ mealPlans, onBack })
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-2">
           <ShoppingCart className="h-5 w-5 text-primary" />
           <h2 className="text-2xl font-bold">Shopping List</h2>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={exportList}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={exportList} size="sm">
+            <Download className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Export</span>
           </Button>
-          <Button variant="outline" onClick={saveToSupabase}>
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            Save List
+          <Button variant="outline" onClick={saveToSupabase} size="sm">
+            <ShoppingCart className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Save List</span>
           </Button>
-          <Button onClick={onBack}>
-            Back to Planner
+          <Button onClick={onBack} size="sm">
+            <span className="hidden sm:inline">Back to Planner</span>
+            <span className="sm:hidden">Back</span>
           </Button>
         </div>
       </div>
