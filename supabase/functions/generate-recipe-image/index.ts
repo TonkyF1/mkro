@@ -1,6 +1,6 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
-import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,22 +26,43 @@ serve(async (req) => {
     console.log(`Generating image for recipe: ${recipeName} (ID: ${recipeId})`)
     console.log(`Image description: ${imageDescription}`)
 
-    // Initialize Supabase client with service role key for storage operations
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
+    if (!openAIApiKey) {
+      throw new Error('OPENAI_API_KEY is not configured')
+    }
 
-    const hf = new HfInference(Deno.env.get('HUGGINGFACE_API_KEY'))
-
-    // Generate image using FLUX.1-schnell model with enhanced food photography prompt
-    const image = await hf.textToImage({
-      inputs: `Professional food photography, high resolution, studio lighting, appetizing presentation, clean white background, shallow depth of field, ${imageDescription}, food styling, commercial quality, vibrant colors, Instagram worthy`,
-      model: 'black-forest-labs/FLUX.1-schnell',
+    // Generate image using OpenAI's gpt-image-1 model with enhanced food photography prompt
+    const enhancedPrompt = `Professional food photography, high resolution, studio lighting, appetizing presentation, clean white background, shallow depth of field, ${imageDescription}, food styling, commercial quality, vibrant colors, Instagram worthy`
+    
+    console.log(`Calling OpenAI API with prompt: ${enhancedPrompt}`)
+    
+    const openAIResponse = await fetch('https://api.openai.com/v1/images/generations', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-image-1',
+        prompt: enhancedPrompt,
+        n: 1,
+        size: '1024x1024',
+        quality: 'high',
+        output_format: 'png',
+      }),
     })
 
-    // Convert the blob to base64 string
-    const arrayBuffer = await image.arrayBuffer()
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
+    if (!openAIResponse.ok) {
+      const errorText = await openAIResponse.text()
+      console.error('OpenAI API error:', openAIResponse.status, errorText)
+      throw new Error(`OpenAI API error: ${openAIResponse.status} - ${errorText}`)
+    }
+
+    const openAIData = await openAIResponse.json()
+    console.log('OpenAI response received')
+
+    // OpenAI returns base64 directly for gpt-image-1
+    const base64 = openAIData.data[0].b64_json
     const imageBase64 = `data:image/png;base64,${base64}`
 
     console.log(`Successfully generated image for recipe: ${recipeName}`)

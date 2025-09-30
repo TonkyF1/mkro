@@ -63,13 +63,13 @@ export const ImageGenerator = ({ onImagesGenerated }: ImageGeneratorProps) => {
         ) : (
           <>
           <Image className="h-4 w-4 mr-2" />
-          Generate AI Images with Hugging Face FLUX
+          Generate AI Images with OpenAI
           </>
         )}
       </Button>
       {isGenerating && (
       <p className="text-sm text-muted-foreground text-center">
-        Using Hugging Face FLUX.1-schnell model to generate professional food photography. This may take several minutes.
+        Using OpenAI's gpt-image-1 model to generate professional food photography. This may take several minutes.
       </p>
       )}
     </div>
