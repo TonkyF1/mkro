@@ -23,7 +23,7 @@ const signInSchema = z.object({
 });
 
 const Auth = () => {
-  const [isSignUp, setIsSignUp] = useState(true);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -231,10 +231,32 @@ const Auth = () => {
               </form>
             </Form>
           )}
-          <div className="mt-6 text-center">
-            <Button variant="link" onClick={toggleAuthMode} disabled={isLoading}>
-              {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
-            </Button>
+          <div className="mt-6 text-center text-sm text-muted-foreground">
+            {isSignUp ? (
+              <>
+                Already have an account?{' '}
+                <button
+                  type="button"
+                  onClick={toggleAuthMode}
+                  disabled={isLoading}
+                  className="text-primary hover:underline font-medium"
+                >
+                  Sign in
+                </button>
+              </>
+            ) : (
+              <>
+                Don't have an account?{' '}
+                <button
+                  type="button"
+                  onClick={toggleAuthMode}
+                  disabled={isLoading}
+                  className="text-primary hover:underline font-medium"
+                >
+                  Sign up here
+                </button>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>
