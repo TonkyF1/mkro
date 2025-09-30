@@ -26,7 +26,7 @@ const Header = () => {
           <img 
             src={logoSrc} 
             alt="MKRO" 
-            className="h-24 sm:h-28 object-contain"
+            className={`object-contain ${currentTheme === 'dark' ? 'h-16 sm:h-20' : 'h-24 sm:h-28'}`}
           />
         </div>
         <p className="mt-2 text-base sm:text-lg font-serif italic text-foreground tracking-wide">
