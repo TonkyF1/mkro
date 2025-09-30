@@ -16,9 +16,9 @@ serve(async (req) => {
   try {
     const { title, ingredients, style, recipeId } = await req.json()
 
-    if (!title || !recipeId || !ingredients) {
+    if (!title || !recipeId) {
       return new Response(
-        JSON.stringify({ error: 'Title, ingredients, and recipe ID are required' }),
+        JSON.stringify({ error: 'Title and recipe ID are required' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       )
     }
