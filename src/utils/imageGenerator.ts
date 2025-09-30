@@ -51,8 +51,8 @@ export const generateAllRecipeImages = async (): Promise<{
         results.failed.push(recipe.name);
       }
 
-      // Add a small delay to avoid overwhelming the OpenAI API
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Add a delay to honor OpenAI gpt-image rate limits (~5/min)
+      await new Promise(resolve => setTimeout(resolve, 13000));
       
     } catch (error) {
       console.error(`Error generating OpenAI image for ${recipe.name}:`, error);

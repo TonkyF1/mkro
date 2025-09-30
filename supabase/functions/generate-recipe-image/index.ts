@@ -31,6 +31,11 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY is not configured')
     }
 
+    // Initialize Supabase client for storage operations
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const sb = createClient(supabaseUrl, supabaseServiceKey)
+
     // Generate image using OpenAI's gpt-image-1 model with enhanced food photography prompt
     const enhancedPrompt = [
       `Ultra-realistic professional food photograph, 85mm lens, DSLR, soft studio lighting, shallow depth of field, commercial quality, no text, no watermark, no illustration, no clipart, no cartoons`,
@@ -70,13 +75,30 @@ serve(async (req) => {
     const base64 = openAIData.data[0].b64_json
     const imageBase64 = `data:image/png;base64,${base64}`
 
+    // Upload to Supabase Storage for persistence and CDN delivery
+    const path = `recipes/${recipeId}.png`
+    const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0))
+    const { error: uploadError } = await sb.storage
+      .from('recipe-images')
+      .upload(path, bytes, { contentType: 'image/png', upsert: true })
+
+    if (uploadError) {
+      console.error('Failed to upload to storage:', uploadError)
+    }
+
+    const { data: publicData } = sb.storage
+      .from('recipe-images')
+      .getPublicUrl(path)
+
+    const publicUrl = publicData?.publicUrl || imageBase64
+
     console.log(`Successfully generated image for recipe: ${recipeName}`)
     console.log(`Image Base64 length: ${base64.length}`)
 
     return new Response(
       JSON.stringify({ 
         image_base64: base64,
-        imageUrl: imageBase64,
+        imageUrl: publicUrl,
         recipeName,
         recipeId,
         success: true 

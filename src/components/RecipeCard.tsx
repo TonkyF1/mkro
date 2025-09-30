@@ -18,26 +18,37 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
   const [isGenerating, setIsGenerating] = useState(false);
   const [showMealPlanModal, setShowMealPlanModal] = useState(false);
 
-  // Generate image on mount if not already present
+  // Try to load from storage first; if missing, generate (rate-limited)
   useEffect(() => {
-    const loadOrGenerateImage = async () => {
-      if (!imageUrl && !isGenerating) {
-        try {
-          console.log('[RecipeCard] Generating OpenAI image for:', recipe.name);
-          setIsGenerating(true);
-          const generatedUrl = await generateSingleRecipeImage(recipe);
-          if (generatedUrl) {
-            setImageUrl(generatedUrl);
+    let cancelled = false;
+
+    const attemptLoadOrGenerate = async () => {
+      const storageUrl = getRecipeImageUrl(recipe.id);
+      const probe = new Image();
+      probe.onload = () => {
+        if (!cancelled) setImageUrl(storageUrl);
+      };
+      probe.onerror = async () => {
+        if (!cancelled && !isGenerating) {
+          try {
+            console.log('[RecipeCard] Generating OpenAI image for:', recipe.name);
+            setIsGenerating(true);
+            const generatedUrl = await generateSingleRecipeImage(recipe);
+            if (!cancelled && generatedUrl) {
+              setImageUrl(generatedUrl);
+            }
+          } catch (e) {
+            console.error('[RecipeCard] Image generation failed:', e);
+          } finally {
+            if (!cancelled) setIsGenerating(false);
           }
-        } catch (e) {
-          console.error('[RecipeCard] Image generation failed:', e);
-        } finally {
-          setIsGenerating(false);
         }
-      }
+      };
+      probe.src = storageUrl;
     };
 
-    loadOrGenerateImage();
+    attemptLoadOrGenerate();
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipe.id]);
 

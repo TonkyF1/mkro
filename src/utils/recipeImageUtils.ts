@@ -1,33 +1,47 @@
 import { supabase } from "@/integrations/supabase/client";
-import placeholderImage from '@/assets/meal-placeholder.png';
 
+// Public URL for a recipe image stored in Supabase Storage
 export const getRecipeImageUrl = (recipeId: string): string => {
-  return placeholderImage; // Fallback to placeholder for now
+  const { data } = supabase.storage
+    .from('recipe-images')
+    .getPublicUrl(`recipes/${recipeId}.png`);
+  return data.publicUrl;
 };
 
+// Simple global queue to avoid OpenAI image rate limits
+let genQueue: Promise<void> = Promise.resolve();
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export const generateSingleRecipeImage = async (recipe: { id: string; name: string; imageDescription: string }) => {
-  try {
-    console.log(`Generating single OpenAI image for: ${recipe.name}`);
-    
-    const { data, error } = await supabase.functions.invoke('generate-recipe-image', {
-      body: {
-        imageDescription: recipe.imageDescription,
-        recipeName: recipe.name,
-        recipeId: recipe.id
+  let result: string | null = null;
+
+  genQueue = genQueue.then(async () => {
+    try {
+      console.log(`Generating single OpenAI image for: ${recipe.name}`);
+      const { data, error } = await supabase.functions.invoke('generate-recipe-image', {
+        body: {
+          imageDescription: recipe.imageDescription,
+          recipeName: recipe.name,
+          recipeId: recipe.id,
+        },
+      });
+
+      console.log('[generateSingleRecipeImage] Function response:', { hasData: !!data, hasB64: !!data?.image_base64, hasUrl: !!data?.imageUrl, error });
+
+      if (!error && (data?.imageUrl || data?.image_base64)) {
+        result = data?.imageUrl ?? `data:image/png;base64,${data.image_base64}`;
+      } else {
+        result = null;
       }
-    });
-
-    console.log('[generateSingleRecipeImage] Function response:', { hasData: !!data, hasB64: !!data?.image_base64, error });
-
-    if (error) {
-      console.error(`Failed to generate OpenAI image for ${recipe.name}:`, error);
-      return placeholderImage;
+    } catch (err) {
+      console.error(`Error generating OpenAI image for ${recipe.name}:`, err);
+      result = null;
+    } finally {
+      // Respect OpenAI gpt-image rate limits (~5/min)
+      await sleep(13000);
     }
+  });
 
-    // Use base64 data if available, otherwise fallback to placeholder
-    return data?.image_base64 ? `data:image/png;base64,${data.image_base64}` : placeholderImage;
-  } catch (error) {
-    console.error(`Error generating OpenAI image for ${recipe.name}:`, error);
-    return placeholderImage;
-  }
+  await genQueue;
+  return result;
 };
