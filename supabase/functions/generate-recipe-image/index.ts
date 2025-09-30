@@ -36,17 +36,8 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const sb = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Generate image using structured recipe card format
-    const ingredientsList = Array.isArray(ingredients) 
-      ? ingredients.join(', ') 
-      : ingredients;
-    
-    const enhancedPrompt = `Create a square recipe card (1024x1024) for social sharing.
-Title: ${title}
-Ingredients: ${ingredientsList}
-Design style: ${style || 'clean, modern cookbook design; warm muted colors; readable sans-serif font; minimal background; no logos or watermarks'}
-Layout: Large bold title at the top, ingredients list neatly below, subtle shadow under the title, ample whitespace for legibility.
-Export: high-resolution PNG, photorealistic food photography style.`;
+    // Generate photorealistic food photography without any text
+    const enhancedPrompt = `Photorealistic close-up of ${title}, appetizing plating, natural warm lighting, shallow depth of field, high detail, crisp texture, neutral background — style: realistic food photography — size: 1024x1024 — Negative: no text, no words, no letters, no watermark, no logo, no signature, no labels, no brand, no printed text, no signage, no menus, remove any text overlays`;
     
     console.log(`Calling OpenAI API with prompt:`, enhancedPrompt)
     
