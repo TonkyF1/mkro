@@ -30,7 +30,7 @@ export const generateSingleRecipeImage = async (recipe: { id: string; name: stri
       console.log('[generateSingleRecipeImage] Function response:', { hasData: !!data, hasB64: !!data?.image_base64, hasUrl: !!data?.imageUrl, error });
 
       if (!error && (data?.imageUrl || data?.image_base64)) {
-        result = data?.imageUrl ?? `data:image/png;base64,${data.image_base64}`;
+        result = data?.imageUrl ? `${data.imageUrl}?t=${Date.now()}` : `data:image/png;base64,${data.image_base64}`;
       } else {
         result = null;
       }

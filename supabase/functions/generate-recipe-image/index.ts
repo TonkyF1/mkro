@@ -37,7 +37,8 @@ serve(async (req) => {
     const sb = createClient(supabaseUrl, supabaseServiceKey)
 
     // Generate photorealistic food photography without any text
-    const enhancedPrompt = `Photorealistic close-up of ${title}, appetizing plating, natural warm lighting, shallow depth of field, high detail, crisp texture, neutral background — style: realistic food photography — size: 1024x1024 — Negative: no text, no words, no letters, no watermark, no logo, no signature, no labels, no brand, no printed text, no signage, no menus, remove any text overlays`;
+    const enhancedPrompt = `Photorealistic close-up of ${title}, appetizing plating, natural warm lighting, shallow depth of field, high detail, crisp texture, neutral background — style: realistic food photography — size: 512x512 — Negative: no text, no words, no letters, no watermark, no logo, no signature, no labels, no brand, no printed text, no signage, no menus, remove any text overlays, no human faces with text`;
+
     
     console.log(`Calling OpenAI API with prompt:`, enhancedPrompt)
     
@@ -51,7 +52,7 @@ serve(async (req) => {
         model: 'gpt-image-1',
         prompt: enhancedPrompt,
         n: 1,
-        size: '1024x1024',
+        size: '512x512',
         quality: 'high',
         output_format: 'png',
       }),
