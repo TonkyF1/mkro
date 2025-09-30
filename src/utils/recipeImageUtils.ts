@@ -5,7 +5,8 @@ export const getRecipeImageUrl = (recipeId: string): string => {
   const { data } = supabase.storage
     .from('recipe-images')
     .getPublicUrl(`recipes/${recipeId}.png`);
-  return data.publicUrl;
+  // Cache-bust to ensure the latest overwrite is shown (avoid CDN stale images)
+  return `${data.publicUrl}?t=${Date.now()}`;
 };
 
 // Simple global queue to avoid OpenAI image rate limits
