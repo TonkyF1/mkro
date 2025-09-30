@@ -37,14 +37,13 @@ serve(async (req) => {
     const sb = createClient(supabaseUrl, supabaseServiceKey)
 
     // Generate photorealistic food photography with zero text/typography
-    const enhancedPrompt = `
-Ultra-realistic professional food photography of ${title}. 
-Single plated dish only, centered on a neutral background. 
-Natural lighting, shallow depth of field, crisp texture, vibrant detail, appetizing presentation. 
+    const enhancedPrompt = `Generate an ultra-realistic professional food photograph of ${title}. 
+Show only the plated dish, centered on a plain neutral background (white, grey, or softly blurred kitchen surface). 
+Lighting should be natural, soft, and appetizing. The food should look crisp, detailed, vibrant, and freshly prepared.
 
-STRICT NEGATIVE: text, words, numbers, captions, typography, menus, signs, packaging, logos, watermarks, stickers, napkins with writing, books, papers, receipts, menus, chalkboards, blackboards. 
-ONLY the food and plate should appear.
-`;
+Do NOT include: text, writing, words, numbers, captions, menus, signs, labels, packaging, logos, stickers, watermarks, chalkboards, books, napkins with writing, receipts, menus, or any printed material. 
+
+Only the food on a plate should appear.`;
 
     
     console.log(`Calling OpenAI API with prompt:`, enhancedPrompt)
