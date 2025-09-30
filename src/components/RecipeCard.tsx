@@ -18,28 +18,21 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
   const [isGenerating, setIsGenerating] = useState(false);
   const [showMealPlanModal, setShowMealPlanModal] = useState(false);
 
-  // Try to get image from storage on mount
+  // Generate image on mount if not already present
   useEffect(() => {
-    if (!recipe.image) {
-      const storageUrl = getRecipeImageUrl(recipe.id);
-      
-      // Check if image exists by trying to load it
-      const img = new Image();
-      img.onload = () => setImageUrl(storageUrl);
-      img.onerror = async () => {
-        // Image doesn't exist, generate it
-        if (!isGenerating) {
-          setIsGenerating(true);
-          const generatedUrl = await generateSingleRecipeImage(recipe);
-          if (generatedUrl) {
-            setImageUrl(generatedUrl);
-          }
-          setIsGenerating(false);
+    const loadOrGenerateImage = async () => {
+      if (!recipe.image && !imageUrl && !isGenerating) {
+        setIsGenerating(true);
+        const generatedUrl = await generateSingleRecipeImage(recipe);
+        if (generatedUrl) {
+          setImageUrl(generatedUrl);
         }
-      };
-      img.src = storageUrl;
-    }
-  }, [recipe.id, recipe.image, isGenerating]);
+        setIsGenerating(false);
+      }
+    };
+
+    loadOrGenerateImage();
+  }, [recipe.id]);
 
   return (
     <Card 
