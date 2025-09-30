@@ -6,6 +6,7 @@ import { Recipe } from '@/hooks/useRecipes';
 import { getRecipeImageUrl, generateSingleRecipeImage } from '@/utils/recipeImageUtils';
 import { AddToMealPlanModal } from '@/components/AddToMealPlanModal';
 import { useState, useEffect } from 'react';
+import placeholder from '@/assets/meal-placeholder.png';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -68,25 +69,15 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
               }}
             />
           ) : (
-            <div className="text-center p-4">
-              {isGenerating ? (
-                <>
-                  <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
-                  <p className="text-xs text-muted-foreground">Generating image...</p>
-                </>
-              ) : (
-                <>
-                  <Zap className="h-12 w-12 text-primary mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">{recipe.imageDescription}</p>
-                </>
+            <div className="w-full h-full relative">
+              <img src={placeholder} alt={`${recipe.name} placeholder`} className="w-full h-full object-cover" />
+              {isGenerating && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full"></div>
+                </div>
               )}
             </div>
           )}
-          <div className="absolute top-2 right-2 flex gap-2">
-            <Badge variant="secondary" className="bg-background/90 text-foreground">
-              {recipe.category}
-            </Badge>
-          </div>
           {onAddToMealPlan && (
             <div className="absolute bottom-2 right-2">
               <Button
