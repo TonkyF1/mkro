@@ -14,17 +14,17 @@ serve(async (req) => {
   }
 
   try {
-    const { imageDescription, recipeName, recipeId } = await req.json()
+    const { title, ingredients, style, recipeId } = await req.json()
 
-    if (!imageDescription || !recipeId) {
+    if (!title || !recipeId || !ingredients) {
       return new Response(
-        JSON.stringify({ error: 'Image description and recipe ID are required' }),
+        JSON.stringify({ error: 'Title, ingredients, and recipe ID are required' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       )
     }
 
-    console.log(`Generating image for recipe: ${recipeName} (ID: ${recipeId})`)
-    console.log(`Image description: ${imageDescription}`)
+    console.log(`Generating image for recipe: ${title} (ID: ${recipeId})`)
+    console.log(`Ingredients:`, ingredients)
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
     if (!openAIApiKey) {
@@ -36,13 +36,17 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const sb = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Generate image using OpenAI's gpt-image-1 model with enhanced food photography prompt
-    const enhancedPrompt = [
-      `Ultra-realistic professional food photograph, 85mm lens, DSLR, soft studio lighting, shallow depth of field, commercial quality, no text, no watermark, no illustration, no clipart, no cartoons`,
-      `Dish: ${recipeName}.`,
-      `Render EXACTLY as described: ${imageDescription}.`,
-      `Single plated serving on a clean neutral background, appetizing styling, vibrant but natural colors, high detail, photorealistic.`
-    ].join('\n');
+    // Generate image using structured recipe card format
+    const ingredientsList = Array.isArray(ingredients) 
+      ? ingredients.join(', ') 
+      : ingredients;
+    
+    const enhancedPrompt = `Create a square recipe card (1024x1024) for social sharing.
+Title: ${title}
+Ingredients: ${ingredientsList}
+Design style: ${style || 'clean, modern cookbook design; warm muted colors; readable sans-serif font; minimal background; no logos or watermarks'}
+Layout: Large bold title at the top, ingredients list neatly below, subtle shadow under the title, ample whitespace for legibility.
+Export: high-resolution PNG, photorealistic food photography style.`;
     
     console.log(`Calling OpenAI API with prompt:`, enhancedPrompt)
     
@@ -92,14 +96,15 @@ serve(async (req) => {
 
     const publicUrl = publicData?.publicUrl || imageBase64
 
-    console.log(`Successfully generated image for recipe: ${recipeName}`)
+    console.log(`Successfully generated image for recipe: ${title}`)
     console.log(`Image Base64 length: ${base64.length}`)
 
     return new Response(
       JSON.stringify({ 
         image_base64: base64,
         imageUrl: publicUrl,
-        recipeName,
+        storage_path: path,
+        recipeName: title,
         recipeId,
         success: true 
       }),

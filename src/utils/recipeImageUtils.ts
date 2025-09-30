@@ -12,7 +12,7 @@ export const getRecipeImageUrl = (recipeId: string): string => {
 let genQueue: Promise<void> = Promise.resolve();
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export const generateSingleRecipeImage = async (recipe: { id: string; name: string; imageDescription: string }) => {
+export const generateSingleRecipeImage = async (recipe: { id: string; name: string; ingredients: string[]; imageDescription?: string }) => {
   let result: string | null = null;
 
   genQueue = genQueue.then(async () => {
@@ -20,8 +20,9 @@ export const generateSingleRecipeImage = async (recipe: { id: string; name: stri
       console.log(`Generating single OpenAI image for: ${recipe.name}`);
       const { data, error } = await supabase.functions.invoke('generate-recipe-image', {
         body: {
-          imageDescription: recipe.imageDescription,
-          recipeName: recipe.name,
+          title: recipe.name,
+          ingredients: recipe.ingredients,
+          style: 'clean, modern cookbook design; warm muted colors; readable sans-serif font; square 1:1 composition; minimal background; no logos or watermarks',
           recipeId: recipe.id,
         },
       });

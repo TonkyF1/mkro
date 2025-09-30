@@ -26,8 +26,9 @@ export const generateAllRecipeImages = async (): Promise<{
       
       const { data, error } = await supabase.functions.invoke('generate-recipe-image', {
         body: {
-          imageDescription: recipe.imageDescription,
-          recipeName: recipe.name,
+          title: recipe.name,
+          ingredients: recipe.ingredients,
+          style: 'clean, modern cookbook design; warm muted colors; readable sans-serif font; square 1:1 composition; minimal background; no logos or watermarks',
           recipeId: recipe.id
         }
       });
