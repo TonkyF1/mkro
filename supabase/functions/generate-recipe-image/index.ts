@@ -32,9 +32,14 @@ serve(async (req) => {
     }
 
     // Generate image using OpenAI's gpt-image-1 model with enhanced food photography prompt
-    const enhancedPrompt = `Professional food photography, high resolution, studio lighting, appetizing presentation, clean white background, shallow depth of field, ${imageDescription}, food styling, commercial quality, vibrant colors, Instagram worthy`
+    const enhancedPrompt = [
+      `Ultra-realistic professional food photograph, 85mm lens, DSLR, soft studio lighting, shallow depth of field, commercial quality, no text, no watermark, no illustration, no clipart, no cartoons`,
+      `Dish: ${recipeName}.`,
+      `Render EXACTLY as described: ${imageDescription}.`,
+      `Single plated serving on a clean neutral background, appetizing styling, vibrant but natural colors, high detail, photorealistic.`
+    ].join('\n');
     
-    console.log(`Calling OpenAI API with prompt: ${enhancedPrompt}`)
+    console.log(`Calling OpenAI API with prompt:`, enhancedPrompt)
     
     const openAIResponse = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',

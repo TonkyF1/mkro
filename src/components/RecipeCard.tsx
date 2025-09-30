@@ -14,24 +14,31 @@ interface RecipeCardProps {
 }
 
 export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps) => {
-  const [imageUrl, setImageUrl] = useState<string | null>(recipe.image || null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showMealPlanModal, setShowMealPlanModal] = useState(false);
 
   // Generate image on mount if not already present
   useEffect(() => {
     const loadOrGenerateImage = async () => {
-      if (!recipe.image && !imageUrl && !isGenerating) {
-        setIsGenerating(true);
-        const generatedUrl = await generateSingleRecipeImage(recipe);
-        if (generatedUrl) {
-          setImageUrl(generatedUrl);
+      if (!imageUrl && !isGenerating) {
+        try {
+          console.log('[RecipeCard] Generating OpenAI image for:', recipe.name);
+          setIsGenerating(true);
+          const generatedUrl = await generateSingleRecipeImage(recipe);
+          if (generatedUrl) {
+            setImageUrl(generatedUrl);
+          }
+        } catch (e) {
+          console.error('[RecipeCard] Image generation failed:', e);
+        } finally {
+          setIsGenerating(false);
         }
-        setIsGenerating(false);
       }
     };
 
     loadOrGenerateImage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipe.id]);
 
   return (

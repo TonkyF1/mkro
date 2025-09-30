@@ -17,6 +17,8 @@ export const generateSingleRecipeImage = async (recipe: { id: string; name: stri
       }
     });
 
+    console.log('[generateSingleRecipeImage] Function response:', { hasData: !!data, hasB64: !!data?.image_base64, error });
+
     if (error) {
       console.error(`Failed to generate OpenAI image for ${recipe.name}:`, error);
       return placeholderImage;
