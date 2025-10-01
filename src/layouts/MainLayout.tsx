@@ -19,11 +19,13 @@ const MainLayout = () => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  // Only redirect to auth for protected routes, not home page
   useEffect(() => {
-    if (!authLoading && !user) {
+    const isProtectedRoute = location.pathname !== '/';
+    if (!authLoading && !user && isProtectedRoute) {
       navigate('/auth');
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, navigate, location.pathname]);
 
   const handleOnboardingComplete = async (profileData: UserProfile) => {
     try {
@@ -37,11 +39,8 @@ const MainLayout = () => {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
-  if (!user) {
-    return null;
-  }
-
-  if (!profile || !profile.completed_at) {
+  // Only show questionnaire if user is logged in but hasn't completed profile
+  if (user && (!profile || !profile.completed_at)) {
     return <DetailedQuestionnaire onComplete={handleOnboardingComplete} initialData={profile || {}} />;
   }
 
