@@ -5,9 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { 
   MessageSquare, 
   Calendar,
-  Sparkles,
-  Target,
-  TrendingUp
+  Sparkles
 } from 'lucide-react';
 import aiCoachIcon from '@/assets/ai-coach-icon.png';
 import foodScannerIcon from '@/assets/food-scanner-icon.png';
@@ -15,6 +13,9 @@ import shoppingListIcon from '@/assets/shopping-list-icon.png';
 import mealPlannerIcon from '@/assets/meal-planner-icon.png';
 import exerciseTrackerIcon from '@/assets/exercise-tracker-icon.png';
 import recipeLibraryIcon from '@/assets/recipe-library-icon.png';
+import reachGoalsIcon from '@/assets/reach-goals-icon.png';
+import aiPoweredIcon from '@/assets/ai-powered-icon.png';
+import trackProgressIcon from '@/assets/track-progress-icon.png';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -72,17 +73,17 @@ const Home = () => {
 
   const benefits = [
     {
-      icon: Target,
+      image: reachGoalsIcon,
       title: 'Reach Your Goals',
       description: 'Whether it\'s weight loss, muscle gain, or healthy living, MKRO adapts to your objectives.'
     },
     {
-      icon: Sparkles,
+      image: aiPoweredIcon,
       title: 'AI-Powered Intelligence',
       description: 'Leveraging cutting-edge AI to provide personalized recommendations and insights.'
     },
     {
-      icon: TrendingUp,
+      image: trackProgressIcon,
       title: 'Track Your Progress',
       description: 'Monitor your journey with comprehensive tracking and analytics for continuous improvement.'
     }
@@ -138,8 +139,12 @@ const Home = () => {
               style={{ animationDelay: `${0.8 + index * 0.1}s` }}
             >
               <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-md">
-                  <benefit.icon className="w-6 h-6 text-primary group-hover:text-accent transition-colors duration-300" />
+                <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-md overflow-hidden">
+                  <img 
+                    src={benefit.image} 
+                    alt={benefit.title}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <CardTitle className="text-xl group-hover:text-primary transition-colors duration-300">{benefit.title}</CardTitle>
               </CardHeader>
