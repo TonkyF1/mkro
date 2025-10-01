@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import mkroLogo from '@/assets/mkro-logo.png';
 
 const LoadingScreen = () => {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    // Check theme preference from localStorage or system
+    const theme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    setIsDark(theme === 'dark' || (theme === 'system' && prefersDark) || (!theme && prefersDark));
+  }, []);
+
   return (
-    <div className="fixed inset-0 bg-background flex flex-col items-center justify-center z-50">
+    <div className={`fixed inset-0 bg-background flex flex-col items-center justify-center z-50 ${isDark ? 'dark' : ''}`}>
       <div className="flex flex-col items-center space-y-8">
         {/* Logo with pulse animation */}
         <div className="relative">
