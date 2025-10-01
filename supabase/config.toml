@@ -1,1 +1,13 @@
 project_id = "clemkvxneggnokmvgmbj"
+
+[functions.crystalroof-proxy]
+verify_jwt = false
+
+[functions.hf-proxy]
+verify_jwt = false
+
+[functions.generate-recipe-image]
+verify_jwt = false
+
+[functions.scan-food]
+verify_jwt = false

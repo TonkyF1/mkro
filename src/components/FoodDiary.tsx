@@ -5,8 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, Utensils } from 'lucide-react';
+import { Plus, Trash2, Utensils, Scan } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { FoodScanner } from './FoodScanner';
 
 interface FoodEntry {
   id: string;
@@ -22,6 +23,7 @@ interface FoodEntry {
 const FoodDiary = () => {
   const { toast } = useToast();
   const [foods, setFoods] = useState<FoodEntry[]>([]);
+  const [showScanner, setShowScanner] = useState(false);
   const [newFood, setNewFood] = useState({
     name: '',
     meal: 'breakfast',
@@ -63,6 +65,23 @@ const FoodDiary = () => {
     toast({
       title: 'Food Removed',
       description: 'Food has been removed from your diary.',
+    });
+  };
+
+  const handleScannedFood = (foodData: {
+    name: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+  }) => {
+    setNewFood({
+      ...foodData,
+      meal: 'breakfast'
+    });
+    toast({
+      title: 'Food identified!',
+      description: 'Review and adjust the nutritional values, then click Add Food.',
     });
   };
 
@@ -120,7 +139,13 @@ const FoodDiary = () => {
 
       {/* Add New Food */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Log Food</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Log Food</h3>
+          <Button onClick={() => setShowScanner(true)} variant="outline" size="sm">
+            <Scan className="h-4 w-4 mr-2" />
+            Scan Food
+          </Button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           <div>
             <Label htmlFor="food-name">Food Name</Label>
@@ -195,6 +220,18 @@ const FoodDiary = () => {
           Add Food
         </Button>
       </Card>
+
+      {/* Food Scanner Modal */}
+      {showScanner && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <FoodScanner 
+              onFoodScanned={handleScannedFood} 
+              onClose={() => setShowScanner(false)} 
+            />
+          </div>
+        </div>
+      )}
 
       {/* Meals by Type */}
       {mealTypes.map((mealType) => {
