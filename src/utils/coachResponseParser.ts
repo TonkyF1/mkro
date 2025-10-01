@@ -19,39 +19,61 @@ export interface ParsedWorkout {
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
 export const parseMealPlan = (text: string): ParsedMealPlan[] => {
+  console.log('Parsing meal plan from:', text);
   const mealPlan: ParsedMealPlan[] = [];
   const lines = text.toLowerCase().split('\n');
   
   let currentDay: string | null = null;
   let currentMeal: ParsedMealPlan | null = null;
   
-  for (const line of lines) {
-    // Check for day headers
-    const dayMatch = DAYS.find(day => line.includes(day));
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    
+    // Check for day headers - more flexible patterns
+    const dayMatch = DAYS.find(day => {
+      return line.includes(day) && 
+        (line.startsWith(day) || 
+         line.includes(`day ${day}`) ||
+         line.includes(`${day}:`) ||
+         line.match(new RegExp(`\\b${day}\\b`, 'i')));
+    });
+    
     if (dayMatch) {
-      if (currentMeal) {
+      if (currentMeal && Object.keys(currentMeal).length > 1) {
         mealPlan.push(currentMeal);
       }
       currentDay = dayMatch.charAt(0).toUpperCase() + dayMatch.slice(1);
       currentMeal = { day: currentDay };
+      console.log('Found day:', currentDay);
       continue;
     }
     
-    if (!currentMeal) continue;
+    if (!currentMeal) {
+      // Start a generic plan if we find meal keywords without a day
+      if (line.match(/\b(breakfast|lunch|dinner|snack)\b/)) {
+        currentDay = 'Day 1';
+        currentMeal = { day: currentDay };
+      } else {
+        continue;
+      }
+    }
     
-    // Parse meals
-    if (line.includes('breakfast:') || line.includes('breakfast -')) {
-      const mealInfo = extractMealInfo(line);
-      currentMeal.breakfast = mealInfo;
-    } else if (line.includes('lunch:') || line.includes('lunch -')) {
-      const mealInfo = extractMealInfo(line);
-      currentMeal.lunch = mealInfo;
-    } else if (line.includes('dinner:') || line.includes('dinner -')) {
-      const mealInfo = extractMealInfo(line);
-      currentMeal.dinner = mealInfo;
-    } else if (line.includes('snack:') || line.includes('snack -')) {
-      const mealInfo = extractMealInfo(line);
-      currentMeal.snack = mealInfo;
+    // Parse meals with more flexible patterns
+    const mealPattern = /\b(breakfast|lunch|dinner|snack)\b[:\-\s]+(.*)/i;
+    const mealMatch = line.match(mealPattern);
+    
+    if (mealMatch) {
+      const mealType = mealMatch[1].toLowerCase();
+      const mealContent = mealMatch[2];
+      const mealInfo = extractMealInfo(mealContent);
+      
+      if (mealType === 'breakfast') currentMeal.breakfast = mealInfo;
+      else if (mealType === 'lunch') currentMeal.lunch = mealInfo;
+      else if (mealType === 'dinner') currentMeal.dinner = mealInfo;
+      else if (mealType === 'snack') currentMeal.snack = mealInfo;
+      
+      console.log(`Found ${mealType}:`, mealInfo);
     }
   }
   
@@ -59,28 +81,32 @@ export const parseMealPlan = (text: string): ParsedMealPlan[] => {
     mealPlan.push(currentMeal);
   }
   
+  console.log('Parsed meal plan:', mealPlan);
   return mealPlan;
 };
 
 const extractMealInfo = (line: string): { name: string; calories?: number; protein?: number; carbs?: number; fats?: number } => {
-  // Remove meal type prefix
-  let cleanLine = line.replace(/(breakfast|lunch|dinner|snack)[:\-]/gi, '').trim();
-  
   // Extract numbers for macros
-  const caloriesMatch = cleanLine.match(/(\d+)\s*(kcal|cal|calories)/i);
-  const proteinMatch = cleanLine.match(/(\d+)g?\s*protein/i);
-  const carbsMatch = cleanLine.match(/(\d+)g?\s*(carb|carbs|carbohydrate)/i);
-  const fatsMatch = cleanLine.match(/(\d+)g?\s*fat/i);
+  const caloriesMatch = line.match(/(\d+)\s*(kcal|cal|calories)/i);
+  const proteinMatch = line.match(/(\d+)g?\s*protein/i);
+  const carbsMatch = line.match(/(\d+)g?\s*(carb|carbs|carbohydrate)/i);
+  const fatsMatch = line.match(/(\d+)g?\s*fat/i);
   
-  // Remove macro info to get meal name
-  const name = cleanLine
-    .replace(/\d+\s*(kcal|cal|calories|protein|carb|carbs|fat|g)/gi, '')
-    .replace(/[(\[\{].*?[)\]\}]/g, '') // Remove anything in brackets
+  // Remove macro info and cleanup to get meal name
+  let name = line
+    .replace(/\d+\s*(kcal|cal|calories|protein|carb|carbs|fat|g)\b/gi, '')
+    .replace(/[(\[\{].*?[)\]\}]/g, '')
     .replace(/[-•*]/g, '')
+    .replace(/\s+/g, ' ')
     .trim();
   
+  // If name is too short or empty, use generic
+  if (!name || name.length < 3) {
+    name = 'Meal';
+  }
+  
   return {
-    name: name || 'Meal',
+    name,
     calories: caloriesMatch ? parseInt(caloriesMatch[1]) : undefined,
     protein: proteinMatch ? parseInt(proteinMatch[1]) : undefined,
     carbs: carbsMatch ? parseInt(carbsMatch[1]) : undefined,
@@ -89,68 +115,92 @@ const extractMealInfo = (line: string): { name: string; calories?: number; prote
 };
 
 export const parseWorkoutPlan = (text: string): ParsedWorkout[] => {
+  console.log('Parsing workout plan from:', text);
   const workouts: ParsedWorkout[] = [];
   const lines = text.toLowerCase().split('\n');
   
   let currentDay: string | null = null;
   
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    
     // Check for day headers
-    const dayMatch = DAYS.find(day => line.includes(day));
+    const dayMatch = DAYS.find(day => {
+      return line.includes(day) && 
+        (line.startsWith(day) || 
+         line.includes(`day ${day}`) ||
+         line.includes(`${day}:`));
+    });
+    
     if (dayMatch) {
       currentDay = dayMatch.charAt(0).toUpperCase() + dayMatch.slice(1);
+      console.log('Found workout day:', currentDay);
       continue;
     }
     
-    // Look for exercise patterns
-    if (
-      line.includes('exercise:') ||
-      line.includes('workout:') ||
+    // More comprehensive workout detection patterns
+    const isWorkout = 
       line.match(/\d+\s*(min|minutes|reps|sets)/i) ||
-      line.match(/(run|jog|walk|swim|cycle|lift|press|squat|deadlift|yoga|pilates)/i)
-    ) {
+      line.match(/\b(run|jog|walk|swim|cycle|cycling|lift|press|squat|deadlift|yoga|pilates|cardio|strength|hiit|training|workout|exercise)\b/i) ||
+      line.match(/\b(push[\s-]?up|pull[\s-]?up|sit[\s-]?up|plank|burpee)\b/i);
+    
+    if (isWorkout) {
       const workout = extractWorkoutInfo(line, currentDay);
       if (workout) {
         workouts.push(workout);
+        console.log('Found workout:', workout);
       }
     }
   }
   
+  console.log('Parsed workout plan:', workouts);
   return workouts;
 };
 
 const extractWorkoutInfo = (line: string, day?: string | null): ParsedWorkout | null => {
-  let cleanLine = line.replace(/(exercise|workout)[:\-]/gi, '').trim();
-  
   // Extract duration
-  const durationMatch = cleanLine.match(/(\d+)\s*(min|minutes)/i);
+  const durationMatch = line.match(/(\d+)\s*(min|minutes)/i);
   const duration = durationMatch ? parseInt(durationMatch[1]) : 30;
   
   // Extract calories
-  const caloriesMatch = cleanLine.match(/(\d+)\s*(kcal|cal|calories)/i);
+  const caloriesMatch = line.match(/(\d+)\s*(kcal|cal|calories)/i);
   const calories = caloriesMatch ? parseInt(caloriesMatch[1]) : undefined;
   
-  // Determine exercise type
+  // Determine exercise type based on keywords
   let type = 'cardio';
-  if (cleanLine.match(/(lift|press|squat|deadlift|strength|weights)/i)) {
+  const lowerLine = line.toLowerCase();
+  
+  if (lowerLine.match(/\b(lift|press|squat|deadlift|strength|weight|resistance|bench|curl)\b/i)) {
     type = 'strength';
-  } else if (cleanLine.match(/(yoga|pilates|stretch|flexibility)/i)) {
+  } else if (lowerLine.match(/\b(yoga|pilates|stretch|flexibility)\b/i)) {
     type = 'flexibility';
-  } else if (cleanLine.match(/(run|jog|walk|cycle|swim)/i)) {
+  } else if (lowerLine.match(/\b(run|jog|walk|cycle|cycling|swim|swimming|cardio|hiit)\b/i)) {
     type = 'cardio';
+  } else if (lowerLine.match(/\b(basketball|football|soccer|tennis|sports)\b/i)) {
+    type = 'sports';
   }
   
-  // Extract exercise name
-  const name = cleanLine
-    .replace(/\d+\s*(min|minutes|kcal|cal|calories|reps|sets)/gi, '')
+  // Extract exercise name - remove numbers and macro info
+  let name = line
+    .replace(/\d+\s*(min|minutes|kcal|cal|calories|reps|sets|kg|lbs)\b/gi, '')
     .replace(/[(\[\{].*?[)\]\}]/g, '')
     .replace(/[-•*]/g, '')
+    .replace(/\s+/g, ' ')
     .trim();
   
-  if (!name || name.length < 3) return null;
+  // If name is too short, try to construct from keywords
+  if (!name || name.length < 3) {
+    const exerciseMatch = line.match(/\b(run|jog|walk|swim|cycle|yoga|pilates|lift|press|squat|deadlift|push[\s-]?up|pull[\s-]?up|cardio|hiit)\b/i);
+    if (exerciseMatch) {
+      name = exerciseMatch[1].charAt(0).toUpperCase() + exerciseMatch[1].slice(1);
+    } else {
+      return null;
+    }
+  }
   
   return {
-    name: name || 'Exercise',
+    name,
     type,
     duration,
     calories,
@@ -162,16 +212,17 @@ export const detectPlanType = (text: string): 'meal' | 'workout' | 'both' | 'non
   const lowerText = text.toLowerCase();
   
   const hasMealKeywords = 
-    lowerText.includes('meal plan') ||
-    lowerText.includes('diet plan') ||
-    lowerText.includes('nutrition plan') ||
-    (lowerText.includes('breakfast') && lowerText.includes('lunch') && lowerText.includes('dinner'));
+    lowerText.match(/\b(meal plan|diet plan|nutrition plan|eating plan|food plan)\b/i) ||
+    lowerText.match(/\b(breakfast|lunch|dinner)\b.*\b(breakfast|lunch|dinner)\b/i) ||
+    (lowerText.match(/\bbreakfast\b/g) || []).length >= 2 ||
+    (lowerText.match(/\blunch\b/g) || []).length >= 2;
   
   const hasWorkoutKeywords = 
-    lowerText.includes('workout plan') ||
-    lowerText.includes('training plan') ||
-    lowerText.includes('exercise plan') ||
-    lowerText.match(/(monday|tuesday|wednesday).*?(exercise|workout)/i);
+    lowerText.match(/\b(workout plan|training plan|exercise plan|fitness plan|training program)\b/i) ||
+    lowerText.match(/\b(workout|exercise|training)\b.*\b(monday|tuesday|wednesday|thursday|friday)\b/i) ||
+    (lowerText.match(/\b(run|jog|walk|swim|cycle|yoga|lift|strength)\b/g) || []).length >= 2;
+  
+  console.log('Plan detection:', { hasMealKeywords, hasWorkoutKeywords });
   
   if (hasMealKeywords && hasWorkoutKeywords) return 'both';
   if (hasMealKeywords) return 'meal';

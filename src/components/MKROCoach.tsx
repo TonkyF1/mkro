@@ -156,11 +156,15 @@ const MKROCoach = () => {
 
       // Detect and save plans
       const planType = detectPlanType(coachResponse);
+      console.log('Detected plan type:', planType);
       
       if (planType === 'meal' || planType === 'both') {
         const mealPlan = parseMealPlan(coachResponse);
+        console.log('Parsed meal plan:', mealPlan);
         if (mealPlan.length > 0) {
           localStorage.setItem('mkro_meal_plan', JSON.stringify(mealPlan));
+          // Trigger storage event for same-window updates
+          window.dispatchEvent(new Event('storage'));
           toast({
             title: "Meal Plan Ready! 🍽️",
             description: "Check the Nutrition tab to view your personalized meal plan.",
@@ -170,8 +174,11 @@ const MKROCoach = () => {
       
       if (planType === 'workout' || planType === 'both') {
         const workoutPlan = parseWorkoutPlan(coachResponse);
+        console.log('Parsed workout plan:', workoutPlan);
         if (workoutPlan.length > 0) {
           localStorage.setItem('mkro_workout_plan', JSON.stringify(workoutPlan));
+          // Trigger storage event for same-window updates
+          window.dispatchEvent(new Event('storage'));
           toast({
             title: "Workout Plan Ready! 💪",
             description: "Check the Exercise tab to view your personalized training plan.",
