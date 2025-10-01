@@ -1,13 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserRoundPlus, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
 import mkroLogo from '@/assets/mkro-logo.png';
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   return (
     <header className="w-full bg-background border-b border-border">
@@ -26,18 +22,7 @@ const Header = () => {
             Training & Meal Planning Coach
           </p>
         </div>
-        <div className="flex-1 flex justify-end">
-          {user ? (
-            <Button variant="ghost" size="icon" onClick={() => navigate('/profile')}>
-              <User className="h-5 w-5" />
-            </Button>
-          ) : (
-            <Button variant="default" size="sm" onClick={() => navigate('/auth')} className="gap-2">
-              <UserRoundPlus className="h-4 w-4" />
-              <span className="hidden sm:inline">Sign In</span>
-            </Button>
-          )}
-        </div>
+        <div className="flex-1" />
       </div>
     </header>
   );
