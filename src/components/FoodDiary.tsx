@@ -5,9 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, Utensils, Scan, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, Utensils, Scan, Clock, ChevronDown, ChevronUp, ScanBarcode } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { FoodScanner } from './FoodScanner';
+import { BarcodeScanner } from './BarcodeScanner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -39,6 +40,7 @@ const FoodDiary = () => {
   const [foods, setFoods] = useState<FoodEntry[]>([]);
   const [mealHistory, setMealHistory] = useState<MealHistory[]>([]);
   const [showScanner, setShowScanner] = useState(false);
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [newFood, setNewFood] = useState({
     name: '',
@@ -241,7 +243,11 @@ const FoodDiary = () => {
             </Button>
             <Button onClick={() => setShowScanner(true)} variant="outline" size="sm">
               <Scan className="h-4 w-4 mr-2" />
-              Scan Food
+              AI Scan
+            </Button>
+            <Button onClick={() => setShowBarcodeScanner(true)} variant="outline" size="sm">
+              <ScanBarcode className="h-4 w-4 mr-2" />
+              Barcode
             </Button>
           </div>
         </div>
@@ -355,6 +361,18 @@ const FoodDiary = () => {
             <FoodScanner 
               onFoodScanned={handleScannedFood} 
               onClose={() => setShowScanner(false)} 
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Barcode Scanner Modal */}
+      {showBarcodeScanner && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <BarcodeScanner 
+              onFoodScanned={handleScannedFood} 
+              onClose={() => setShowBarcodeScanner(false)} 
             />
           </div>
         </div>
