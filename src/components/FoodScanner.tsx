@@ -184,7 +184,8 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
                   id="calories"
                   type="number"
                   value={editedData.calories}
-                  onChange={(e) => setEditedData({ ...editedData, calories: Number(e.target.value) })}
+                  onChange={(e) => setEditedData({ ...editedData, calories: e.target.value === '' ? 0 : Number(e.target.value) })}
+                  min="0"
                 />
               </div>
               <div className="space-y-2">
@@ -193,7 +194,8 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
                   id="protein"
                   type="number"
                   value={editedData.protein}
-                  onChange={(e) => setEditedData({ ...editedData, protein: Number(e.target.value) })}
+                  onChange={(e) => setEditedData({ ...editedData, protein: e.target.value === '' ? 0 : Number(e.target.value) })}
+                  min="0"
                 />
               </div>
               <div className="space-y-2">
@@ -202,7 +204,8 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
                   id="carbs"
                   type="number"
                   value={editedData.carbs}
-                  onChange={(e) => setEditedData({ ...editedData, carbs: Number(e.target.value) })}
+                  onChange={(e) => setEditedData({ ...editedData, carbs: e.target.value === '' ? 0 : Number(e.target.value) })}
+                  min="0"
                 />
               </div>
               <div className="space-y-2">
@@ -211,7 +214,8 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
                   id="fats"
                   type="number"
                   value={editedData.fats}
-                  onChange={(e) => setEditedData({ ...editedData, fats: Number(e.target.value) })}
+                  onChange={(e) => setEditedData({ ...editedData, fats: e.target.value === '' ? 0 : Number(e.target.value) })}
+                  min="0"
                 />
               </div>
             </div>
