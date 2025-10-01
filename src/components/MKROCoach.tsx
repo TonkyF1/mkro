@@ -6,8 +6,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTrial } from '@/hooks/useTrial';
 import UpgradePrompt from './UpgradePrompt';
-import { Send, Bot, User } from 'lucide-react';
+import { Send, Bot, User, Calendar, Dumbbell } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { detectPlanType, parseMealPlan, parseWorkoutPlan } from '@/utils/coachResponseParser';
 
 interface ChatMessage {
   id: string;
@@ -152,6 +153,31 @@ const MKROCoach = () => {
       };
 
       setMessages(prev => [...prev, coachMessage]);
+
+      // Detect and save plans
+      const planType = detectPlanType(coachResponse);
+      
+      if (planType === 'meal' || planType === 'both') {
+        const mealPlan = parseMealPlan(coachResponse);
+        if (mealPlan.length > 0) {
+          localStorage.setItem('mkro_meal_plan', JSON.stringify(mealPlan));
+          toast({
+            title: "Meal Plan Ready! 🍽️",
+            description: "Check the Nutrition tab to view your personalized meal plan.",
+          });
+        }
+      }
+      
+      if (planType === 'workout' || planType === 'both') {
+        const workoutPlan = parseWorkoutPlan(coachResponse);
+        if (workoutPlan.length > 0) {
+          localStorage.setItem('mkro_workout_plan', JSON.stringify(workoutPlan));
+          toast({
+            title: "Workout Plan Ready! 💪",
+            description: "Check the Exercise tab to view your personalized training plan.",
+          });
+        }
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
@@ -240,7 +266,7 @@ const MKROCoach = () => {
                         <Bot className="w-4 h-4 text-secondary-foreground" />
                       )}
                     </div>
-                    <div className={cn(
+                     <div className={cn(
                       "rounded-lg p-4",
                       message.type === 'user' 
                         ? 'bg-primary text-primary-foreground' 
@@ -249,9 +275,40 @@ const MKROCoach = () => {
                       {message.type === 'user' ? (
                         <p className="text-sm leading-relaxed">{message.content}</p>
                       ) : (
-                        <div className="text-sm">
-                          {formatCoachMessage(message.content)}
-                        </div>
+                        <>
+                          <div className="text-sm">
+                            {formatCoachMessage(message.content)}
+                          </div>
+                          {(() => {
+                            const planType = detectPlanType(message.content);
+                            return planType !== 'none' && (
+                              <div className="flex gap-2 mt-4 pt-3 border-t border-current/10">
+                                {(planType === 'meal' || planType === 'both') && (
+                                  <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    onClick={() => window.location.href = '/nutrition'}
+                                    className="text-xs"
+                                  >
+                                    <Calendar className="h-3 w-3 mr-1" />
+                                    View in Nutrition
+                                  </Button>
+                                )}
+                                {(planType === 'workout' || planType === 'both') && (
+                                  <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    onClick={() => window.location.href = '/exercise'}
+                                    className="text-xs"
+                                  >
+                                    <Dumbbell className="h-3 w-3 mr-1" />
+                                    View in Exercise
+                                  </Button>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </>
                       )}
                       <div className="text-xs opacity-70 mt-3 pt-2 border-t border-current/10">
                         {message.timestamp.toLocaleTimeString()}

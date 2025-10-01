@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, Dumbbell } from 'lucide-react';
+import { Plus, Trash2, Dumbbell, Bot } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { ParsedWorkout } from '@/utils/coachResponseParser';
 
 interface Exercise {
   id: string;
@@ -20,12 +21,61 @@ interface Exercise {
 const ExerciseTracker = () => {
   const { toast } = useToast();
   const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [aiWorkoutPlan, setAiWorkoutPlan] = useState<ParsedWorkout[]>([]);
   const [newExercise, setNewExercise] = useState({
     name: '',
     type: 'cardio',
     duration: 0,
     calories: 0,
   });
+
+  // Load AI workout plan
+  useEffect(() => {
+    const loadAIWorkoutPlan = () => {
+      const stored = localStorage.getItem('mkro_workout_plan');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setAiWorkoutPlan(parsed);
+        } catch (e) {
+          console.error('Error parsing AI workout plan:', e);
+        }
+      }
+    };
+
+    loadAIWorkoutPlan();
+    window.addEventListener('storage', loadAIWorkoutPlan);
+    
+    return () => {
+      window.removeEventListener('storage', loadAIWorkoutPlan);
+    };
+  }, []);
+
+  const addAIWorkoutToLog = (workout: ParsedWorkout) => {
+    const exercise: Exercise = {
+      id: Date.now().toString(),
+      name: workout.name,
+      type: workout.type,
+      duration: workout.duration,
+      calories: workout.calories,
+      date: new Date().toISOString().split('T')[0],
+    };
+
+    setExercises([...exercises, exercise]);
+    toast({
+      title: 'Exercise Added',
+      description: `${exercise.name} has been logged from your MKRO plan!`,
+    });
+  };
+
+  const clearAIWorkoutPlan = () => {
+    localStorage.removeItem('mkro_workout_plan');
+    setAiWorkoutPlan([]);
+    toast({
+      title: "AI Plan Cleared",
+      description: "The MKRO Coach workout plan has been removed.",
+    });
+  };
 
   const exerciseTypes = [
     'cardio',
@@ -95,6 +145,51 @@ const ExerciseTracker = () => {
 
   return (
     <div className="space-y-6">
+      {/* AI Workout Plan Banner */}
+      {aiWorkoutPlan.length > 0 && (
+        <Card className="p-4 bg-primary/5 border-primary/20">
+          <div className="flex items-center justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <Bot className="h-5 w-5 text-primary" />
+              <div>
+                <h3 className="font-semibold">MKRO Coach Workout Plan Available</h3>
+                <p className="text-sm text-muted-foreground">
+                  {aiWorkoutPlan.length} exercises recommended for you
+                </p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" onClick={clearAIWorkoutPlan}>
+              Clear
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {aiWorkoutPlan.map((workout, idx) => (
+              <Card key={idx} className="p-3 bg-background">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1">
+                    <Badge variant="outline" className="mb-2">{workout.type}</Badge>
+                    <p className="font-medium text-sm">{workout.name}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {workout.duration} min
+                      {workout.calories && ` • ${workout.calories} cal`}
+                      {workout.day && ` • ${workout.day}`}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => addAIWorkoutToLog(workout)}
+                    className="shrink-0"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {/* Weekly Stats */}
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
