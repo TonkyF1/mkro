@@ -17,41 +17,63 @@ interface RecipeCardProps {
 export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [imageChecked, setImageChecked] = useState(false);
   const [showMealPlanModal, setShowMealPlanModal] = useState(false);
 
-  // Try to load from storage first; if missing, generate (rate-limited)
   useEffect(() => {
     let cancelled = false;
 
-    const attemptLoadOrGenerate = async () => {
+    const loadOrGenerateImage = async () => {
+      if (imageChecked) return;
+
+      // Try loading from storage first
       const storageUrl = getRecipeImageUrl(recipe.id);
-      const probe = new Image();
-      probe.onload = () => {
-        if (!cancelled) setImageUrl(storageUrl);
-      };
-      probe.onerror = async () => {
-        if (!cancelled && !isGenerating) {
-          try {
-            console.log('[RecipeCard] Generating OpenAI image for:', recipe.name);
-            setIsGenerating(true);
-            const generatedUrl = await generateSingleRecipeImage(recipe);
-            if (!cancelled && generatedUrl) {
-              setImageUrl(generatedUrl);
-            }
-          } catch (e) {
-            console.error('[RecipeCard] Image generation failed:', e);
-          } finally {
-            if (!cancelled) setIsGenerating(false);
+      
+      try {
+        // Check if image exists in storage with a fetch request
+        const response = await fetch(storageUrl, { method: 'HEAD' });
+        
+        if (response.ok && !cancelled) {
+          // Image exists in storage
+          console.log(`[RecipeCard] Image found in storage for: ${recipe.name}`);
+          setImageUrl(storageUrl);
+          setImageChecked(true);
+          return;
+        }
+      } catch (error) {
+        console.log(`[RecipeCard] Storage check failed for: ${recipe.name}, will generate`);
+      }
+
+      // Image doesn't exist, generate it
+      if (!cancelled && !isGenerating) {
+        try {
+          console.log(`[RecipeCard] Generating OpenAI image for: ${recipe.name}`);
+          setIsGenerating(true);
+          const generatedUrl = await generateSingleRecipeImage(recipe);
+          
+          if (!cancelled && generatedUrl) {
+            console.log(`[RecipeCard] Successfully generated image for: ${recipe.name}`);
+            setImageUrl(generatedUrl);
+          } else {
+            console.log(`[RecipeCard] Generation returned null for: ${recipe.name}`);
+          }
+        } catch (error) {
+          console.error(`[RecipeCard] Image generation failed for ${recipe.name}:`, error);
+        } finally {
+          if (!cancelled) {
+            setIsGenerating(false);
+            setImageChecked(true);
           }
         }
-      };
-      probe.src = storageUrl;
+      }
     };
 
-    attemptLoadOrGenerate();
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recipe.id]);
+    loadOrGenerateImage();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [recipe.id, recipe.name, imageChecked, isGenerating]);
 
   return (
     <Card 
@@ -65,15 +87,23 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
               alt={recipe.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               onError={() => {
+                console.error(`[RecipeCard] Image failed to load for: ${recipe.name}`);
                 setImageUrl(null);
               }}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               {isGenerating ? (
-                <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" aria-label="Generating image" />
+                <div className="flex flex-col items-center gap-2">
+                  <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" aria-label="Generating image" />
+                  <span className="text-xs text-muted-foreground">Generating...</span>
+                </div>
               ) : (
-                <img src={mealPlaceholder} alt={`${recipe.name} placeholder`} className="w-full h-full object-cover opacity-70" />
+                <img 
+                  src={mealPlaceholder} 
+                  alt={`${recipe.name} placeholder`} 
+                  className="w-full h-full object-cover opacity-70" 
+                />
               )}
             </div>
           )}
