@@ -113,7 +113,7 @@ const Home = () => {
             <MessageSquare className="w-5 h-5" />
             Talk to Your Coach
           </Button>
-          <Button size="lg" variant="outline" onClick={() => navigate('/planner')} className="gap-2">
+          <Button size="lg" variant="outline" onClick={() => navigate('/nutrition')} className="gap-2">
             <Calendar className="w-5 h-5" />
             Start Planning Meals
           </Button>
