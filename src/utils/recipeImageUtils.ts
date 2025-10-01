@@ -31,7 +31,7 @@ export const generateSingleRecipeImage = async (
         body: {
           title: recipe.name,
           ingredients: recipe.ingredients,
-          style: 'clean, modern cookbook design; warm muted colors; readable sans-serif font; square 1:1 composition; minimal background; no logos or watermarks',
+          style: 'hyper-realistic photo, natural lighting, 50mm lens f/1.8, studio-quality food photography',
           recipeId: recipe.id,
         },
       });

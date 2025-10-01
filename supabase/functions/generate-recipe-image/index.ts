@@ -36,8 +36,8 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const sb = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Generate photorealistic food photography with strict text removal
-    const enhancedPrompt = `Ultra-realistic, high-resolution close-up studio food photograph of ${title} served on a plain, unbranded ceramic plate on a neutral background. Natural soft lighting, shallow depth of field, crisp textures, vibrant but natural colors. No text, no words, no letters, no numbers, no logos, no labels, no packaging, no watermark, no signage, no menus, no stickers, no handwriting, no typography, and no embossed or printed text on any surface. No hands, no people, no utensils or cutlery, no napkins with writing, no books. Only the plated dish and plate. Style: minimalistic, bright, soft shadows.`
+    // Generate hyper-realistic photographic food imagery with camera specifications
+    const enhancedPrompt = `A hyper-realistic, high-resolution photo of ${title} on a clean white plate. Photorealistic food photography with natural lighting, shallow depth of field, soft bokeh background, warm tones, appetizing composition, macro close-up showing texture and steam, realistic reflections and highlights, no text, no logos, no overlays, no hands, no utensils, 50mm lens, f/1.8, studio-quality, color-graded for food — produce accurate textures and natural colors. Bright, minimalistic, soft shadows, natural highlights. Shot on Canon EOS R, 50mm lens, f/1.8, shot with natural window light. Crispy textures, glossy surfaces, visible steam where appropriate, flaky layers. Photorealistic, true-to-life colors, accurate food anatomy. Do not include: cartoon, painterly, text, logos, artifacts, surreal, unrealistic colors, extra elements, weird reflections, AI artifacts.`
 
     
     console.log(`Calling OpenAI API with prompt:`, enhancedPrompt)
