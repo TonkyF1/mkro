@@ -1,7 +1,9 @@
 import { useState, useRef } from 'react';
-import { Camera, Upload, Loader2, X } from 'lucide-react';
+import { Camera, Upload, Loader2, X, Check } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -16,9 +18,20 @@ interface FoodScannerProps {
   onClose: () => void;
 }
 
+interface ScannedData {
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  confidence: string;
+}
+
 export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
   const [isScanning, setIsScanning] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [scannedData, setScannedData] = useState<ScannedData | null>(null);
+  const [editedData, setEditedData] = useState<ScannedData | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -51,21 +64,22 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
             throw new Error('Invalid response from food scanner');
           }
 
-          toast({
-            title: "Food identified!",
-            description: `Found: ${data.name} (${data.confidence} confidence)`,
-          });
-
-          // Pass the data to parent component
-          onFoodScanned({
+          const foodData: ScannedData = {
             name: data.name,
             calories: Math.round(data.calories),
             protein: Math.round(data.protein),
             carbs: Math.round(data.carbs),
             fats: Math.round(data.fats),
-          });
+            confidence: data.confidence,
+          };
 
-          onClose();
+          setScannedData(foodData);
+          setEditedData(foodData);
+
+          toast({
+            title: "Food identified!",
+            description: `Found: ${data.name} (${data.confidence} confidence). Please review the values.`,
+          });
         } catch (scanError) {
           console.error('Scan error:', scanError);
           toast({
@@ -110,6 +124,19 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
     }
   };
 
+  const handleConfirm = () => {
+    if (editedData) {
+      onFoodScanned(editedData);
+      onClose();
+    }
+  };
+
+  const handleReset = () => {
+    setScannedData(null);
+    setEditedData(null);
+    setPreviewImage(null);
+  };
+
   return (
     <Card className="p-6 relative">
       <Button
@@ -123,9 +150,13 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
 
       <div className="space-y-4">
         <div className="text-center">
-          <h3 className="text-lg font-semibold mb-2">Scan Your Food</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            {scannedData ? 'Review & Edit' : 'Scan Your Food'}
+          </h3>
           <p className="text-sm text-muted-foreground">
-            Take a photo or upload an image to identify food and log nutrition
+            {scannedData 
+              ? 'Verify the detected values and edit if needed'
+              : 'Take a photo or upload an image to identify food and log nutrition'}
           </p>
         </div>
 
@@ -139,48 +170,116 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
           </div>
         )}
 
-        <div className="flex gap-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            onChange={handleFileSelect}
-            className="hidden"
-          />
-          
-          <Button
-            onClick={handleCameraCapture}
-            disabled={isScanning}
-            className="flex-1"
-          >
-            {isScanning ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Scanning...
-              </>
-            ) : (
-              <>
-                <Camera className="h-4 w-4 mr-2" />
-                Take Photo
-              </>
-            )}
-          </Button>
+        {scannedData && editedData ? (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Food Name</Label>
+              <Input
+                id="name"
+                value={editedData.name}
+                onChange={(e) => setEditedData({ ...editedData, name: e.target.value })}
+              />
+            </div>
 
-          <Button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isScanning}
-            variant="outline"
-            className="flex-1"
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            Upload
-          </Button>
-        </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="calories">Calories</Label>
+                <Input
+                  id="calories"
+                  type="number"
+                  value={editedData.calories}
+                  onChange={(e) => setEditedData({ ...editedData, calories: Number(e.target.value) })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="protein">Protein (g)</Label>
+                <Input
+                  id="protein"
+                  type="number"
+                  value={editedData.protein}
+                  onChange={(e) => setEditedData({ ...editedData, protein: Number(e.target.value) })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="carbs">Carbs (g)</Label>
+                <Input
+                  id="carbs"
+                  type="number"
+                  value={editedData.carbs}
+                  onChange={(e) => setEditedData({ ...editedData, carbs: Number(e.target.value) })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fats">Fats (g)</Label>
+                <Input
+                  id="fats"
+                  type="number"
+                  value={editedData.fats}
+                  onChange={(e) => setEditedData({ ...editedData, fats: Number(e.target.value) })}
+                />
+              </div>
+            </div>
 
-        <p className="text-xs text-center text-muted-foreground">
-          AI will estimate nutritional values for a typical serving
-        </p>
+            <div className="flex gap-2">
+              <Button onClick={handleConfirm} className="flex-1">
+                <Check className="h-4 w-4 mr-2" />
+                Confirm & Log
+              </Button>
+              <Button onClick={handleReset} variant="outline">
+                Scan Again
+              </Button>
+            </div>
+
+            <p className="text-xs text-center text-muted-foreground">
+              AI confidence: {scannedData.confidence}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="flex gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              
+              <Button
+                onClick={handleCameraCapture}
+                disabled={isScanning}
+                className="flex-1"
+              >
+                {isScanning ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Scanning...
+                  </>
+                ) : (
+                  <>
+                    <Camera className="h-4 w-4 mr-2" />
+                    Take Photo
+                  </>
+                )}
+              </Button>
+
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isScanning}
+                variant="outline"
+                className="flex-1"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Upload
+              </Button>
+            </div>
+
+            <p className="text-xs text-center text-muted-foreground">
+              AI will estimate nutritional values for a typical serving
+            </p>
+          </>
+        )}
       </div>
     </Card>
   );
