@@ -84,10 +84,11 @@ export const RecipeDetail = ({ recipe, onBack, onAddToShoppingList }: RecipeDeta
           </Button>
           
           <Button 
+            size="sm"
             onClick={() => onAddToShoppingList(recipe)}
             className="bg-primary hover:bg-primary/90 text-primary-foreground"
           >
-            <ShoppingCart className="h-4 w-4 mr-2" />
+            <ShoppingCart className="h-3 w-3 mr-1" />
             Add to Shopping List
           </Button>
         </div>
