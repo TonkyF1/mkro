@@ -53,8 +53,9 @@ serve(async (req) => {
         prompt: enhancedPrompt,
         n: 1,
         size: '1024x1024',
-        quality: 'high',
-        output_format: 'png',
+        quality: 'medium',
+        output_format: 'jpeg',
+        output_compression: 80,
       }),
     })
 
@@ -69,14 +70,14 @@ serve(async (req) => {
 
     // OpenAI returns base64 directly for gpt-image-1
     const base64 = openAIData.data[0].b64_json
-    const imageBase64 = `data:image/png;base64,${base64}`
+    const imageBase64 = `data:image/jpeg;base64,${base64}`
 
     // Upload to Supabase Storage for persistence and CDN delivery
-    const path = `recipes/${recipeId}.png`
+    const path = `recipes/${recipeId}.jpg`
     const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0))
     const { error: uploadError } = await sb.storage
       .from('recipe-images')
-      .upload(path, bytes, { contentType: 'image/png', upsert: true })
+      .upload(path, bytes, { contentType: 'image/jpeg', upsert: true })
 
     if (uploadError) {
       console.error('Failed to upload to storage:', uploadError)
