@@ -336,7 +336,10 @@ const Home = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          <Card className="border-2 border-border hover:border-accent/40 transition-all duration-300 hover:shadow-lg">
+          <Card 
+            className="border-2 border-border hover:border-accent/40 transition-all duration-300 hover:shadow-lg cursor-pointer"
+            onClick={() => navigate('/recipes')}
+          >
             <CardHeader className="space-y-4">
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center">
                 <ChefHat className="w-7 h-7 text-accent" />
@@ -348,7 +351,10 @@ const Home = () => {
             </CardHeader>
           </Card>
 
-          <Card className="border-2 border-border hover:border-primary/40 transition-all duration-300 hover:shadow-lg">
+          <Card 
+            className="border-2 border-border hover:border-primary/40 transition-all duration-300 hover:shadow-lg cursor-pointer"
+            onClick={() => navigate('/recipes')}
+          >
             <CardHeader className="space-y-4">
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                 <Leaf className="w-7 h-7 text-primary" />
