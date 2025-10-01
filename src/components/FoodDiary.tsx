@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, Utensils, Scan, Clock, ChevronDown, ChevronUp, ScanBarcode } from 'lucide-react';
+import { Plus, Trash2, Utensils, Scan, Clock, ChevronDown, ChevronUp, ScanBarcode, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { FoodScanner } from './FoodScanner';
 import { BarcodeScanner } from './BarcodeScanner';
@@ -43,6 +43,7 @@ const FoodDiary = () => {
   const [showScanner, setShowScanner] = useState(false);
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const [newFood, setNewFood] = useState({
     name: '',
     meal: 'breakfast',
@@ -264,6 +265,10 @@ const FoodDiary = () => {
         <div className="flex items-center justify-between mb-4 gap-2">
           <h3 className="text-lg font-semibold">Log Food</h3>
           <div className="flex flex-wrap gap-2 justify-end">
+            <Button onClick={() => setShowSearch(!showSearch)} variant="outline" size="sm" className="text-xs">
+              <Search className="h-3 w-3 mr-1" />
+              Search {showSearch ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />}
+            </Button>
             <Button onClick={() => setShowHistory(!showHistory)} variant="outline" size="sm" className="text-xs">
               <Clock className="h-3 w-3 mr-1" />
               History {showHistory ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />}
@@ -278,6 +283,20 @@ const FoodDiary = () => {
             </Button>
           </div>
         </div>
+
+        {/* Food Search Dropdown */}
+        {showSearch && (
+          <div className="mb-4 p-4 bg-muted rounded-lg">
+            <p className="text-sm font-medium mb-3">Search UK Foods</p>
+            <FoodSearch onAddFood={(food) => {
+              setNewFood({
+                ...food,
+                meal: newFood.meal || 'breakfast'
+              });
+              setShowSearch(false);
+            }} />
+          </div>
+        )}
 
         {/* Meal History Dropdown */}
         {showHistory && mealHistory.length > 0 && (
@@ -314,16 +333,6 @@ const FoodDiary = () => {
             </div>
           </div>
         )}
-
-        {/* Food Search */}
-        <div className="mb-4">
-          <FoodSearch onAddFood={(food) => {
-            setNewFood({
-              ...food,
-              meal: newFood.meal || 'breakfast'
-            });
-          }} />
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           <div>
