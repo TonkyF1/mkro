@@ -1,16 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import mkroLogo from '@/assets/mkro-logo.png';
 
 const LoadingScreen = () => {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    // Check theme preference from localStorage or system
-    const theme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    setIsDark(theme === 'dark' || (theme === 'system' && prefersDark) || (!theme && prefersDark));
-  }, []);
 
   return (
     <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-50">
