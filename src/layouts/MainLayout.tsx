@@ -8,7 +8,7 @@ const MainLayout = () => {
   const location = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [location.pathname]);
 
   return (
@@ -18,7 +18,9 @@ const MainLayout = () => {
       <PageNavigation />
       
       <div className="container mx-auto px-4 py-6">
-        <Outlet />
+        <div key={location.pathname} className="animate-fade-in">
+          <Outlet />
+        </div>
       </div>
     </div>
   );
