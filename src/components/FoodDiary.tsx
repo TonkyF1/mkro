@@ -260,19 +260,19 @@ const FoodDiary = () => {
 
       {/* Add New Food */}
       <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 gap-2">
           <h3 className="text-lg font-semibold">Log Food</h3>
-          <div className="flex gap-2">
-            <Button onClick={() => setShowHistory(!showHistory)} variant="outline" size="sm">
-              <Clock className="h-4 w-4 mr-2" />
-              History {showHistory ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
+          <div className="flex flex-wrap gap-2 justify-end">
+            <Button onClick={() => setShowHistory(!showHistory)} variant="outline" size="sm" className="text-xs">
+              <Clock className="h-3 w-3 mr-1" />
+              History {showHistory ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />}
             </Button>
-            <Button onClick={() => setShowScanner(true)} variant="outline" size="sm">
-              <Scan className="h-4 w-4 mr-2" />
+            <Button onClick={() => setShowScanner(true)} variant="outline" size="sm" className="text-xs">
+              <Scan className="h-3 w-3 mr-1" />
               AI Scan
             </Button>
-            <Button onClick={() => setShowBarcodeScanner(true)} variant="outline" size="sm">
-              <ScanBarcode className="h-4 w-4 mr-2" />
+            <Button onClick={() => setShowBarcodeScanner(true)} variant="outline" size="sm" className="text-xs">
+              <ScanBarcode className="h-3 w-3 mr-1" />
               Barcode
             </Button>
           </div>
