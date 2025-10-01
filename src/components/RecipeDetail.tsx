@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Clock, Users, Zap, ArrowLeft, Lightbulb, ShoppingCart } from 'lucide-react';
 import { Recipe } from '@/data/recipes';
+import { getRecipeImageUrl, generateSingleRecipeImage } from '@/utils/recipeImageUtils';
+import { useState, useEffect } from 'react';
+import mealPlaceholder from '@/assets/meal-placeholder.png';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -11,6 +14,61 @@ interface RecipeDetailProps {
 }
 
 export const RecipeDetail = ({ recipe, onBack, onAddToShoppingList }: RecipeDetailProps) => {
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [imageChecked, setImageChecked] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadOrGenerateImage = async () => {
+      if (imageChecked) return;
+
+      // Try loading from storage first
+      const storageUrl = getRecipeImageUrl(recipe.id);
+      
+      try {
+        // Check if image exists in storage
+        const response = await fetch(storageUrl, { method: 'HEAD' });
+        
+        if (response.ok && !cancelled) {
+          console.log(`[RecipeDetail] Image found in storage for: ${recipe.name}`);
+          setImageUrl(storageUrl);
+          setImageChecked(true);
+          return;
+        }
+      } catch (error) {
+        console.log(`[RecipeDetail] Storage check failed for: ${recipe.name}, will generate`);
+      }
+
+      // Image doesn't exist, generate it
+      if (!cancelled && !isGenerating) {
+        try {
+          console.log(`[RecipeDetail] Generating image for: ${recipe.name}`);
+          setIsGenerating(true);
+          const generatedUrl = await generateSingleRecipeImage(recipe);
+          
+          if (!cancelled && generatedUrl) {
+            console.log(`[RecipeDetail] Successfully generated image for: ${recipe.name}`);
+            setImageUrl(generatedUrl);
+          }
+        } catch (error) {
+          console.error(`[RecipeDetail] Image generation failed for ${recipe.name}:`, error);
+        } finally {
+          if (!cancelled) {
+            setIsGenerating(false);
+            setImageChecked(true);
+          }
+        }
+      }
+    };
+
+    loadOrGenerateImage();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [recipe.id, recipe.name, imageChecked, isGenerating]);
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
@@ -38,16 +96,30 @@ export const RecipeDetail = ({ recipe, onBack, onAddToShoppingList }: RecipeDeta
           {/* Recipe Image */}
           <div className="lg:w-1/2">
             <div className="h-64 lg:h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg flex items-center justify-center overflow-hidden">
-              {recipe.image ? (
+              {imageUrl ? (
                 <img 
-                  src={recipe.image} 
+                  src={imageUrl} 
                   alt={recipe.name}
                   className="w-full h-full object-cover"
+                  onError={() => {
+                    console.error(`[RecipeDetail] Image failed to load for: ${recipe.name}`);
+                    setImageUrl(null);
+                  }}
                 />
               ) : (
-                <div className="text-center p-6">
-                  <Zap className="h-16 w-16 text-primary mx-auto mb-4" />
-                  <p className="text-muted-foreground">{recipe.imageDescription}</p>
+                <div className="w-full h-full flex items-center justify-center">
+                  {isGenerating ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" aria-label="Generating image" />
+                      <span className="text-xs text-muted-foreground">Generating image...</span>
+                    </div>
+                  ) : (
+                    <img 
+                      src={mealPlaceholder} 
+                      alt={`${recipe.name} placeholder`} 
+                      className="w-full h-full object-cover opacity-70" 
+                    />
+                  )}
                 </div>
               )}
             </div>
