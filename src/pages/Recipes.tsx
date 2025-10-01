@@ -5,6 +5,7 @@ import { RecipeDetail } from '@/components/RecipeDetail';
 import { useRecipes, Recipe, getAllDietaryTags } from '@/hooks/useRecipes';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useToast } from '@/hooks/use-toast';
+import { testImageGeneration } from '@/utils/testImageGeneration';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -15,6 +16,12 @@ const Recipes = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  // TEST: Run once on page load
+  useEffect(() => {
+    console.log('🚀 Running image generation test...');
+    testImageGeneration();
+  }, []);
 
   const categories = ['all', 'breakfast', 'lunch', 'dinner', 'snack'];
   const dietaryTags = getAllDietaryTags(recipes);
