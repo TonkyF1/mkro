@@ -4,23 +4,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   MessageSquare, 
-  Camera, 
-  ShoppingCart, 
-  Calendar, 
-  Dumbbell, 
-  BookOpen,
+  Calendar,
   Sparkles,
   Target,
-  TrendingUp,
-  ChefHat
+  TrendingUp
 } from 'lucide-react';
+import aiCoachIcon from '@/assets/ai-coach-icon.png';
+import foodScannerIcon from '@/assets/food-scanner-icon.png';
+import shoppingListIcon from '@/assets/shopping-list-icon.png';
+import mealPlannerIcon from '@/assets/meal-planner-icon.png';
+import exerciseTrackerIcon from '@/assets/exercise-tracker-icon.png';
+import recipeLibraryIcon from '@/assets/recipe-library-icon.png';
 
 const Home = () => {
   const navigate = useNavigate();
 
   const features = [
     {
-      icon: MessageSquare,
+      image: aiCoachIcon,
       title: 'MKRO AI Coach',
       description: 'Get personalized nutrition and training advice from your AI-powered personal coach available 24/7.',
       action: () => navigate('/coach'),
@@ -28,7 +29,7 @@ const Home = () => {
       gradient: 'from-primary/20 to-primary/5'
     },
     {
-      icon: Camera,
+      image: foodScannerIcon,
       title: 'Smart Food Scanner',
       description: 'Instantly scan any food item to get detailed nutritional information and track your macros effortlessly.',
       action: () => navigate('/food-diary'),
@@ -36,7 +37,7 @@ const Home = () => {
       gradient: 'from-accent/20 to-accent/5'
     },
     {
-      icon: ShoppingCart,
+      image: shoppingListIcon,
       title: 'Shopping List Generator',
       description: 'Automatically generate shopping lists from your meal plans and never forget an ingredient again.',
       action: () => navigate('/planner'),
@@ -44,7 +45,7 @@ const Home = () => {
       gradient: 'from-secondary/20 to-secondary/5'
     },
     {
-      icon: Calendar,
+      image: mealPlannerIcon,
       title: 'Meal Planner',
       description: 'Plan your entire week of meals with our intelligent meal planning system tailored to your goals.',
       action: () => navigate('/planner'),
@@ -52,7 +53,7 @@ const Home = () => {
       gradient: 'from-primary/20 to-primary/5'
     },
     {
-      icon: Dumbbell,
+      image: exerciseTrackerIcon,
       title: 'Exercise Tracker',
       description: 'Log your workouts, track progress, and stay motivated with comprehensive exercise tracking.',
       action: () => navigate('/exercise'),
@@ -60,7 +61,7 @@ const Home = () => {
       gradient: 'from-accent/20 to-accent/5'
     },
     {
-      icon: ChefHat,
+      image: recipeLibraryIcon,
       title: 'Recipe Library',
       description: 'Explore hundreds of healthy, delicious recipes with detailed nutritional information and instructions.',
       action: () => navigate('/'),
@@ -171,8 +172,12 @@ const Home = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-hydration/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               <CardHeader className="relative z-10">
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300`}>
-                  <feature.icon className="w-7 h-7 text-primary group-hover:text-accent transition-colors duration-300" />
+                <div className={`w-20 h-20 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 overflow-hidden`}>
+                  <img 
+                    src={feature.image} 
+                    alt={feature.title}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <CardTitle className="text-xl group-hover:text-primary transition-colors duration-300">{feature.title}</CardTitle>
                 <CardDescription className="text-base leading-relaxed">
