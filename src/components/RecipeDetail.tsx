@@ -198,9 +198,14 @@ export const RecipeDetail = ({ recipe, onBack, onAddToShoppingList }: RecipeDeta
             <CardTitle className="text-xl">Instructions</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-foreground leading-relaxed">
-              {recipe.instructions}
-            </p>
+            <ul className="space-y-3">
+              {recipe.instructions.split('\n').map((instruction, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <span className="text-primary font-bold mt-0.5 flex-shrink-0">{instruction.trim().charAt(0)}</span>
+                  <span className="text-foreground leading-relaxed">{instruction.trim().substring(1).trim()}</span>
+                </li>
+              ))}
+            </ul>
           </CardContent>
         </Card>
       </div>
