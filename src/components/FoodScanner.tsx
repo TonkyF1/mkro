@@ -32,7 +32,8 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [scannedData, setScannedData] = useState<ScannedData | null>(null);
   const [editedData, setEditedData] = useState<ScannedData | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const processImage = async (file: File) => {
@@ -115,8 +116,14 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
   };
 
   const handleCameraCapture = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+    if (cameraInputRef.current) {
+      cameraInputRef.current.click();
+    }
+  };
+
+  const handleGalleryUpload = () => {
+    if (galleryInputRef.current) {
+      galleryInputRef.current.click();
     }
   };
 
@@ -237,11 +244,21 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
         ) : (
           <>
             <div className="flex gap-2">
+              {/* Camera input for direct photo capture */}
               <input
-                ref={fileInputRef}
+                ref={cameraInputRef}
                 type="file"
                 accept="image/*"
                 capture="environment"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              
+              {/* Gallery input for selecting existing photos */}
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*"
                 onChange={handleFileSelect}
                 className="hidden"
               />
@@ -265,7 +282,7 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
               </Button>
 
               <Button
-                onClick={() => fileInputRef.current?.click()}
+                onClick={handleGalleryUpload}
                 disabled={isScanning}
                 variant="outline"
                 className="flex-1"
@@ -276,7 +293,7 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
             </div>
 
             <p className="text-xs text-center text-muted-foreground">
-              AI will estimate nutritional values for a typical serving
+              Take a photo or choose from your gallery
             </p>
           </>
         )}
