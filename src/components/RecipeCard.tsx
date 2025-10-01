@@ -156,7 +156,7 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
           <span className="px-2 py-1 bg-primary/10 text-primary rounded">
             {recipe.protein}g protein
           </span>
-          <span className="px-2 py-1 bg-accent/10 text-accent-foreground rounded">
+          <span className="px-2 py-1 bg-accent/10 text-foreground rounded">
             {recipe.carbs}g carbs
           </span>
         </div>
