@@ -148,7 +148,7 @@ const Home = () => {
                 </div>
                 <CardTitle className="text-xl group-hover:text-primary transition-colors duration-300">{benefit.title}</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="text-center">
                 <p className="text-muted-foreground">{benefit.description}</p>
               </CardContent>
             </Card>
@@ -176,7 +176,7 @@ const Home = () => {
               {/* Animated background gradient on hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-hydration/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
-              <CardHeader className="relative z-10">
+              <CardHeader className="relative z-10 flex flex-col items-center text-center">
                 <div className={`w-20 h-20 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 overflow-hidden`}>
                   <img 
                     src={feature.image} 
@@ -189,7 +189,7 @@ const Home = () => {
                   {feature.description}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="relative z-10">
+              <CardContent className="relative z-10 flex justify-center">
                 <Button 
                   variant="outline" 
                   className="w-full border-primary/30 hover:border-primary hover:bg-primary/10 transition-all duration-300 group-hover:shadow-md" 
