@@ -138,7 +138,7 @@ const Home = () => {
               className="border-2 border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 bg-gradient-to-br from-card to-primary/5 backdrop-blur-sm group"
               style={{ animationDelay: `${0.8 + index * 0.1}s` }}
             >
-              <CardHeader>
+              <CardHeader className="flex flex-col items-center text-center">
                 <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-md overflow-hidden">
                   <img 
                     src={benefit.image} 
