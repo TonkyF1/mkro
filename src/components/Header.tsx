@@ -29,7 +29,7 @@ const Header = () => {
             className={`object-contain ${currentTheme === 'dark' ? 'h-16 sm:h-20' : 'h-24 sm:h-28'}`}
           />
         </div>
-        <p className="mt-2 text-sm sm:text-base text-foreground tracking-wide">
+        <p className="mt-2 text-sm sm:text-base italic text-foreground tracking-wide">
           Training & Meal Planning Coach
         </p>
       </div>
