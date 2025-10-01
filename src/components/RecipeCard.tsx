@@ -59,7 +59,7 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
       className="group cursor-pointer transition-all duration-300 hover:shadow-[var(--shadow-elevated)] hover:-translate-y-1 bg-gradient-to-br from-card to-card/80 border-border/50"
     >
       <CardHeader className="p-0">
-        <div className="h-48 bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg flex items-center justify-center overflow-hidden relative">{imageUrl ? (
+        <div className="h-40 md:h-48 bg-gradient-to-br from-primary/20 to-accent/20 rounded-t-lg flex items-center justify-center overflow-hidden relative">{imageUrl ? (
             <img 
               src={imageUrl} 
               alt={recipe.name}
@@ -72,8 +72,8 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
             <div className="w-full h-full relative">
               <img src={placeholder} alt={`${recipe.name} placeholder`} className="w-full h-full object-cover" />
               {isGenerating && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full"></div>
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                  <div className="animate-spin h-6 w-6 md:h-8 md:w-8 border-2 border-primary border-t-transparent rounded-full"></div>
                 </div>
               )}
             </div>
@@ -96,55 +96,52 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
         </div>
       </CardHeader>
       
-      <CardContent className="p-4">
-        <h3 className="font-bold text-lg text-foreground mb-2 group-hover:text-primary transition-colors">
+      <CardContent className="p-3 md:p-4">
+        <h3 className="font-bold text-sm md:text-lg text-foreground mb-1 md:mb-2 group-hover:text-primary transition-colors line-clamp-2">
           {recipe.name}
         </h3>
         
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+        <p className="text-xs md:text-sm text-muted-foreground mb-2 md:mb-3 line-clamp-1 md:line-clamp-2">
           {recipe.description}
         </p>
         
         {/* Recipe Stats */}
-        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
+        <div className="flex items-center gap-2 md:gap-4 text-[10px] md:text-xs text-muted-foreground mb-2 md:mb-3">
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
-            <span>{recipe.prepTime}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Users className="h-3 w-3" />
-            <span>{recipe.servingSize}</span>
+            <span className="hidden md:inline">{recipe.prepTime}</span>
+            <span className="md:hidden">{recipe.prepTime.split(' ')[0]}</span>
           </div>
           <div className="flex items-center gap-1">
             <Zap className="h-3 w-3" />
-            <span>{recipe.calories} cal</span>
+            <span>{recipe.calories}</span>
           </div>
         </div>
         
-        {/* Nutrition */}
-        <div className="flex gap-3 text-xs mb-3">
-          <span className="px-2 py-1 bg-primary/10 text-primary rounded">
-            {recipe.protein}g protein
+        {/* Nutrition - Mobile compact */}
+        <div className="flex gap-1 md:gap-3 text-[10px] md:text-xs mb-2 md:mb-3">
+          <span className="px-1.5 md:px-2 py-0.5 md:py-1 bg-primary/10 text-primary rounded">
+            {recipe.protein}g
           </span>
-          <span className="px-2 py-1 bg-accent/10 text-accent-foreground rounded">
-            {recipe.carbs}g carbs
+          <span className="px-1.5 md:px-2 py-0.5 md:py-1 bg-accent/10 text-accent-foreground rounded">
+            {recipe.carbs}g
           </span>
         </div>
         
-        {/* Dietary Tags */}
+        {/* Dietary Tags - Show less on mobile */}
         <div className="flex flex-wrap gap-1">
-          {recipe.dietaryTags.slice(0, 3).map((tag) => (
+          {recipe.dietaryTags.slice(0, 2).map((tag) => (
             <Badge 
               key={tag} 
               variant="outline" 
-              className="text-xs border-primary/30 text-primary"
+              className="text-[10px] md:text-xs border-primary/30 text-primary px-1.5 md:px-2 py-0 md:py-0.5"
             >
               {tag}
             </Badge>
           ))}
-          {recipe.dietaryTags.length > 3 && (
-            <Badge variant="outline" className="text-xs">
-              +{recipe.dietaryTags.length - 3}
+          {recipe.dietaryTags.length > 2 && (
+            <Badge variant="outline" className="text-[10px] md:text-xs px-1.5 md:px-2 py-0 md:py-0.5">
+              +{recipe.dietaryTags.length - 2}
             </Badge>
           )}
         </div>
