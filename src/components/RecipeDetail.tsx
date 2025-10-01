@@ -3,9 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Clock, Users, Zap, ArrowLeft, Lightbulb, ShoppingCart } from 'lucide-react';
 import { Recipe } from '@/data/recipes';
-import { getRecipeImageUrl, generateSingleRecipeImage } from '@/utils/recipeImageUtils';
-import { useState, useEffect } from 'react';
-import placeholder from '@/assets/meal-placeholder.png';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -14,41 +11,6 @@ interface RecipeDetailProps {
 }
 
 export const RecipeDetail = ({ recipe, onBack, onAddToShoppingList }: RecipeDetailProps) => {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const attemptLoadOrGenerate = async () => {
-      const storageUrl = getRecipeImageUrl(recipe.id);
-      const probe = new Image();
-      probe.onload = () => {
-        if (!cancelled) setImageUrl(storageUrl);
-      };
-      probe.onerror = async () => {
-        if (!cancelled && !isGenerating) {
-          try {
-            setIsGenerating(true);
-            const generatedUrl = await generateSingleRecipeImage(recipe);
-            if (!cancelled && generatedUrl) {
-              setImageUrl(generatedUrl);
-            }
-          } catch (e) {
-            console.error('[RecipeDetail] Image generation failed:', e);
-          } finally {
-            if (!cancelled) setIsGenerating(false);
-          }
-        }
-      };
-      probe.src = storageUrl;
-    };
-
-    attemptLoadOrGenerate();
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recipe.id]);
-
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
@@ -75,24 +37,17 @@ export const RecipeDetail = ({ recipe, onBack, onAddToShoppingList }: RecipeDeta
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Recipe Image */}
           <div className="lg:w-1/2">
-            <div className="h-64 lg:h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg flex items-center justify-center overflow-hidden relative">
-              {imageUrl ? (
+            <div className="h-64 lg:h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg flex items-center justify-center overflow-hidden">
+              {recipe.image ? (
                 <img 
-                  src={imageUrl} 
+                  src={recipe.image} 
                   alt={recipe.name}
                   className="w-full h-full object-cover"
-                  onError={() => {
-                    setImageUrl(null);
-                  }}
                 />
               ) : (
-                <div className="w-full h-full relative">
-                  <img src={placeholder} alt={`${recipe.name} placeholder`} className="w-full h-full object-cover" />
-                  {isGenerating && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                      <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full"></div>
-                    </div>
-                  )}
+                <div className="text-center p-6">
+                  <Zap className="h-16 w-16 text-primary mx-auto mb-4" />
+                  <p className="text-muted-foreground">{recipe.imageDescription}</p>
                 </div>
               )}
             </div>

@@ -36,14 +36,8 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const sb = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Generate photorealistic food photography with zero text/typography
-    const enhancedPrompt = `Generate an ultra-realistic professional food photograph of ${title}. 
-Show only the plated dish, centered on a plain neutral background (white, grey, or softly blurred kitchen surface). 
-Lighting should be natural, soft, and appetizing. The food should look crisp, detailed, vibrant, and freshly prepared.
-
-Do NOT include: text, writing, words, numbers, captions, menus, signs, labels, packaging, logos, stickers, watermarks, chalkboards, books, napkins with writing, receipts, menus, or any printed material. 
-
-Only the food on a plate should appear.`;
+    // Generate photorealistic food photography without any text
+    const enhancedPrompt = `Photorealistic close-up of ${title}, appetizing plating, natural warm lighting, shallow depth of field, high detail, crisp texture, neutral background — style: realistic food photography — size: 512x512 — Negative: no text, no words, no letters, no watermark, no logo, no signature, no labels, no brand, no printed text, no signage, no menus, remove any text overlays, no human faces with text`;
 
     
     console.log(`Calling OpenAI API with prompt:`, enhancedPrompt)
