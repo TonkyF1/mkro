@@ -1,4 +1,4 @@
-import { useLocation, Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Utensils, Home } from "lucide-react";
@@ -18,16 +18,16 @@ const NotFound = () => {
           <h1 className="text-6xl font-bold text-foreground mb-2">404</h1>
           <h2 className="text-2xl font-semibold text-foreground mb-4">Page Not Found</h2>
           <p className="text-muted-foreground mb-6">
-            Oops! The recipe you&apos;re looking for seems to have wandered off the menu. 
-            Let&apos;s get you back to exploring delicious, healthy meals.
+            Oops! The recipe you're looking for seems to have wandered off the menu. 
+            Let's get you back to exploring delicious, healthy meals.
           </p>
         </div>
         
         <Button asChild className="bg-primary hover:bg-primary/90">
-          <Link to="/">
+          <a href="/">
             <Home className="h-4 w-4 mr-2" />
             Return to Home
-          </Link>
+          </a>
         </Button>
       </div>
     </div>
