@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from 'next-themes';
-import { LogIn, User } from 'lucide-react';
+import { UserRoundPlus, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import mkroLogo from '@/assets/mkro-logo.png';
@@ -44,8 +44,8 @@ const Header = () => {
             </Button>
           ) : (
             <Button variant="default" size="sm" onClick={() => navigate('/auth')} className="gap-2">
-              <LogIn className="h-4 w-4" />
-              <span className="hidden sm:inline">Log In</span>
+              <UserRoundPlus className="h-4 w-4" />
+              <span className="hidden sm:inline">Sign In</span>
             </Button>
           )}
         </div>
