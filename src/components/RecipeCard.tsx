@@ -6,6 +6,7 @@ import { Recipe } from '@/hooks/useRecipes';
 import { getRecipeImageUrl, generateSingleRecipeImage } from '@/utils/recipeImageUtils';
 import { AddToMealPlanModal } from '@/components/AddToMealPlanModal';
 import { useState, useEffect } from 'react';
+import mealPlaceholder from '@/assets/meal-placeholder.png';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -68,25 +69,15 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
               }}
             />
           ) : (
-            <div className="text-center p-4">
+            <div className="w-full h-full flex items-center justify-center">
               {isGenerating ? (
-                <>
-                  <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
-                  <p className="text-xs text-muted-foreground">Generating image...</p>
-                </>
+                <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" aria-label="Generating image" />
               ) : (
-                <>
-                  <Zap className="h-12 w-12 text-primary mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">{recipe.imageDescription}</p>
-                </>
+                <img src={mealPlaceholder} alt={`${recipe.name} placeholder`} className="w-full h-full object-cover opacity-70" />
               )}
             </div>
           )}
-          <div className="absolute top-2 right-2 flex gap-2">
-            <Badge variant="secondary" className="bg-background/90 text-foreground">
-              {recipe.category}
-            </Badge>
-          </div>
+          {/* Removed text overlays and category badge to ensure images contain no text */}
           {onAddToMealPlan && (
             <div className="absolute bottom-2 right-2">
               <Button
