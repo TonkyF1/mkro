@@ -101,7 +101,7 @@ const Home = () => {
         <div className="inline-block animate-float">
           <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full border-2 border-primary/30 mb-6 shadow-lg backdrop-blur-sm">
             <Sparkles className="w-4 h-4 text-primary animate-pulse-glow" />
-            <span className="text-sm font-medium bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Your AI-Powered Health Companion</span>
+            <span className="text-sm font-medium bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Your AI-Powered Health Coach</span>
           </div>
         </div>
         
