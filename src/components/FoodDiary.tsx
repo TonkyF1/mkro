@@ -180,6 +180,32 @@ const FoodDiary = () => {
     });
   };
 
+  const deleteFromHistory = async (historyId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent selecting the item when clicking delete
+    
+    const { error } = await supabase
+      .from('meal_history')
+      .delete()
+      .eq('id', historyId);
+
+    if (error) {
+      console.error('Error deleting from history:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to delete from history.',
+      });
+      return;
+    }
+
+    toast({
+      title: 'Deleted',
+      description: 'Meal removed from history.',
+    });
+
+    fetchMealHistory();
+  };
+
   const getTodayFoods = () => {
     const today = new Date().toISOString().split('T')[0];
     return foods.filter(food => food.date === today);
@@ -264,7 +290,7 @@ const FoodDiary = () => {
                   className="w-full text-left p-3 bg-background rounded-lg hover:bg-accent transition-colors"
                 >
                   <div className="flex items-center justify-between">
-                    <div>
+                    <div className="flex-1">
                       <p className="font-medium">{item.name}</p>
                       <div className="flex gap-2 mt-1">
                         <Badge variant="outline" className="text-xs">{item.calories} cal</Badge>
@@ -273,6 +299,14 @@ const FoodDiary = () => {
                         <Badge variant="outline" className="text-xs">{item.fats}g fats</Badge>
                       </div>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => deleteFromHistory(item.id, e)}
+                      className="ml-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </button>
               ))}
