@@ -119,6 +119,39 @@ export type Database = {
         }
         Relationships: []
       }
+      recipe_images: {
+        Row: {
+          attempts: number
+          created_at: string | null
+          dish: string | null
+          file_path: string
+          id: string
+          ocr_text: string | null
+          prompt: string | null
+          status: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string | null
+          dish?: string | null
+          file_path: string
+          id?: string
+          ocr_text?: string | null
+          prompt?: string | null
+          status?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string | null
+          dish?: string | null
+          file_path?: string
+          id?: string
+          ocr_text?: string | null
+          prompt?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       recipes: {
         Row: {
           calories: number
