@@ -6,6 +6,8 @@ import { useRecipes, Recipe, getAllDietaryTags } from '@/hooks/useRecipes';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useToast } from '@/hooks/use-toast';
 import { testImageGeneration } from '@/utils/testImageGeneration';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -16,6 +18,7 @@ const Recipes = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // TEST: Run once on page load
   useEffect(() => {
@@ -30,7 +33,10 @@ const Recipes = () => {
     const categoryMatch = selectedCategory === 'all' || recipe.category === selectedCategory;
     const tagMatch = selectedTags.length === 0 || 
       selectedTags.some(tag => recipe.dietaryTags.includes(tag));
-    return categoryMatch && tagMatch;
+    const searchMatch = searchQuery === '' || 
+      recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      recipe.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return categoryMatch && tagMatch && searchMatch;
   });
 
   const handleTagToggle = (tag: string) => {
@@ -116,6 +122,17 @@ const Recipes = () => {
         <p className="text-muted-foreground">
           Ready to plan your nutritious meals?
         </p>
+      </div>
+      
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        <Input
+          type="text"
+          placeholder="Search recipes..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9"
+        />
       </div>
       
       <RecipeFilter
