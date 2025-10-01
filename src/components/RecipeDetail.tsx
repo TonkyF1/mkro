@@ -230,6 +230,10 @@ export const RecipeDetail = ({ recipe, onBack, onAddToShoppingList }: RecipeDeta
                 <span className="font-medium">Carbohydrates</span>
                 <span className="font-bold text-primary">{recipe.carbs}g</span>
               </div>
+              <div className="flex justify-between items-center p-2 bg-secondary rounded">
+                <span className="font-medium">Fats</span>
+                <span className="font-bold text-primary">{recipe.fats}g</span>
+              </div>
             </div>
           </CardContent>
         </Card>
