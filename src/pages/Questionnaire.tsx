@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 const Questionnaire = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const { profile } = useUserProfile();
+  const { profile, saveProfile } = useUserProfile();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -20,10 +20,13 @@ const Questionnaire = () => {
     }
   }, [user, loading, profile, navigate]);
 
-  const handleQuestionnaireComplete = (profileData: UserProfile) => {
-    // Navigation to home page is handled by the useUserProfile hook
-    // after the profile is successfully saved
-    navigate('/');
+  const handleQuestionnaireComplete = async (profileData: UserProfile) => {
+    try {
+      await saveProfile(profileData);
+      navigate('/');
+    } catch (error) {
+      console.error('Failed to save profile:', error);
+    }
   };
 
   if (loading) {
