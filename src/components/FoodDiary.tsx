@@ -9,6 +9,7 @@ import { Plus, Trash2, Utensils, Scan, Clock, ChevronDown, ChevronUp, ScanBarcod
 import { useToast } from '@/hooks/use-toast';
 import { FoodScanner } from './FoodScanner';
 import { BarcodeScanner } from './BarcodeScanner';
+import { FoodSearch } from './FoodSearch';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -313,6 +314,17 @@ const FoodDiary = () => {
             </div>
           </div>
         )}
+
+        {/* Food Search */}
+        <div className="mb-4">
+          <FoodSearch onAddFood={(food) => {
+            setNewFood({
+              ...food,
+              meal: newFood.meal || 'breakfast'
+            });
+          }} />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           <div>
             <Label htmlFor="food-name">Food Name</Label>
