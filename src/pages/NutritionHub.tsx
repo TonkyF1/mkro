@@ -72,13 +72,14 @@ const NutritionHub = () => {
               const dayPlan: any = { date: day };
 
               // Convert AI meal data to Recipe-like objects for each meal slot
+              // Only populate if caloric info is available
               if (aiDay) {
-                if (aiDay.breakfast) {
+                if (aiDay.breakfast && aiDay.breakfast.calories) {
                   dayPlan.breakfast = {
                     id: `ai-breakfast-${dayIndex}`,
                     name: aiDay.breakfast.name,
                     category: 'breakfast',
-                    calories: aiDay.breakfast.calories || 0,
+                    calories: aiDay.breakfast.calories,
                     protein: aiDay.breakfast.protein || 0,
                     carbs: aiDay.breakfast.carbs || 0,
                     fats: aiDay.breakfast.fats || 0,
@@ -91,12 +92,12 @@ const NutritionHub = () => {
                     dietaryTags: []
                   };
                 }
-                if (aiDay.lunch) {
+                if (aiDay.lunch && aiDay.lunch.calories) {
                   dayPlan.lunch = {
                     id: `ai-lunch-${dayIndex}`,
                     name: aiDay.lunch.name,
                     category: 'lunch',
-                    calories: aiDay.lunch.calories || 0,
+                    calories: aiDay.lunch.calories,
                     protein: aiDay.lunch.protein || 0,
                     carbs: aiDay.lunch.carbs || 0,
                     fats: aiDay.lunch.fats || 0,
@@ -109,12 +110,12 @@ const NutritionHub = () => {
                     dietaryTags: []
                   };
                 }
-                if (aiDay.dinner) {
+                if (aiDay.dinner && aiDay.dinner.calories) {
                   dayPlan.dinner = {
                     id: `ai-dinner-${dayIndex}`,
                     name: aiDay.dinner.name,
                     category: 'dinner',
-                    calories: aiDay.dinner.calories || 0,
+                    calories: aiDay.dinner.calories,
                     protein: aiDay.dinner.protein || 0,
                     carbs: aiDay.dinner.carbs || 0,
                     fats: aiDay.dinner.fats || 0,
@@ -127,12 +128,12 @@ const NutritionHub = () => {
                     dietaryTags: []
                   };
                 }
-                if (aiDay.snack) {
+                if (aiDay.snack && aiDay.snack.calories) {
                   dayPlan.snack = {
                     id: `ai-snack-${dayIndex}`,
                     name: aiDay.snack.name,
                     category: 'snack',
-                    calories: aiDay.snack.calories || 0,
+                    calories: aiDay.snack.calories,
                     protein: aiDay.snack.protein || 0,
                     carbs: aiDay.snack.carbs || 0,
                     fats: aiDay.snack.fats || 0,

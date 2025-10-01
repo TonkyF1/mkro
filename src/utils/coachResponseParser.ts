@@ -12,8 +12,11 @@ export interface ParsedWorkout {
   name: string;
   type: string;
   duration: number;
-  calories?: number;
+  sets?: string;
+  reps?: string;
+  weight?: string;
   day?: string;
+  dayNumber?: number;
 }
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -117,36 +120,54 @@ const extractMealInfo = (line: string): { name: string; calories?: number; prote
 export const parseWorkoutPlan = (text: string): ParsedWorkout[] => {
   console.log('Parsing workout plan from:', text);
   const workouts: ParsedWorkout[] = [];
-  const lines = text.toLowerCase().split('\n');
+  const lines = text.split('\n');
   
   let currentDay: string | null = null;
+  let currentDayNumber: number = 0;
   
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
     
-    // Check for day headers
+    const lowerLine = line.toLowerCase();
+    
+    // Check for day headers - match "Day 1", "Day 2", etc. or day names
+    const dayNumberMatch = lowerLine.match(/day\s*(\d+)/i);
+    if (dayNumberMatch) {
+      currentDayNumber = parseInt(dayNumberMatch[1]);
+      currentDay = `Day ${currentDayNumber}`;
+      console.log('Found workout day:', currentDay);
+      continue;
+    }
+    
     const dayMatch = DAYS.find(day => {
-      return line.includes(day) && 
-        (line.startsWith(day) || 
-         line.includes(`day ${day}`) ||
-         line.includes(`${day}:`));
+      return lowerLine.includes(day) && 
+        (lowerLine.startsWith(day) || 
+         lowerLine.includes(`${day}:`) ||
+         lowerLine.match(new RegExp(`^${day}\\b`, 'i')));
     });
     
     if (dayMatch) {
+      currentDayNumber++;
       currentDay = dayMatch.charAt(0).toUpperCase() + dayMatch.slice(1);
       console.log('Found workout day:', currentDay);
       continue;
     }
     
+    // Look for category headers like "Upper Body", "Cardio", etc.
+    const categoryMatch = lowerLine.match(/^(upper body|lower body|cardio|full body|core|legs|chest|back|arms|shoulders)/i);
+    if (categoryMatch && !lowerLine.match(/\d+\s*(min|reps|sets)/i)) {
+      // This is likely a category header, not an exercise
+      continue;
+    }
+    
     // More comprehensive workout detection patterns
     const isWorkout = 
-      line.match(/\d+\s*(min|minutes|reps|sets)/i) ||
-      line.match(/\b(run|jog|walk|swim|cycle|cycling|lift|press|squat|deadlift|yoga|pilates|cardio|strength|hiit|training|workout|exercise)\b/i) ||
-      line.match(/\b(push[\s-]?up|pull[\s-]?up|sit[\s-]?up|plank|burpee)\b/i);
+      lowerLine.match(/\d+\s*(min|minutes|reps|sets|x|kg|lbs)/i) ||
+      lowerLine.match(/\b(run|jog|walk|swim|cycle|cycling|lift|press|squat|deadlift|yoga|pilates|cardio|strength|hiit|training|workout|exercise|row|curl|extension|fly|raise|pull|push)\b/i);
     
     if (isWorkout) {
-      const workout = extractWorkoutInfo(line, currentDay);
+      const workout = extractWorkoutInfo(line, currentDay, currentDayNumber);
       if (workout) {
         workouts.push(workout);
         console.log('Found workout:', workout);
@@ -158,20 +179,36 @@ export const parseWorkoutPlan = (text: string): ParsedWorkout[] => {
   return workouts;
 };
 
-const extractWorkoutInfo = (line: string, day?: string | null): ParsedWorkout | null => {
+const extractWorkoutInfo = (line: string, day?: string | null, dayNumber?: number): ParsedWorkout | null => {
+  // Extract sets and reps patterns like "3x10", "3 sets of 10", "10 reps"
+  const setsRepsMatch = line.match(/(\d+)\s*[x×]\s*(\d+)/i);
+  const setsMatch = line.match(/(\d+)\s*sets/i);
+  const repsMatch = line.match(/(\d+)\s*reps/i);
+  
+  let sets: string | undefined;
+  let reps: string | undefined;
+  
+  if (setsRepsMatch) {
+    sets = setsRepsMatch[1];
+    reps = setsRepsMatch[2];
+  } else {
+    if (setsMatch) sets = setsMatch[1];
+    if (repsMatch) reps = repsMatch[1];
+  }
+  
+  // Extract weight (kg or lbs)
+  const weightMatch = line.match(/(\d+)\s*(kg|lbs|lb)/i);
+  const weight = weightMatch ? `${weightMatch[1]}${weightMatch[2]}` : undefined;
+  
   // Extract duration
   const durationMatch = line.match(/(\d+)\s*(min|minutes)/i);
-  const duration = durationMatch ? parseInt(durationMatch[1]) : 30;
-  
-  // Extract calories
-  const caloriesMatch = line.match(/(\d+)\s*(kcal|cal|calories)/i);
-  const calories = caloriesMatch ? parseInt(caloriesMatch[1]) : undefined;
+  const duration = durationMatch ? parseInt(durationMatch[1]) : (sets || reps ? 0 : 30);
   
   // Determine exercise type based on keywords
   let type = 'cardio';
   const lowerLine = line.toLowerCase();
   
-  if (lowerLine.match(/\b(lift|press|squat|deadlift|strength|weight|resistance|bench|curl)\b/i)) {
+  if (lowerLine.match(/\b(lift|press|squat|deadlift|strength|weight|resistance|bench|curl|row|extension|fly|raise)\b/i)) {
     type = 'strength';
   } else if (lowerLine.match(/\b(yoga|pilates|stretch|flexibility)\b/i)) {
     type = 'flexibility';
@@ -181,17 +218,35 @@ const extractWorkoutInfo = (line: string, day?: string | null): ParsedWorkout | 
     type = 'sports';
   }
   
-  // Extract exercise name - remove numbers and macro info
+  // Extract exercise name - be more careful to preserve the name
   let name = line
-    .replace(/\d+\s*(min|minutes|kcal|cal|calories|reps|sets|kg|lbs)\b/gi, '')
-    .replace(/[(\[\{].*?[)\]\}]/g, '')
-    .replace(/[-•*]/g, '')
-    .replace(/\s+/g, ' ')
+    .replace(/[-•*]\s*/g, '') // Remove bullets
+    .replace(/:\s*$/, '') // Remove trailing colons
     .trim();
+  
+  // Remove the sets/reps/weight info from name if present
+  if (setsRepsMatch) {
+    name = name.replace(setsRepsMatch[0], '').trim();
+  }
+  if (weightMatch) {
+    name = name.replace(weightMatch[0], '').trim();
+  }
+  if (durationMatch) {
+    name = name.replace(durationMatch[0], '').trim();
+  }
+  if (setsMatch) {
+    name = name.replace(setsMatch[0], '').trim();
+  }
+  if (repsMatch) {
+    name = name.replace(repsMatch[0], '').trim();
+  }
+  
+  // Clean up any remaining artifacts
+  name = name.replace(/\s+/g, ' ').trim();
   
   // If name is too short, try to construct from keywords
   if (!name || name.length < 3) {
-    const exerciseMatch = line.match(/\b(run|jog|walk|swim|cycle|yoga|pilates|lift|press|squat|deadlift|push[\s-]?up|pull[\s-]?up|cardio|hiit)\b/i);
+    const exerciseMatch = line.match(/\b(run|jog|walk|swim|cycle|yoga|pilates|lift|press|squat|deadlift|push[\s-]?up|pull[\s-]?up|cardio|hiit|row|curl|extension|fly|raise)\b/i);
     if (exerciseMatch) {
       name = exerciseMatch[1].charAt(0).toUpperCase() + exerciseMatch[1].slice(1);
     } else {
@@ -203,8 +258,11 @@ const extractWorkoutInfo = (line: string, day?: string | null): ParsedWorkout | 
     name,
     type,
     duration,
-    calories,
+    sets,
+    reps,
+    weight,
     day: day || undefined,
+    dayNumber: dayNumber || undefined,
   };
 };
 

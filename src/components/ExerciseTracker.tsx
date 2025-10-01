@@ -50,17 +50,28 @@ const ExerciseTracker = () => {
           setAiWorkoutPlan(parsed);
           
           // Auto-populate weekly plan from AI recommendations
+          // Group by day number first
           if (parsed.length > 0) {
-            const newWeeklyPlan = DAYS.map(day => ({ day, exercises: [] as Exercise[] }));
+            const newWeeklyPlan = DAYS.map((day, idx) => ({ 
+              day: `Day ${idx + 1}`, 
+              exercises: [] as Exercise[] 
+            }));
             
             parsed.forEach((workout, index) => {
-              // Map workout to day based on workout.day or sequential index
               let dayIndex = -1;
               
-              if (workout.day) {
-                // Try to match day name
-                const dayName = workout.day.toLowerCase();
-                dayIndex = DAYS.findIndex(d => d.toLowerCase().includes(dayName) || dayName.includes(d.toLowerCase()));
+              // Use dayNumber if available, otherwise try day name
+              if (workout.dayNumber && workout.dayNumber >= 1 && workout.dayNumber <= 7) {
+                dayIndex = workout.dayNumber - 1;
+              } else if (workout.day) {
+                // Try to extract day number from day string like "Day 1", "Day 2"
+                const dayNumMatch = workout.day.match(/day\s*(\d+)/i);
+                if (dayNumMatch) {
+                  const num = parseInt(dayNumMatch[1]);
+                  if (num >= 1 && num <= 7) {
+                    dayIndex = num - 1;
+                  }
+                }
               }
               
               // If no day match, distribute sequentially (max 7 days)
@@ -75,7 +86,6 @@ const ExerciseTracker = () => {
                   name: workout.name,
                   type: workout.type,
                   duration: workout.duration,
-                  calories: workout.calories,
                   date: '', // Will be set when logging
                 };
                 newWeeklyPlan[dayIndex].exercises.push(exercise);
@@ -104,7 +114,6 @@ const ExerciseTracker = () => {
       name: workout.name,
       type: workout.type,
       duration: workout.duration,
-      calories: workout.calories,
       date: new Date().toISOString().split('T')[0],
     };
 
@@ -390,15 +399,14 @@ const ExerciseTracker = () => {
             {weeklyPlan.map((dayPlan, dayIndex) => {
               const dayTotal = dayPlan.exercises.reduce((sum, ex) => ({
                 duration: sum.duration + ex.duration,
-                calories: sum.calories + (ex.calories || 0),
-              }), { duration: 0, calories: 0 });
+              }), { duration: 0 });
 
               return (
                 <Card key={dayPlan.day} className="glass-card">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg">{dayPlan.day}</CardTitle>
                     <div className="text-sm text-muted-foreground">
-                      {dayTotal.duration} min • {dayTotal.calories} cal
+                      {dayTotal.duration > 0 ? `${dayTotal.duration} min` : 'Rest day'}
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
@@ -417,10 +425,11 @@ const ExerciseTracker = () => {
                               </Button>
                             </div>
                             <div className="font-medium text-sm">{exercise.name}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {exercise.duration} min
-                              {exercise.calories && ` • ${exercise.calories} cal`}
-                            </div>
+                            {exercise.duration > 0 && (
+                              <div className="text-xs text-muted-foreground">
+                                {exercise.duration} min
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
