@@ -40,7 +40,7 @@ export const recipes: Recipe[] = [
       '1 clove garlic, minced',
       'Fresh parsley for garnish'
     ],
-    instructions: 'Season chicken with Cajun seasoning, grill until cooked. Cook pasta al dente. Sauté garlic and peppers in oil, add cream cheese and milk for sauce. Toss pasta with sauce, top with sliced chicken and parsley.',
+    instructions: '1. Season the chicken breast thoroughly with Cajun seasoning on both sides. Let rest for 5 minutes to absorb flavors.\n2. Heat a grill or grill pan to medium-high heat. Cook chicken for 6-7 minutes per side until golden and internal temperature reaches 165°F. Remove and let rest.\n3. Bring a large pot of salted water to boil. Add protein pasta and cook according to package directions until al dente, stirring occasionally. Drain and set aside.\n4. In a large skillet, heat olive oil over medium heat. Add minced garlic and diced bell peppers. Sauté for 3-4 minutes until peppers are softened and fragrant.\n5. Reduce heat to low. Add light cream cheese and skim milk, stirring constantly until cream cheese melts completely and forms a smooth, creamy sauce (about 2-3 minutes).\n6. Add the cooked pasta to the sauce and toss gently to coat evenly.\n7. Slice the rested chicken into thin strips.\n8. Transfer pasta to a serving plate, arrange sliced chicken on top, and garnish with fresh chopped parsley. Serve immediately while hot.',
     prepTime: '20 minutes',
     servingSize: '1 serving',
     calories: 420,
@@ -66,7 +66,7 @@ export const recipes: Recipe[] = [
       '1 tsp paprika',
       'Salt and pepper to taste'
     ],
-    instructions: 'Season chicken with garlic powder, paprika, salt, and pepper. Grill or bake until cooked. Steam broccoli. Assemble bowls with rice, chicken, and broccoli. Store in fridge for up to 4 days.',
+    instructions: '1. Pat chicken breast dry with paper towels. Mix garlic powder, paprika, salt, and pepper in a small bowl.\n2. Rub the seasoning mixture all over the chicken, ensuring even coverage on all sides. Let marinate for 10-15 minutes.\n3. For grilling: Preheat grill to medium-high. Grill chicken 6-7 minutes per side. For baking: Preheat oven to 425°F, bake on a lined sheet for 20-25 minutes.\n4. Check internal temperature reaches 165°F. Remove chicken and let rest 5 minutes before slicing.\n5. Meanwhile, bring water to boil in a steamer. Add broccoli florets and steam for 4-5 minutes until bright green and tender-crisp.\n6. Cook brown rice according to package directions or use pre-cooked rice.\n7. Slice the rested chicken into bite-sized pieces.\n8. In meal prep containers, divide rice evenly, top with sliced chicken and steamed broccoli.\n9. Let cool completely before sealing. Label with date and store in refrigerator for up to 4 days. Reheat in microwave for 2-3 minutes when ready to eat.',
     prepTime: '25 minutes',
     servingSize: '1 serving',
     calories: 400,
@@ -92,7 +92,7 @@ export const recipes: Recipe[] = [
       '1 tbsp Greek yogurt',
       '1 tsp chili powder'
     ],
-    instructions: 'Grill chicken with chili powder. Spread yogurt on tortilla, add chicken, cheese, lettuce, and salsa. Roll tightly and slice.',
+    instructions: '1. Rub chili powder evenly over chicken breast on all sides. Let sit for 10 minutes.\n2. Heat grill or grill pan to medium-high heat. Grill chicken for 6-7 minutes per side until fully cooked (165°F internal temp).\n3. Remove chicken and let rest for 5 minutes, then slice into thin strips.\n4. Warm the wholegrain tortilla in a dry pan for 10-15 seconds per side until pliable.\n5. Spread Greek yogurt evenly across the center of the tortilla, leaving 1 inch on each side.\n6. Layer the sliced chicken down the middle of the tortilla.\n7. Sprinkle shredded low-fat cheddar over the chicken.\n8. Add shredded lettuce and spoon salsa on top.\n9. Fold in the sides of the tortilla, then roll tightly from bottom to top, keeping ingredients secure.\n10. Slice the wrap diagonally in half. Serve immediately or wrap in foil for later.',
     prepTime: '15 minutes',
     servingSize: '1 wrap',
     calories: 350,
@@ -118,7 +118,7 @@ export const recipes: Recipe[] = [
       '1 clove garlic, minced',
       '1 tbsp olive oil'
     ],
-    instructions: 'Cook rice. Sauté chicken in oil until golden. Add vegetables, cook until tender. Mix honey, soy sauce, and garlic, toss with chicken and veggies. Serve over rice.',
+    instructions: '1. Rinse brown rice and cook according to package directions. Set aside and keep warm.\n2. Cut chicken breast into 1-inch cubes. Pat dry with paper towels.\n3. Heat olive oil in a large wok or skillet over medium-high heat until shimmering.\n4. Add chicken cubes in a single layer. Cook without stirring for 2-3 minutes until golden brown on bottom, then stir and cook another 3-4 minutes until cooked through.\n5. Add mixed vegetables (broccoli, carrots, peppers) to the pan. Stir-fry for 4-5 minutes until vegetables are tender-crisp.\n6. While vegetables cook, mix together honey, low-sodium soy sauce, and minced garlic in a small bowl.\n7. Pour the honey-garlic sauce over the chicken and vegetables. Toss well to coat everything evenly.\n8. Continue cooking for 1-2 minutes, stirring constantly, until sauce thickens and glazes the chicken and veggies.\n9. Spoon brown rice into a bowl and top with the honey garlic chicken and vegetable mixture. Serve immediately while hot.',
     prepTime: '20 minutes',
     servingSize: '1 serving',
     calories: 410,
@@ -145,7 +145,7 @@ export const recipes: Recipe[] = [
       '1/2 cup spinach',
       'Fresh cilantro for garnish'
     ],
-    instructions: 'Sauté onion in oil, add curry paste. Add chicken and sweet potato, cook until browned. Pour in coconut milk, simmer until tender. Stir in spinach, garnish with cilantro.',
+    instructions: '1. Cut chicken thigh into 1-inch cubes and sweet potato into similar-sized pieces for even cooking.\n2. Heat olive oil in a large pot or deep skillet over medium heat.\n3. Add diced onion and sauté for 3-4 minutes until softened and translucent.\n4. Stir in curry paste and cook for 1 minute, stirring constantly, until fragrant.\n5. Add the cubed chicken and sweet potato to the pot. Stir to coat with curry paste.\n6. Cook for 5-6 minutes, stirring occasionally, until chicken is browned on all sides.\n7. Pour in the light coconut milk and stir well to combine. Bring to a gentle simmer.\n8. Reduce heat to medium-low, cover, and simmer for 15-20 minutes until sweet potato is fork-tender and chicken is fully cooked.\n9. Stir in fresh spinach and cook for 1-2 minutes until wilted.\n10. Taste and adjust seasoning if needed. Garnish with fresh cilantro and serve hot with rice or naan.',
     prepTime: '25 minutes',
     servingSize: '1 serving',
     calories: 430,
@@ -171,7 +171,7 @@ export const recipes: Recipe[] = [
       '1 tbsp blue cheese crumbles (optional)',
       '1 tbsp olive oil'
     ],
-    instructions: 'Cook chicken in oil, toss with buffalo sauce. Arrange greens with celery, top with chicken and blue cheese. Drizzle with ranch.',
+    instructions: '1. Dice chicken breast into bite-sized pieces and pat dry.\n2. Heat olive oil in a large skillet over medium-high heat.\n3. Add chicken to the hot pan and cook for 5-6 minutes, stirring occasionally, until golden brown and cooked through.\n4. Pour buffalo sauce over the chicken and toss well to coat evenly. Cook for another minute to let sauce caramelize slightly.\n5. Remove chicken from heat and let cool for 2-3 minutes.\n6. In a large bowl, combine mixed greens and diced celery.\n7. Top the greens with the buffalo chicken.\n8. If using, sprinkle blue cheese crumbles over the top.\n9. Drizzle low-fat ranch dressing over the entire salad.\n10. Toss gently just before eating, or serve with dressing on the side. Serve immediately.',
     prepTime: '15 minutes',
     servingSize: '1 serving',
     calories: 300,
@@ -197,7 +197,7 @@ export const recipes: Recipe[] = [
       '1 tsp Italian seasoning',
       '1 tbsp parmesan, grated'
     ],
-    instructions: 'Coat chicken with panko and seasoning, bake at 400°F for 20 minutes. Top with marinara and mozzarella, bake until cheese melts. Sprinkle with parmesan.',
+    instructions: '1. Preheat oven to 400°F (200°C). Line a baking sheet with parchment paper.\n2. In a shallow dish, mix panko breadcrumbs with Italian seasoning.\n3. Pat chicken breast dry and brush lightly with olive oil on both sides.\n4. Press chicken into the panko mixture, coating both sides thoroughly and pressing to adhere.\n5. Place coated chicken on the prepared baking sheet. Bake for 20 minutes until golden and internal temperature reaches 165°F.\n6. Remove from oven and spoon marinara sauce evenly over the chicken.\n7. Top with shredded light mozzarella cheese.\n8. Return to oven and bake for an additional 5-7 minutes until cheese is melted and bubbly.\n9. Remove from oven and immediately sprinkle with grated parmesan cheese.\n10. Let rest for 2-3 minutes before serving. Garnish with fresh basil if desired.',
     prepTime: '25 minutes',
     servingSize: '1 serving',
     calories: 380,
@@ -223,7 +223,7 @@ export const recipes: Recipe[] = [
       '1 tsp sesame oil',
       '1 clove garlic, minced'
     ],
-    instructions: 'Cook rice and steam vegetables. Sauté chicken in sesame oil, add garlic, soy sauce, and honey. Cook until glazed. Serve over rice with veggies.',
+    instructions: '1. Cook brown rice according to package directions. Keep warm.\n2. While rice cooks, steam mixed vegetables in a steamer basket for 5-6 minutes until tender-crisp. Set aside.\n3. Pat chicken breast dry and cut into bite-sized pieces if desired.\n4. Heat sesame oil in a large skillet or wok over medium-high heat.\n5. Add chicken pieces and cook for 6-8 minutes, turning occasionally, until golden and cooked through.\n6. Add minced garlic to the pan and cook for 30 seconds until fragrant, stirring constantly.\n7. In a small bowl, whisk together low-sodium soy sauce and honey until well combined.\n8. Pour the soy-honey mixture over the chicken. Stir well to coat.\n9. Continue cooking for 2-3 minutes, stirring frequently, until sauce thickens and forms a glossy glaze on the chicken.\n10. To serve, place rice in a bowl, top with glazed chicken and steamed vegetables. Drizzle any remaining glaze over the top.',
     prepTime: '20 minutes',
     servingSize: '1 serving',
     calories: 390,
@@ -250,7 +250,7 @@ export const recipes: Recipe[] = [
       '1 tsp fajita seasoning',
       '2 tbsp salsa'
     ],
-    instructions: 'Season chicken with fajita seasoning, cook in oil. Add peppers and onion, cook until tender. Serve over rice or lettuce, top with avocado and salsa.',
+    instructions: '1. Slice chicken breast into thin strips. Sprinkle fajita seasoning evenly over chicken and toss to coat.\n2. Heat olive oil in a large skillet over medium-high heat.\n3. Add seasoned chicken strips to the hot pan. Cook for 5-6 minutes, stirring occasionally, until chicken is golden and cooked through. Remove and set aside.\n4. In the same pan, add sliced bell peppers and onion. Cook for 4-5 minutes, stirring frequently, until vegetables are tender and slightly charred.\n5. Return chicken to the pan and toss with vegetables for 1 minute to combine flavors.\n6. If using rice: spoon cooked brown rice into a bowl. If using lettuce: arrange lettuce leaves as a bed.\n7. Top with the chicken and vegetable mixture.\n8. Add sliced avocado on top.\n9. Spoon salsa over the bowl.\n10. Serve immediately while hot. Optional: add a squeeze of lime juice for extra flavor.',
     prepTime: '18 minutes',
     servingSize: '1 serving',
     calories: 370,
@@ -276,7 +276,7 @@ export const recipes: Recipe[] = [
       '1 tbsp olive oil',
       '1 tsp oregano'
     ],
-    instructions: 'Season chicken with oregano, grill until cooked. Fill pita with chicken, cucumber, tomatoes, and tzatziki. Drizzle with olive oil.',
+    instructions: '1. Pat chicken breast dry and sprinkle oregano evenly on both sides. Let rest for 5 minutes.\n2. Heat a grill or grill pan to medium-high heat. Brush lightly with olive oil.\n3. Grill chicken for 6-7 minutes per side until cooked through (165°F internal temp) with nice grill marks.\n4. Remove chicken and let rest for 5 minutes, then slice into thin strips.\n5. While chicken rests, warm the wholegrain pita in a dry pan or microwave for 10-15 seconds until soft and pliable.\n6. Cut the pita in half to create two pockets.\n7. Spread tzatziki sauce inside each pita pocket.\n8. Divide sliced chicken between the two pockets.\n9. Add cucumber slices and halved cherry tomatoes to each pocket.\n10. Drizzle a small amount of olive oil over the filling.\n11. Serve immediately, or wrap tightly in foil if taking to go.',
     prepTime: '15 minutes',
     servingSize: '1 serving',
     calories: 340,
@@ -304,7 +304,7 @@ export const recipes: Recipe[] = [
       '1 tsp chili powder',
       '1 tbsp olive oil'
     ],
-    instructions: 'Cook beef in oil until browned. Add beans, tomatoes, and spices, simmer 15 minutes. Serve over rice.',
+    instructions: '1. Heat olive oil in a large pot or Dutch oven over medium-high heat.\n2. Add lean ground beef and break it up with a wooden spoon. Cook for 5-7 minutes until browned, stirring occasionally.\n3. Drain any excess fat from the pan.\n4. Add paprika and chili powder to the beef. Stir well to coat the meat with spices.\n5. Add kidney beans, diced tomatoes with their juices to the pot. Stir to combine.\n6. Bring the mixture to a boil, then reduce heat to low.\n7. Cover and simmer for 15 minutes, stirring occasionally, until flavors meld and chili thickens.\n8. While chili simmers, cook brown rice according to package directions or use pre-cooked rice.\n9. Taste chili and adjust seasoning with salt and pepper if needed.\n10. Spoon rice into a bowl and ladle chili over the top. Garnish with fresh herbs if desired. Serve hot.',
     prepTime: '20 minutes',
     servingSize: '1 serving',
     calories: 430,
@@ -330,7 +330,7 @@ export const recipes: Recipe[] = [
       '1 clove garlic, minced',
       '1 tsp ginger, grated'
     ],
-    instructions: 'Cook noodles. Sauté beef in sesame oil, add garlic, ginger, and vegetables. Add soy sauce, toss with noodles.',
+    instructions: '1. Cook rice noodles according to package directions. Drain and set aside.\n2. Slice lean beef into thin strips against the grain for tenderness.\n3. Heat sesame oil in a large wok or skillet over high heat until shimmering.\n4. Add beef strips in a single layer. Sear for 2-3 minutes without stirring, then flip and cook another 2 minutes until browned. Remove and set aside.\n5. In the same pan, add minced garlic and grated ginger. Stir-fry for 30 seconds until fragrant.\n6. Add mixed vegetables (broccoli, peppers) to the pan. Stir-fry for 4-5 minutes until tender-crisp.\n7. Return the beef to the pan with vegetables.\n8. Pour low-sodium soy sauce over everything and toss well to coat.\n9. Add the cooked noodles to the pan and toss everything together for 1-2 minutes until heated through and well combined.\n10. Transfer to a serving bowl. Serve immediately while hot. Optional: garnish with sesame seeds or sliced green onions.',
     prepTime: '18 minutes',
     servingSize: '1 serving',
     calories: 400,
@@ -355,7 +355,7 @@ export const recipes: Recipe[] = [
       '1 tsp smoked paprika',
       'Lettuce, tomato, onion for topping'
     ],
-    instructions: 'Form beef into patty, grill until cooked. Toss sweet potato with oil and paprika, bake at 425°F for 25 minutes. Serve burger on bun with toppings.',
+    instructions: '1. Preheat oven to 425°F (220°C). Line two baking sheets with parchment paper.\n2. Cut sweet potato into evenly-sized fries (about 1/4 inch thick).\n3. In a bowl, toss sweet potato fries with olive oil and smoked paprika until evenly coated.\n4. Spread fries in a single layer on one baking sheet, ensuring they don\'t overlap. Bake for 25-30 minutes, flipping halfway, until crispy and golden.\n5. While fries bake, form lean ground beef into a patty about 3/4 inch thick. Make a small indent in center to prevent bulging.\n6. Heat a grill or grill pan to medium-high. Cook patty for 4-5 minutes per side for medium doneness, or longer if desired.\n7. During last minute of cooking, place cheese on patty if desired and cover to melt.\n8. Lightly toast the wholegrain bun on the grill or in a toaster.\n9. Assemble burger: place patty on bottom bun, add lettuce, tomato slices, and onion.\n10. Serve burger with crispy sweet potato fries on the side. Enjoy while hot!',
     prepTime: '30 minutes',
     servingSize: '1 serving',
     calories: 450,
@@ -381,7 +381,7 @@ export const recipes: Recipe[] = [
       '1 tbsp olive oil',
       '2 tbsp cheddar, shredded'
     ],
-    instructions: 'Cook beef with cumin and tomatoes. Mix with quinoa. Stuff peppers, top with cheese, bake at 375°F for 25 minutes.',
+    instructions: '1. Preheat oven to 375°F (190°C).\n2. Cook quinoa according to package directions. Set aside.\n3. Slice the tops off bell peppers and remove seeds and membranes. Rinse and pat dry.\n4. Heat olive oil in a large skillet over medium-high heat.\n5. Add lean ground beef and cook for 5-6 minutes, breaking up with a spoon, until browned.\n6. Add cumin and diced tomatoes to the beef. Stir well and cook for 2-3 minutes.\n7. Remove from heat and mix in the cooked quinoa until well combined.\n8. Stand peppers upright in a baking dish. If needed, slice a thin layer off the bottom to help them stand.\n9. Spoon the beef and quinoa mixture into each pepper, packing gently and filling to the top.\n10. Top each stuffed pepper with shredded cheddar cheese.\n11. Pour 1/4 cup water in the bottom of the baking dish to prevent sticking.\n12. Cover with foil and bake for 25 minutes until peppers are tender. Serve hot.',
     prepTime: '30 minutes',
     servingSize: '1 serving',
     calories: 380,
@@ -407,7 +407,7 @@ export const recipes: Recipe[] = [
       '1 tbsp olive oil',
       '1 tsp Italian seasoning'
     ],
-    instructions: 'Cook pasta. Sauté onion and garlic, add beef, cook until browned. Add tomatoes and seasoning, simmer 15 minutes. Serve over pasta.',
+    instructions: '1. Bring a large pot of salted water to boil. Cook protein pasta according to package directions until al dente. Drain and set aside.\n2. Heat olive oil in a large deep skillet or Dutch oven over medium heat.\n3. Add diced onion and cook for 3-4 minutes until softened and translucent.\n4. Add minced garlic and cook for 30 seconds more, stirring constantly, until fragrant.\n5. Increase heat to medium-high. Add lean ground beef and break it up with a wooden spoon.\n6. Cook beef for 6-8 minutes, stirring occasionally, until fully browned and no pink remains.\n7. Add crushed tomatoes and Italian seasoning to the beef. Stir well to combine.\n8. Reduce heat to low and let simmer for 15 minutes, stirring occasionally, until sauce thickens and flavors develop.\n9. Taste and adjust seasoning with salt and pepper if needed.\n10. Add cooked pasta to the sauce and toss to coat evenly, or serve sauce over pasta in a bowl. Garnish with fresh herbs if desired.',
     prepTime: '25 minutes',
     servingSize: '1 serving',
     calories: 410,
@@ -433,7 +433,7 @@ export const recipes: Recipe[] = [
       '1 tsp cumin',
       '1 tbsp olive oil'
     ],
-    instructions: 'Cook beef and onion in oil. Add spices, tomatoes, and lentils, simmer 20 minutes. Serve hot.',
+    instructions: '1. If using dried lentils, cook them first: Rinse lentils, add to pot with 2 cups water, bring to boil, then simmer for 20-25 minutes until tender. Drain and set aside.\n2. Heat olive oil in a large pot or Dutch oven over medium heat.\n3. Add lean ground beef and diced onion. Cook for 6-8 minutes, breaking up beef with a spoon, until meat is browned and onion is soft.\n4. Add chili powder and cumin to the pot. Stir well for 30 seconds to toast the spices and release their flavors.\n5. Add diced tomatoes with juices and cooked lentils to the pot. Stir everything together.\n6. Bring mixture to a boil, then reduce heat to low.\n7. Cover and simmer for 20 minutes, stirring occasionally. If chili becomes too thick, add a splash of water.\n8. Taste and adjust seasoning with salt and pepper as needed.\n9. Ladle into bowls and serve hot. Top with fresh cilantro, a dollop of Greek yogurt, or a sprinkle of cheese if desired.',
     prepTime: '25 minutes',
     servingSize: '1 serving',
     calories: 390,
@@ -461,7 +461,7 @@ export const recipes: Recipe[] = [
       '1 tsp cumin',
       '1 tbsp olive oil'
     ],
-    instructions: 'Cook turkey and onion in oil. Add spices, beans, and tomatoes, simmer 20 minutes. Serve hot.',
+    instructions: '1. Heat olive oil in a large pot or Dutch oven over medium heat.\n2. Add ground turkey and diced onion. Cook for 6-8 minutes, breaking up turkey with a wooden spoon, until no pink remains and onion is softened.\n3. Add chili powder and cumin to the pot. Stir well for 30 seconds to toast spices and coat the meat.\n4. Add kidney beans (drained and rinsed if canned) and diced tomatoes with their juices.\n5. Stir everything together and bring to a boil.\n6. Reduce heat to low, cover partially, and simmer for 20 minutes. Stir occasionally to prevent sticking.\n7. If chili becomes too thick, add a splash of water or broth.\n8. Taste and adjust seasoning with salt and pepper as needed.\n9. Ladle into bowls and serve hot. Garnish with sliced green onions, shredded cheese, or a dollop of sour cream if desired.',
     prepTime: '25 minutes',
     servingSize: '1 serving',
     calories: 350,
