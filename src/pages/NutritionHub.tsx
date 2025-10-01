@@ -52,14 +52,107 @@ const NutritionHub = () => {
     };
   }, []);
 
-  // Load AI-generated meal plan
+  // Load AI-generated meal plan and auto-populate weekly planner
   useEffect(() => {
     const loadAIMealPlan = () => {
       const stored = localStorage.getItem('mkro_meal_plan');
       if (stored) {
         try {
-          const parsed = JSON.parse(stored);
+          const parsed = JSON.parse(stored) as ParsedMealPlan[];
           setAiMealPlan(parsed);
+          
+          // Auto-populate weekly meal plan from AI recommendations
+          if (parsed.length > 0) {
+            const newMealPlan = DAYS.map((day, dayIndex) => {
+              const aiDay = parsed.find(p => {
+                const dayName = p.day?.toLowerCase() || '';
+                return day.toLowerCase().includes(dayName) || dayName.includes(day.toLowerCase());
+              }) || parsed[dayIndex]; // Fallback to sequential if day name doesn't match
+
+              const dayPlan: any = { date: day };
+
+              // Convert AI meal data to Recipe-like objects for each meal slot
+              if (aiDay) {
+                if (aiDay.breakfast) {
+                  dayPlan.breakfast = {
+                    id: `ai-breakfast-${dayIndex}`,
+                    name: aiDay.breakfast.name,
+                    category: 'breakfast',
+                    calories: aiDay.breakfast.calories || 0,
+                    protein: aiDay.breakfast.protein || 0,
+                    carbs: aiDay.breakfast.carbs || 0,
+                    fats: aiDay.breakfast.fats || 0,
+                    estimatedCost: 0,
+                    prepTime: '15 minutes',
+                    servingSize: '1 serving',
+                    description: aiDay.breakfast.name,
+                    ingredients: [],
+                    instructions: '',
+                    dietaryTags: []
+                  };
+                }
+                if (aiDay.lunch) {
+                  dayPlan.lunch = {
+                    id: `ai-lunch-${dayIndex}`,
+                    name: aiDay.lunch.name,
+                    category: 'lunch',
+                    calories: aiDay.lunch.calories || 0,
+                    protein: aiDay.lunch.protein || 0,
+                    carbs: aiDay.lunch.carbs || 0,
+                    fats: aiDay.lunch.fats || 0,
+                    estimatedCost: 0,
+                    prepTime: '20 minutes',
+                    servingSize: '1 serving',
+                    description: aiDay.lunch.name,
+                    ingredients: [],
+                    instructions: '',
+                    dietaryTags: []
+                  };
+                }
+                if (aiDay.dinner) {
+                  dayPlan.dinner = {
+                    id: `ai-dinner-${dayIndex}`,
+                    name: aiDay.dinner.name,
+                    category: 'dinner',
+                    calories: aiDay.dinner.calories || 0,
+                    protein: aiDay.dinner.protein || 0,
+                    carbs: aiDay.dinner.carbs || 0,
+                    fats: aiDay.dinner.fats || 0,
+                    estimatedCost: 0,
+                    prepTime: '30 minutes',
+                    servingSize: '1 serving',
+                    description: aiDay.dinner.name,
+                    ingredients: [],
+                    instructions: '',
+                    dietaryTags: []
+                  };
+                }
+                if (aiDay.snack) {
+                  dayPlan.snack = {
+                    id: `ai-snack-${dayIndex}`,
+                    name: aiDay.snack.name,
+                    category: 'snack',
+                    calories: aiDay.snack.calories || 0,
+                    protein: aiDay.snack.protein || 0,
+                    carbs: aiDay.snack.carbs || 0,
+                    fats: aiDay.snack.fats || 0,
+                    estimatedCost: 0,
+                    prepTime: '5 minutes',
+                    servingSize: '1 serving',
+                    description: aiDay.snack.name,
+                    ingredients: [],
+                    instructions: '',
+                    dietaryTags: []
+                  };
+                }
+              }
+
+              return dayPlan;
+            });
+
+            setMealPlan(newMealPlan);
+            saveMealPlanToStorage(newMealPlan);
+          }
         } catch (e) {
           console.error('Error parsing AI meal plan:', e);
         }
@@ -77,6 +170,10 @@ const NutritionHub = () => {
   const clearAIMealPlan = () => {
     localStorage.removeItem('mkro_meal_plan');
     setAiMealPlan([]);
+    // Reset to empty meal plan
+    const emptyPlan = DAYS.map(day => ({ date: day }));
+    setMealPlan(emptyPlan);
+    saveMealPlanToStorage(emptyPlan);
     toast({
       title: "AI Plan Cleared",
       description: "The MKRO Coach meal plan has been removed.",
@@ -133,47 +230,19 @@ const NutritionHub = () => {
 
         <TabsContent value="weekly" className="mt-6">
           {aiMealPlan.length > 0 && (
-            <div className="mb-6 space-y-4">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
+            <Card className="p-4 bg-primary/5 border-primary/20 mb-6">
+              <div className="flex items-center gap-3">
                 <Bot className="h-5 w-5 text-primary" />
-                MKRO Coach Recommendations
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {aiMealPlan.map((day, idx) => (
-                  <Card key={idx} className="p-4 bg-primary/5 border-primary/10">
-                    <h4 className="font-semibold mb-3 capitalize">{day.day}</h4>
-                    <div className="space-y-2 text-sm">
-                      {day.breakfast && (
-                        <div>
-                          <span className="font-medium">Breakfast:</span> {day.breakfast.name}
-                          {day.breakfast.calories && <span className="text-muted-foreground ml-1">({day.breakfast.calories} cal)</span>}
-                        </div>
-                      )}
-                      {day.lunch && (
-                        <div>
-                          <span className="font-medium">Lunch:</span> {day.lunch.name}
-                          {day.lunch.calories && <span className="text-muted-foreground ml-1">({day.lunch.calories} cal)</span>}
-                        </div>
-                      )}
-                      {day.dinner && (
-                        <div>
-                          <span className="font-medium">Dinner:</span> {day.dinner.name}
-                          {day.dinner.calories && <span className="text-muted-foreground ml-1">({day.dinner.calories} cal)</span>}
-                        </div>
-                      )}
-                      {day.snack && (
-                        <div>
-                          <span className="font-medium">Snack:</span> {day.snack.name}
-                          {day.snack.calories && <span className="text-muted-foreground ml-1">({day.snack.calories} cal)</span>}
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-                ))}
+                <div>
+                  <h3 className="font-semibold">MKRO Coach Recommendations Active</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Your personalized meal plan has been auto-populated below
+                  </p>
+                </div>
               </div>
-            </div>
+            </Card>
           )}
-          <MealPlanner 
+          <MealPlanner
             recipes={recipes} 
             onGenerateShoppingList={generateShoppingList}
             initialMealPlan={mealPlan}
