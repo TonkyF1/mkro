@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, Utensils, Scan } from 'lucide-react';
+import { Plus, Trash2, Utensils, Scan, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { FoodScanner } from './FoodScanner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface FoodEntry {
   id: string;
@@ -20,10 +22,24 @@ interface FoodEntry {
   date: string;
 }
 
+interface MealHistory {
+  id: string;
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  meal_type: string | null;
+  created_at: string;
+}
+
 const FoodDiary = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [foods, setFoods] = useState<FoodEntry[]>([]);
+  const [mealHistory, setMealHistory] = useState<MealHistory[]>([]);
   const [showScanner, setShowScanner] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [newFood, setNewFood] = useState({
     name: '',
     meal: 'breakfast',
@@ -35,12 +51,47 @@ const FoodDiary = () => {
 
   const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
 
-  const addFood = () => {
+  // Fetch meal history on mount
+  useEffect(() => {
+    if (user) {
+      fetchMealHistory();
+    }
+  }, [user]);
+
+  const fetchMealHistory = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('meal_history')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    if (error) {
+      console.error('Error fetching meal history:', error);
+      return;
+    }
+
+    if (data) {
+      setMealHistory(data);
+    }
+  };
+
+  const addFood = async () => {
     if (!newFood.name || newFood.calories <= 0) {
       toast({
         variant: 'destructive',
         title: 'Error',
         description: 'Please fill in food name and calories.',
+      });
+      return;
+    }
+
+    if (!user) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'You must be logged in to add food.',
       });
       return;
     }
@@ -51,8 +102,34 @@ const FoodDiary = () => {
       date: new Date().toISOString().split('T')[0],
     };
 
+    // Save to database
+    const { error } = await supabase
+      .from('meal_history')
+      .insert({
+        user_id: user.id,
+        name: newFood.name,
+        calories: newFood.calories,
+        protein: newFood.protein,
+        carbs: newFood.carbs,
+        fats: newFood.fats,
+        meal_type: newFood.meal,
+      });
+
+    if (error) {
+      console.error('Error saving food:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to save food to history.',
+      });
+      return;
+    }
+
     setFoods([...foods, food]);
     setNewFood({ name: '', meal: 'breakfast', calories: 0, protein: 0, carbs: 0, fats: 0 });
+    
+    // Refresh meal history
+    fetchMealHistory();
     
     toast({
       title: 'Food Added',
@@ -82,6 +159,22 @@ const FoodDiary = () => {
     toast({
       title: 'Food identified!',
       description: 'Review and adjust the nutritional values, then click Add Food.',
+    });
+  };
+
+  const selectFromHistory = (historyItem: MealHistory) => {
+    setNewFood({
+      name: historyItem.name,
+      calories: historyItem.calories,
+      protein: historyItem.protein,
+      carbs: historyItem.carbs,
+      fats: historyItem.fats,
+      meal: historyItem.meal_type || 'breakfast',
+    });
+    setShowHistory(false);
+    toast({
+      title: 'Meal selected',
+      description: 'Adjust values if needed, then click Add Food.',
     });
   };
 
@@ -141,11 +234,45 @@ const FoodDiary = () => {
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Log Food</h3>
-          <Button onClick={() => setShowScanner(true)} variant="outline" size="sm">
-            <Scan className="h-4 w-4 mr-2" />
-            Scan Food
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => setShowHistory(!showHistory)} variant="outline" size="sm">
+              <Clock className="h-4 w-4 mr-2" />
+              History {showHistory ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
+            </Button>
+            <Button onClick={() => setShowScanner(true)} variant="outline" size="sm">
+              <Scan className="h-4 w-4 mr-2" />
+              Scan Food
+            </Button>
+          </div>
         </div>
+
+        {/* Meal History Dropdown */}
+        {showHistory && mealHistory.length > 0 && (
+          <div className="mb-4 p-4 bg-muted rounded-lg max-h-64 overflow-y-auto">
+            <p className="text-sm font-medium mb-3">Recent Meals</p>
+            <div className="space-y-2">
+              {mealHistory.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => selectFromHistory(item)}
+                  className="w-full text-left p-3 bg-background rounded-lg hover:bg-accent transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{item.name}</p>
+                      <div className="flex gap-2 mt-1">
+                        <Badge variant="outline" className="text-xs">{item.calories} cal</Badge>
+                        <Badge variant="outline" className="text-xs">{item.protein}g protein</Badge>
+                        <Badge variant="outline" className="text-xs">{item.carbs}g carbs</Badge>
+                        <Badge variant="outline" className="text-xs">{item.fats}g fats</Badge>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           <div>
             <Label htmlFor="food-name">Food Name</Label>
