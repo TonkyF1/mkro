@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Header from '@/components/Header';
 import { 
   MessageSquare, 
   Camera, 
@@ -88,7 +89,9 @@ const Home = () => {
   ];
 
   return (
-    <div className="space-y-16 pb-16">
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="container mx-auto px-4 py-6 space-y-16 pb-16">
       {/* Hero Section */}
       <section className="text-center space-y-6 pt-8">
         <div className="inline-block">
@@ -194,6 +197,7 @@ const Home = () => {
           </Button>
         </div>
       </section>
+      </div>
     </div>
   );
 };

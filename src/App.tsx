@@ -44,10 +44,10 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <Routes>
+              <Route path="/" element={<Home />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/questionnaire" element={<Questionnaire />} />
               <Route element={<MainLayout />}>
-                <Route path="/" element={<Home />} />
                 <Route path="/recipes" element={<Recipes />} />
                 <Route path="/nutrition" element={<NutritionHub />} />
                 <Route path="/shopping" element={<Shopping />} />
