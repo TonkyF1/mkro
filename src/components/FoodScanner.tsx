@@ -39,17 +39,11 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
     try {
       setIsScanning(true);
 
-      // Create preview
+      // Read file once and use for both preview and API
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-
-      // Convert to base64 for API
-      const base64Reader = new FileReader();
-      base64Reader.onloadend = async () => {
-        const base64String = base64Reader.result as string;
+      reader.onloadend = async () => {
+        const base64String = reader.result as string;
+        setPreviewImage(base64String);
 
         try {
           const { data, error } = await supabase.functions.invoke('scan-food', {
@@ -87,9 +81,10 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
             description: scanError instanceof Error ? scanError.message : "Could not identify the food. Please try again.",
             variant: "destructive",
           });
+          setIsScanning(false);
         }
       };
-      base64Reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
 
     } catch (error) {
       console.error('Error processing image:', error);
@@ -98,6 +93,7 @@ export const FoodScanner = ({ onFoodScanned, onClose }: FoodScannerProps) => {
         description: "Failed to process image. Please try again.",
         variant: "destructive",
       });
+      setIsScanning(false);
     } finally {
       setIsScanning(false);
     }
