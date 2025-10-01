@@ -8,12 +8,11 @@ import { ThemeProvider } from "next-themes";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
 import Recipes from "./pages/Recipes";
-import Planner from "./pages/Planner";
 import Shopping from "./pages/Shopping";
 import Profile from "./pages/Profile";
 import Coach from "./pages/Coach";
 import Exercise from "./pages/Exercise";
-import FoodDiaryPage from "./pages/FoodDiaryPage";
+import NutritionHub from "./pages/NutritionHub";
 import Auth from "./pages/Auth";
 import Questionnaire from "./pages/Questionnaire";
 import NotFound from "./pages/NotFound";
@@ -50,10 +49,9 @@ const App = () => {
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/recipes" element={<Recipes />} />
-                <Route path="/planner" element={<Planner />} />
+                <Route path="/nutrition" element={<NutritionHub />} />
                 <Route path="/shopping" element={<Shopping />} />
                 <Route path="/exercise" element={<Exercise />} />
-                <Route path="/food-diary" element={<FoodDiaryPage />} />
                 <Route path="/coach" element={<Coach />} />
                 <Route path="/profile" element={<Profile />} />
               </Route>

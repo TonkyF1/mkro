@@ -9,10 +9,9 @@ const PageNavigation: React.FC = () => {
   const navItems = [
     { path: '/', label: 'Home', shortLabel: 'Home', icon: Home },
     { path: '/recipes', label: 'Recipes', shortLabel: 'Food', icon: ChefHat },
-    { path: '/planner', label: 'Planner', shortLabel: 'Plan', icon: Calendar },
+    { path: '/nutrition', label: 'Nutrition', shortLabel: 'Diary', icon: Utensils },
     { path: '/shopping', label: 'Shopping', shortLabel: 'Shop', icon: ShoppingCart },
     { path: '/exercise', label: 'Exercise', shortLabel: 'Gym', icon: Dumbbell },
-    { path: '/food-diary', label: 'Food', shortLabel: 'Food', icon: Utensils },
     { path: '/coach', label: 'Coach', shortLabel: 'AI', icon: Bot },
     { path: '/profile', label: 'Profile', shortLabel: 'Me', icon: User },
   ];
