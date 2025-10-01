@@ -105,16 +105,16 @@ const FoodDiary = () => {
       date: new Date().toISOString().split('T')[0],
     };
 
-    // Save to database
+    // Save to database - round all numeric values to integers
     const { error } = await supabase
       .from('meal_history')
       .insert({
         user_id: user.id,
         name: newFood.name,
-        calories: newFood.calories,
-        protein: newFood.protein,
-        carbs: newFood.carbs,
-        fats: newFood.fats,
+        calories: Math.round(newFood.calories),
+        protein: Math.round(newFood.protein),
+        carbs: Math.round(newFood.carbs),
+        fats: Math.round(newFood.fats),
         meal_type: newFood.meal,
       });
 
