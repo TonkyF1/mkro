@@ -13,12 +13,20 @@ export const getRecipeImageUrl = (recipeId: string): string => {
 let genQueue: Promise<void> = Promise.resolve();
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export const generateSingleRecipeImage = async (recipe: { id: string; name: string; ingredients: string[]; imageDescription?: string }) => {
+export const generateSingleRecipeImage = async (
+  recipe: { 
+    id: string; 
+    name: string; 
+    ingredients: string[]; 
+    imageDescription?: string 
+  }
+): Promise<string | null> => {
   let result: string | null = null;
-
+  
   genQueue = genQueue.then(async () => {
     try {
-      console.log(`Generating single OpenAI image for: ${recipe.name}`);
+      console.log(`[generateSingleRecipeImage] Starting generation for: ${recipe.name}`);
+      
       const { data, error } = await supabase.functions.invoke('generate-recipe-image', {
         body: {
           title: recipe.name,
@@ -28,18 +36,43 @@ export const generateSingleRecipeImage = async (recipe: { id: string; name: stri
         },
       });
 
-      console.log('[generateSingleRecipeImage] Function response:', { hasData: !!data, hasB64: !!data?.image_base64, hasUrl: !!data?.imageUrl, error });
+      console.log('[generateSingleRecipeImage] Response:', {
+        hasData: !!data,
+        hasError: !!error,
+        success: data?.success,
+        hasB64: !!data?.image_base64,
+        hasUrl: !!data?.imageUrl,
+        errorDetails: error || data?.error
+      });
 
-      if (!error && (data?.imageUrl || data?.image_base64)) {
-        result = data?.imageUrl ? `${data.imageUrl}?t=${Date.now()}` : `data:image/png;base64,${data.image_base64}`;
+      if (error) {
+        console.error('[generateSingleRecipeImage] Supabase function error:', error);
+        result = null;
+        return;
+      }
+
+      if (data?.error || !data?.success) {
+        console.error('[generateSingleRecipeImage] Edge function returned error:', data?.error || data?.details);
+        result = null;
+        return;
+      }
+
+      // Prefer the public URL from storage, fallback to base64
+      if (data?.imageUrl) {
+        result = `${data.imageUrl}?t=${Date.now()}`;
+        console.log('[generateSingleRecipeImage] Using public URL:', result);
+      } else if (data?.image_base64) {
+        result = `data:image/png;base64,${data.image_base64}`;
+        console.log('[generateSingleRecipeImage] Using base64 (length:', data.image_base64.length, ')');
       } else {
+        console.error('[generateSingleRecipeImage] No image data in response');
         result = null;
       }
     } catch (err) {
-      console.error(`Error generating OpenAI image for ${recipe.name}:`, err);
+      console.error(`[generateSingleRecipeImage] Exception for ${recipe.name}:`, err);
       result = null;
     } finally {
-      // Respect OpenAI gpt-image rate limits (~5/min)
+      // Respect OpenAI DALL-E rate limits (5 images per minute for DALL-E 3)
       await sleep(13000);
     }
   });
