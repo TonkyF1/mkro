@@ -232,13 +232,19 @@ const ExerciseTracker = () => {
 
   return (
     <Tabs defaultValue="today" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 mb-6">
-        <TabsTrigger value="today">Today's Log</TabsTrigger>
-        <TabsTrigger value="weekly">Weekly Plan</TabsTrigger>
+      <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+        <TabsTrigger value="today" className="flex items-center gap-2">
+          <Dumbbell className="h-4 w-4" />
+          Today's Log
+        </TabsTrigger>
+        <TabsTrigger value="weekly" className="flex items-center gap-2">
+          <Calendar className="h-4 w-4" />
+          Weekly Plan
+        </TabsTrigger>
       </TabsList>
 
       {/* Today's Log Tab */}
-      <TabsContent value="today" className="space-y-6">
+      <TabsContent value="today" className="mt-6 space-y-6">
         {/* Weekly Stats */}
         <Card className="p-6">
           <div className="flex items-center gap-2 mb-4">
@@ -352,7 +358,7 @@ const ExerciseTracker = () => {
       </TabsContent>
 
       {/* Weekly Plan Tab */}
-      <TabsContent value="weekly" className="space-y-6">
+      <TabsContent value="weekly" className="mt-6 space-y-6">
         {/* AI Workout Plan Banner */}
         {aiWorkoutPlan.length > 0 && (
           <Card className="p-4 bg-primary/5 border-primary/20">
