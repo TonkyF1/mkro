@@ -7,6 +7,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAuth } from '@/hooks/useAuth';
 import { useTrial } from '@/hooks/useTrial';
 import ProfileEdit from '@/components/ProfileEdit';
+import { MacroGoalEditor } from '@/components/MacroGoalEditor';
 import { 
   User, 
   Mail, 
@@ -34,6 +35,7 @@ const Profile = () => {
   const { user, signOut } = useAuth();
   const { isTrialExpired, isDevelopmentMode } = useTrial();
   const [editingProfile, setEditingProfile] = useState(false);
+  const [editingMacros, setEditingMacros] = useState(false);
   const navigate = useNavigate();
   const isPremium = profile?.is_premium || false;
 
@@ -220,14 +222,25 @@ const Profile = () => {
 
             {/* Nutrition Macros */}
             <Card className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Flame className="w-6 h-6 text-primary" />
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Flame className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold">Daily Nutrition Targets</h3>
+                    <p className="text-sm text-muted-foreground">Your personalized macro goals</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold">Daily Nutrition Targets</h3>
-                  <p className="text-sm text-muted-foreground">Your personalized macro goals</p>
-                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setEditingMacros(true)}
+                  className="gap-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit
+                </Button>
               </div>
 
               <div className="space-y-6">
@@ -283,14 +296,25 @@ const Profile = () => {
 
             {/* Goals & Preferences */}
             <Card className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Target className="w-6 h-6 text-primary" />
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Target className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold">Goals & Lifestyle</h3>
+                    <p className="text-sm text-muted-foreground">Your fitness journey details</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold">Goals & Lifestyle</h3>
-                  <p className="text-sm text-muted-foreground">Your fitness journey details</p>
-                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setEditingMacros(true)}
+                  className="gap-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit
+                </Button>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -463,6 +487,15 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      {/* Macro & Goal Editor Modal */}
+      {profile && (
+        <MacroGoalEditor 
+          open={editingMacros} 
+          onOpenChange={setEditingMacros}
+          profile={profile}
+        />
+      )}
     </div>
   );
 };
