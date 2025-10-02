@@ -282,6 +282,66 @@ const Home = () => {
 
       {/* Progress & Motivation Section */}
       <section className="space-y-8 max-w-4xl mx-auto">
+        {/* Streak Reward Feature */}
+        <Card className="border-2 border-accent/30 bg-gradient-to-br from-accent/10 via-purple-500/5 to-transparent overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-yellow-400/20 to-orange-500/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-accent/10 rounded-full blur-2xl" />
+          
+          <CardHeader className="text-center space-y-4 relative z-10">
+            <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 via-orange-500 to-pink-500 flex items-center justify-center shadow-2xl">
+              <Award className="w-10 h-10 text-white" />
+            </div>
+            <CardTitle className="text-3xl md:text-4xl">
+              Unlock Rewards with Your <span className="text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 bg-clip-text">5-Day Streak!</span>
+            </CardTitle>
+            <CardDescription className="text-lg">
+              Track your meals for 5 days in a row and unlock a premium celebration experience with confetti, achievements, and progress insights
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="relative z-10 space-y-6">
+            <div className="grid sm:grid-cols-3 gap-4">
+              <div className="text-center p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-border">
+                <div className="mx-auto w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mb-3">
+                  <CheckCircle2 className="w-6 h-6 text-green-600" />
+                </div>
+                <p className="font-semibold text-sm">Check Off Meals</p>
+                <p className="text-xs text-muted-foreground mt-1">Mark each meal as complete</p>
+              </div>
+              <div className="text-center p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-border">
+                <div className="mx-auto w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-3">
+                  <Calendar className="w-6 h-6 text-blue-600" />
+                </div>
+                <p className="font-semibold text-sm">Track 5 Days</p>
+                <p className="text-xs text-muted-foreground mt-1">Build your weekly streak</p>
+              </div>
+              <div className="text-center p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-border">
+                <div className="mx-auto w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400/30 to-orange-500/30 flex items-center justify-center mb-3">
+                  <Sparkles className="w-6 h-6 text-orange-500" />
+                </div>
+                <p className="font-semibold text-sm">Get Rewarded</p>
+                <p className="text-xs text-muted-foreground mt-1">Unlock celebrations</p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
+              <div className="flex items-center gap-3">
+                <TrendingUp className="w-6 h-6 text-primary flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="font-semibold">Real-Time Progress Tracking</p>
+                  <p className="text-sm text-muted-foreground">See your streak grow and calories tracked at the top of your Nutrition Hub</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <Button size="lg" onClick={() => navigate('/nutrition')} className="gap-2 shadow-lg">
+                <Calendar className="w-5 h-5" />
+                Start Tracking Today
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
           <CardHeader className="text-center space-y-4">
             <div className="mx-auto w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
@@ -318,8 +378,8 @@ const Home = () => {
               <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
                 <Award className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-semibold">Milestone Celebrations</p>
-                  <p className="text-sm text-muted-foreground">Badges & streaks coming soon</p>
+                  <p className="font-semibold">Streak Rewards</p>
+                  <p className="text-sm text-muted-foreground">Premium celebrations for consistency</p>
                 </div>
               </div>
             </div>
