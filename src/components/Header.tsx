@@ -7,7 +7,7 @@ const Header = () => {
 
   return (
     <header className="w-full bg-background border-b border-border">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-2 flex items-center justify-between">
         <div className="flex-1" />
         <div 
           className="cursor-pointer hover:opacity-80 transition-opacity flex flex-col items-center"
