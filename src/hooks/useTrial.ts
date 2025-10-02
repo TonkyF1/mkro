@@ -11,8 +11,11 @@ export const useTrial = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Check if we're in development/preview mode
-  const isDevelopmentMode = window.location.hostname === 'localhost' || 
-                           window.location.hostname.includes('lovable.app');
+  const host = window?.location?.hostname || '';
+  const isDevelopmentMode = host === 'localhost' ||
+                           host.includes('lovable.app') ||
+                           host.includes('lovable.dev') ||
+                           host.includes('lovableproject.com');
 
   const initializeTrial = async () => {
     if (!user || !profile || profile.trial_start_date || isDevelopmentMode) return;
