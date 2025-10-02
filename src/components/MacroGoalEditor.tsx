@@ -21,9 +21,9 @@ export const MacroGoalEditor = ({ open, onOpenChange, profile }: MacroGoalEditor
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     goal: profile.goal || '',
-    target_protein: profile.target_protein || 0,
-    target_carbs: profile.target_carbs || 0,
-    target_fats: profile.target_fats || 0,
+    protein: profile.target_protein?.toString() || '',
+    carbs: profile.target_carbs?.toString() || '',
+    fats: profile.target_fats?.toString() || '',
   });
 
   const handleSave = async () => {
@@ -32,9 +32,9 @@ export const MacroGoalEditor = ({ open, onOpenChange, profile }: MacroGoalEditor
       await saveProfile({
         ...profile,
         goal: formData.goal as any,
-        target_protein: formData.target_protein,
-        target_carbs: formData.target_carbs,
-        target_fats: formData.target_fats,
+        target_protein: parseInt(formData.protein) || 0,
+        target_carbs: parseInt(formData.carbs) || 0,
+        target_fats: parseInt(formData.fats) || 0,
       });
       toast({
         title: 'Success',
@@ -51,6 +51,13 @@ export const MacroGoalEditor = ({ open, onOpenChange, profile }: MacroGoalEditor
     } finally {
       setLoading(false);
     }
+  };
+
+  const getCalories = () => {
+    const protein = parseInt(formData.protein) || 0;
+    const carbs = parseInt(formData.carbs) || 0;
+    const fats = parseInt(formData.fats) || 0;
+    return (protein * 4) + (carbs * 4) + (fats * 9);
   };
 
   return (
@@ -89,13 +96,14 @@ export const MacroGoalEditor = ({ open, onOpenChange, profile }: MacroGoalEditor
               <Label htmlFor="protein" className="text-blue-600">Protein (g)</Label>
               <Input
                 id="protein"
-                type="number"
-                min="0"
-                value={formData.target_protein}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  target_protein: parseInt(e.target.value) || 0 
-                }))}
+                type="text"
+                inputMode="numeric"
+                placeholder="0"
+                value={formData.protein}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, '');
+                  setFormData(prev => ({ ...prev, protein: val }));
+                }}
                 className="mt-1"
               />
             </div>
@@ -104,13 +112,14 @@ export const MacroGoalEditor = ({ open, onOpenChange, profile }: MacroGoalEditor
               <Label htmlFor="carbs" className="text-green-600">Carbs (g)</Label>
               <Input
                 id="carbs"
-                type="number"
-                min="0"
-                value={formData.target_carbs}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  target_carbs: parseInt(e.target.value) || 0 
-                }))}
+                type="text"
+                inputMode="numeric"
+                placeholder="0"
+                value={formData.carbs}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, '');
+                  setFormData(prev => ({ ...prev, carbs: val }));
+                }}
                 className="mt-1"
               />
             </div>
@@ -119,13 +128,14 @@ export const MacroGoalEditor = ({ open, onOpenChange, profile }: MacroGoalEditor
               <Label htmlFor="fats" className="text-orange-600">Fats (g)</Label>
               <Input
                 id="fats"
-                type="number"
-                min="0"
-                value={formData.target_fats}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  target_fats: parseInt(e.target.value) || 0 
-                }))}
+                type="text"
+                inputMode="numeric"
+                placeholder="0"
+                value={formData.fats}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, '');
+                  setFormData(prev => ({ ...prev, fats: val }));
+                }}
                 className="mt-1"
               />
             </div>
@@ -134,7 +144,7 @@ export const MacroGoalEditor = ({ open, onOpenChange, profile }: MacroGoalEditor
             <div className="pt-2 border-t text-sm text-muted-foreground">
               <p>
                 Estimated Daily Calories: <span className="font-bold text-foreground">
-                  {(formData.target_protein * 4) + (formData.target_carbs * 4) + (formData.target_fats * 9)} kcal
+                  {getCalories()} kcal
                 </span>
               </p>
             </div>
