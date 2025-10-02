@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -11,10 +11,19 @@ const MainLayout = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading } = useUserProfile();
+  const redirectedRef = useRef(false);
 
   useEffect(() => {
-    if (!authLoading && !profileLoading && user && !profile?.completed_at && location.pathname !== '/questionnaire') {
-      navigate('/questionnaire');
+    if (
+      !authLoading &&
+      !profileLoading &&
+      user &&
+      !profile?.completed_at &&
+      location.pathname !== '/questionnaire' &&
+      !redirectedRef.current
+    ) {
+      redirectedRef.current = true;
+      navigate('/questionnaire', { replace: true });
     }
   }, [user, profile, authLoading, profileLoading, location.pathname, navigate]);
 
