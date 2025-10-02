@@ -161,9 +161,12 @@ const Profile = () => {
               </div>
             </div>
             {!isPremium && (
-              <Button size="lg" className="gap-2 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700">
-                <Crown className="w-4 h-4" />
-                Upgrade Now
+              <Button 
+                size="sm" 
+                className="gap-2 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 shadow-md hover:shadow-lg transition-all mt-3 min-h-[40px] min-w-[40px]"
+              >
+                <Crown className="w-3.5 h-3.5" />
+                <span className="text-sm font-semibold">Upgrade</span>
               </Button>
             )}
           </div>

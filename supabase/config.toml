@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.realtime-voice-coach]
 verify_jwt = false
+
+[functions.mkro-coach]
+verify_jwt = false
