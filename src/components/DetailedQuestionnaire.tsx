@@ -37,7 +37,7 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
   initialData = {},
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 5;
+  const totalSteps = 8;
 
   const form = useForm({
     defaultValues: {
@@ -112,29 +112,26 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
   const progress = (currentStep / totalSteps) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-primary/80 to-secondary flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl shadow-2xl border-primary/20">
-        <CardHeader className="space-y-4 pb-8">
-          <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-              <span className="text-3xl font-bold text-primary">{currentStep}</span>
-            </div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Welcome to MKRO
-            </CardTitle>
-            <p className="text-muted-foreground">Let's personalize your experience in just a few steps</p>
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center p-4">
+      <Card className="w-full max-w-2xl">
+        <CardHeader>
+          <div className="flex items-center justify-between mb-4">
+            <CardTitle>Personal Nutrition Questionnaire</CardTitle>
+            <span className="text-sm text-muted-foreground">
+              Step {currentStep} of {totalSteps}
+            </span>
           </div>
-          <Progress value={progress} className="w-full h-2" />
+          <Progress value={progress} className="w-full" />
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-6">
                 {currentStep === 1 && (
-                  <div className="space-y-6">
-                    <div className="text-center space-y-3">
-                      <h2 className="text-2xl font-bold">Let's get to know you</h2>
-                      <p className="text-muted-foreground">Tell us about yourself</p>
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Let's get started!</h2>
+                      <p className="text-muted-foreground">First, tell us your name</p>
                     </div>
                     
                     <FormField
@@ -142,39 +139,39 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base">What's your name?</FormLabel>
+                          <FormLabel>What's your name?</FormLabel>
                           <FormControl>
-                            <Input className="h-12 text-lg" placeholder="Your name" {...field} />
+                            <Input placeholder="Enter your full name" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-
-                    <FormField
-                      control={form.control}
-                      name="age"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-base">Your age</FormLabel>
-                          <FormControl>
-                            <Input className="h-12 text-lg" type="number" placeholder="25" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  </>
                 )}
 
                 {currentStep === 2 && (
-                  <div className="space-y-6">
-                    <div className="text-center space-y-3">
-                      <h2 className="text-2xl font-bold">Your Body Stats & Goals</h2>
-                      <p className="text-muted-foreground">This helps us create your perfect plan</p>
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Basic Information</h2>
+                      <p className="text-muted-foreground">Help us understand your physical profile</p>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="age"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Age</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
                       <FormField
                         control={form.control}
                         name="height"
@@ -182,7 +179,7 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                           <FormItem>
                             <FormLabel>Height ({form.watch('height_unit')})</FormLabel>
                             <FormControl>
-                              <Input className="h-12 text-lg" type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                              <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -196,30 +193,39 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                           <FormItem>
                             <FormLabel>Weight ({form.watch('weight_unit')})</FormLabel>
                             <FormControl>
-                              <Input className="h-12 text-lg" type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                              <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
+                  </>
+                )}
 
+                {currentStep === 3 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Health Goals</h2>
+                      <p className="text-muted-foreground">What's your primary health objective?</p>
+                    </div>
+                    
                     <FormField
                       control={form.control}
                       name="goal"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base">What's your main goal?</FormLabel>
+                          <FormLabel>Primary Goal</FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={field.onChange}
                               defaultValue={field.value}
-                              className="grid grid-cols-2 gap-3"
+                              className="flex flex-col space-y-2"
                             >
                               {GOALS.map((goal) => (
-                                <div key={goal.value} className="flex items-center space-x-2 border rounded-lg p-3 hover:bg-primary/5 transition-colors">
+                                <div key={goal.value} className="flex items-center space-x-2">
                                   <RadioGroupItem value={goal.value} id={goal.value} />
-                                  <Label htmlFor={goal.value} className="cursor-pointer">{goal.label}</Label>
+                                  <Label htmlFor={goal.value}>{goal.label}</Label>
                                 </div>
                               ))}
                             </RadioGroup>
@@ -228,14 +234,14 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                         </FormItem>
                       )}
                     />
-                  </div>
+                  </>
                 )}
 
-                {currentStep === 3 && (
-                  <div className="space-y-6">
-                    <div className="text-center space-y-3">
-                      <h2 className="text-2xl font-bold">Activity & Diet</h2>
-                      <p className="text-muted-foreground">Help us tailor your nutrition</p>
+                {currentStep === 4 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Activity Level</h2>
+                      <p className="text-muted-foreground">How active are you on a typical day?</p>
                     </div>
                     
                     <FormField
@@ -243,7 +249,7 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                       name="activity_level"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base">How active are you?</FormLabel>
+                          <FormLabel>Activity Level</FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={field.onChange}
@@ -251,9 +257,9 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                               className="flex flex-col space-y-2"
                             >
                               {ACTIVITY_LEVELS.map((level) => (
-                                <div key={level.value} className="flex items-center space-x-2 border rounded-lg p-3 hover:bg-primary/5 transition-colors">
+                                <div key={level.value} className="flex items-center space-x-2">
                                   <RadioGroupItem value={level.value} id={level.value} />
-                                  <Label htmlFor={level.value} className="cursor-pointer flex-1">{level.label}</Label>
+                                  <Label htmlFor={level.value}>{level.label}</Label>
                                 </div>
                               ))}
                             </RadioGroup>
@@ -262,21 +268,30 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                         </FormItem>
                       )}
                     />
+                  </>
+                )}
 
+                {currentStep === 5 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Dietary Preferences</h2>
+                      <p className="text-muted-foreground">Select all that apply to you</p>
+                    </div>
+                    
                     <FormField
                       control={form.control}
                       name="dietary_preferences"
                       render={() => (
                         <FormItem>
-                          <FormLabel className="text-base">Dietary preferences (optional)</FormLabel>
+                          <FormLabel>Dietary Preferences</FormLabel>
                           <div className="grid grid-cols-2 gap-2">
-                            {DIETARY_OPTIONS.slice(0, 6).map((option) => (
+                            {DIETARY_OPTIONS.map((option) => (
                               <FormField
                                 key={option}
                                 control={form.control}
                                 name="dietary_preferences"
                                 render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center space-x-2 space-y-0 border rounded-lg p-2 hover:bg-primary/5 transition-colors">
+                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                                     <FormControl>
                                       <Checkbox
                                         checked={field.value?.includes(option)}
@@ -288,7 +303,7 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                                         }}
                                       />
                                     </FormControl>
-                                    <FormLabel className="text-sm capitalize cursor-pointer">{option.replace('-', ' ')}</FormLabel>
+                                    <FormLabel className="text-sm capitalize">{option.replace('-', ' ')}</FormLabel>
                                   </FormItem>
                                 )}
                               />
@@ -297,73 +312,14 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                         </FormItem>
                       )}
                     />
-                  </div>
+                  </>
                 )}
 
-                {currentStep === 4 && (
-                  <div className="space-y-6">
-                    <div className="text-center space-y-3">
-                      <h2 className="text-2xl font-bold">Cooking & Budget</h2>
-                      <p className="text-muted-foreground">Let's match meals to your lifestyle</p>
-                    </div>
-                    
-                    <FormField
-                      control={form.control}
-                      name="cooking_time_preference"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-base">How much time do you have for cooking?</FormLabel>
-                          <FormControl>
-                            <RadioGroup
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                              className="flex flex-col space-y-2"
-                            >
-                              {COOKING_TIME_OPTIONS.map((option) => (
-                                <div key={option.value} className="flex items-center space-x-2 border rounded-lg p-3 hover:bg-primary/5 transition-colors">
-                                  <RadioGroupItem value={option.value} id={option.value} />
-                                  <Label htmlFor={option.value} className="cursor-pointer flex-1">{option.label}</Label>
-                                </div>
-                              ))}
-                            </RadioGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="budget_preference"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-base">What's your food budget?</FormLabel>
-                          <FormControl>
-                            <RadioGroup
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                              className="grid grid-cols-3 gap-3"
-                            >
-                              {BUDGET_OPTIONS.map((option) => (
-                                <div key={option.value} className="flex items-center space-x-2 border rounded-lg p-3 hover:bg-primary/5 transition-colors">
-                                  <RadioGroupItem value={option.value} id={option.value} />
-                                  <Label htmlFor={option.value} className="cursor-pointer capitalize">{option.label}</Label>
-                                </div>
-                              ))}
-                            </RadioGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-
-                {currentStep === 5 && (
-                  <div className="space-y-6">
-                    <div className="text-center space-y-3">
-                      <h2 className="text-2xl font-bold">Almost Done!</h2>
-                      <p className="text-muted-foreground">A few final details</p>
+                {currentStep === 6 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Allergies & Restrictions</h2>
+                      <p className="text-muted-foreground">Let us know about any food allergies</p>
                     </div>
                     
                     <FormField
@@ -371,7 +327,7 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                       name="allergies"
                       render={() => (
                         <FormItem>
-                          <FormLabel className="text-base">Any food allergies? (optional)</FormLabel>
+                          <FormLabel>Food Allergies</FormLabel>
                           <div className="grid grid-cols-2 gap-2">
                             {ALLERGY_OPTIONS.map((option) => (
                               <FormField
@@ -379,7 +335,7 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                                 control={form.control}
                                 name="allergies"
                                 render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center space-x-2 space-y-0 border rounded-lg p-2 hover:bg-primary/5 transition-colors">
+                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                                     <FormControl>
                                       <Checkbox
                                         checked={field.value?.includes(option)}
@@ -391,7 +347,7 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                                         }}
                                       />
                                     </FormControl>
-                                    <FormLabel className="text-sm capitalize cursor-pointer">{option}</FormLabel>
+                                    <FormLabel className="text-sm capitalize">{option.replace('-', ' ')}</FormLabel>
                                   </FormItem>
                                 )}
                               />
@@ -400,60 +356,163 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                         </FormItem>
                       )}
                     />
+                  </>
+                )}
 
-                    <FormField
-                      control={form.control}
-                      name="kitchen_equipment"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel className="text-base">What kitchen equipment do you have? (optional)</FormLabel>
-                          <div className="grid grid-cols-2 gap-2">
-                            {KITCHEN_EQUIPMENT.slice(0, 6).map((option) => (
-                              <FormField
-                                key={option}
-                                control={form.control}
-                                name="kitchen_equipment"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center space-x-2 space-y-0 border rounded-lg p-2 hover:bg-primary/5 transition-colors">
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value?.includes(option)}
-                                        onCheckedChange={(checked) => {
-                                          const updatedValue = checked
-                                            ? [...(field.value || []), option]
-                                            : (field.value || []).filter((value) => value !== option);
-                                          field.onChange(updatedValue);
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormLabel className="text-sm capitalize cursor-pointer">{option.replace('_', ' ')}</FormLabel>
-                                  </FormItem>
-                                )}
+                {currentStep === 7 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Cooking Preferences</h2>
+                      <p className="text-muted-foreground">Help us tailor recipes to your lifestyle</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="cooking_time_preference"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Preferred Cooking Time</FormLabel>
+                            <FormControl>
+                              <RadioGroup
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                className="flex flex-col space-y-2"
+                              >
+                                {COOKING_TIME_OPTIONS.map((option) => (
+                                  <div key={option.value} className="flex items-center space-x-2">
+                                    <RadioGroupItem value={option.value} id={option.value} />
+                                    <Label htmlFor={option.value}>{option.label}</Label>
+                                  </div>
+                                ))}
+                              </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="budget_preference"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Budget Preference</FormLabel>
+                            <FormControl>
+                              <RadioGroup
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                className="flex flex-col space-y-2"
+                              >
+                                {BUDGET_OPTIONS.map((option) => (
+                                  <div key={option.value} className="flex items-center space-x-2">
+                                    <RadioGroupItem value={option.value} id={option.value} />
+                                    <Label htmlFor={option.value}>{option.label}</Label>
+                                  </div>
+                                ))}
+                              </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </>
+                )}
+
+                {currentStep === 8 && (
+                  <>
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold mb-2">Final Details</h2>
+                      <p className="text-muted-foreground">Just a few more details to personalize your experience</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="meal_frequency"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Preferred Meals Per Day: {field.value}</FormLabel>
+                            <FormControl>
+                              <Slider
+                                min={2}
+                                max={6}
+                                step={1}
+                                value={[field.value]}
+                                onValueChange={(value) => field.onChange(value[0])}
                               />
-                            ))}
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="sleep_hours"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Average Sleep Hours: {field.value}</FormLabel>
+                            <FormControl>
+                              <Slider
+                                min={4}
+                                max={12}
+                                step={0.5}
+                                value={[field.value]}
+                                onValueChange={(value) => field.onChange(value[0])}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="stress_level"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Stress Level (1-10): {field.value}</FormLabel>
+                            <FormControl>
+                              <Slider
+                                min={1}
+                                max={10}
+                                step={1}
+                                value={[field.value]}
+                                onValueChange={(value) => field.onChange(value[0])}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </>
                 )}
               </div>
               
-              <div className="flex justify-between pt-6 gap-4">
-                {currentStep > 1 && (
-                  <Button type="button" variant="outline" onClick={prevStep} className="flex-1">
-                    <ChevronLeft className="w-4 h-4 mr-2" />
-                    Back
-                  </Button>
-                )}
+              <div className="flex justify-between pt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                  className="flex items-center"
+                >
+                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  Previous
+                </Button>
+                
                 {currentStep < totalSteps ? (
-                  <Button type="button" onClick={nextStep} className={currentStep === 1 ? 'w-full' : 'flex-1'}>
-                    Continue
-                    <ChevronRight className="w-4 h-4 ml-2" />
+                  <Button type="button" onClick={nextStep} className="flex items-center">
+                    Next
+                    <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button type="submit" className="flex-1 bg-gradient-to-r from-primary to-secondary hover:opacity-90">
-                    Get Started
+                  <Button type="submit" className="flex items-center">
+                    Complete Setup
+                    <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 )}
               </div>

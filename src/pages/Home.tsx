@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,19 +32,9 @@ import shoppingListIcon from '@/assets/shopping-list-icon.png';
 import mealPlannerIcon from '@/assets/meal-planner-icon.png';
 import exerciseTrackerIcon from '@/assets/exercise-tracker-icon.png';
 import recipeLibraryIcon from '@/assets/recipe-library-icon.png';
-import { useAuth } from '@/hooks/useAuth';
-import { useUserProfile } from '@/hooks/useUserProfile';
 
 const Home = () => {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
-  const { profile, loading: profileLoading } = useUserProfile();
-
-  useEffect(() => {
-    if (!authLoading && !profileLoading && user && !profile?.completed_at) {
-      navigate('/questionnaire', { replace: true });
-    }
-  }, [user, profile, authLoading, profileLoading, navigate]);
 
   const mainFeatures = [
     {
