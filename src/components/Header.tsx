@@ -18,7 +18,7 @@ const Header = () => {
             alt="MKRO" 
             className="object-contain h-64 sm:h-80"
           />
-          <p className="mt-2 text-sm sm:text-base italic text-foreground tracking-wide">
+          <p className="mt-1 text-sm sm:text-base italic text-foreground tracking-wide">
             Training & Meal Planning Coach
           </p>
         </div>
