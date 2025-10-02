@@ -34,11 +34,89 @@ const Planner = () => {
     if (nutritionPlan?.days) {
       const daysData = nutritionPlan.days;
       const updatedPlan = DAYS.map(day => {
-        if (daysData[day]) {
-          return {
-            date: day,
-            ...daysData[day]
-          };
+        const dayPlan = daysData[day];
+        if (dayPlan) {
+          // Transform coach format to MealPlanner format
+          const transformedDay: any = { date: day };
+          
+          // Map Breakfast, Lunch, Dinner, Snacks to the meal slots
+          if (dayPlan.Breakfast && dayPlan.Breakfast.length > 0) {
+            const meal = dayPlan.Breakfast[0];
+            transformedDay.breakfast = {
+              id: `${day}-breakfast`,
+              name: meal.title,
+              calories: meal.kcal,
+              protein: meal.protein_g,
+              carbs: meal.carbs_g,
+              fats: meal.fat_g,
+              category: 'breakfast',
+              ingredients: [],
+              instructions: '',
+              prepTime: 15,
+              servings: 1,
+              estimatedCost: 5,
+              dietaryTags: []
+            };
+          }
+          
+          if (dayPlan.Lunch && dayPlan.Lunch.length > 0) {
+            const meal = dayPlan.Lunch[0];
+            transformedDay.lunch = {
+              id: `${day}-lunch`,
+              name: meal.title,
+              calories: meal.kcal,
+              protein: meal.protein_g,
+              carbs: meal.carbs_g,
+              fats: meal.fat_g,
+              category: 'lunch',
+              ingredients: [],
+              instructions: '',
+              prepTime: 20,
+              servings: 1,
+              estimatedCost: 7,
+              dietaryTags: []
+            };
+          }
+          
+          if (dayPlan.Dinner && dayPlan.Dinner.length > 0) {
+            const meal = dayPlan.Dinner[0];
+            transformedDay.dinner = {
+              id: `${day}-dinner`,
+              name: meal.title,
+              calories: meal.kcal,
+              protein: meal.protein_g,
+              carbs: meal.carbs_g,
+              fats: meal.fat_g,
+              category: 'dinner',
+              ingredients: [],
+              instructions: '',
+              prepTime: 30,
+              servings: 1,
+              estimatedCost: 10,
+              dietaryTags: []
+            };
+          }
+          
+          if (dayPlan.Snacks && dayPlan.Snacks.length > 0) {
+            const meal = dayPlan.Snacks[0];
+            transformedDay.snack = {
+              id: `${day}-snack`,
+              name: meal.title,
+              calories: meal.kcal,
+              protein: meal.protein_g,
+              carbs: meal.carbs_g,
+              fats: meal.fat_g,
+              category: 'snack',
+              ingredients: [],
+              instructions: '',
+              prepTime: 5,
+              servings: 1,
+              estimatedCost: 3,
+              dietaryTags: []
+            };
+          }
+          
+          return transformedDay;
         }
         return { date: day };
       });

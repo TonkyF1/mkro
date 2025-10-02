@@ -154,6 +154,8 @@ const MKROCoach = () => {
 
     try {
       setIsLoading(true);
+      console.log('Saving action:', action, 'with data:', pendingSave);
+      
       const saveDirectives = {
         ...pendingSave,
         write: action === 'nutrition' 
@@ -163,15 +165,21 @@ const MKROCoach = () => {
           : pendingSave.write
       };
 
+      console.log('Final save directives:', saveDirectives);
       await savePlans(saveDirectives);
       setPendingSave(null);
       
       toast({
-        title: 'Plans Saved',
-        description: 'Your weekly plans have been saved successfully!',
+        title: 'Plans Saved!',
+        description: 'Your weekly plans are now available in the Nutrition and Training pages.',
       });
     } catch (error) {
       console.error('Save error:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Save Failed',
+        description: error instanceof Error ? error.message : 'Failed to save plans',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -222,8 +230,11 @@ const MKROCoach = () => {
       
       // Handle machine output
       if (machineOutput) {
+        console.log('Processing machine output:', machineOutput.type, machineOutput.data);
+        
         switch (machineOutput.type) {
           case 'PLAN_PROPOSAL':
+            console.log('Plan proposal received:', machineOutput.data);
             setPendingSave({
               week_start_iso: machineOutput.data.week_start_iso,
               write: {
@@ -237,10 +248,19 @@ const MKROCoach = () => {
                 }
               }
             });
+            toast({
+              title: 'Plan Ready!',
+              description: 'Choose how you want to save your new plan.',
+            });
             break;
             
           case 'SAVE_DIRECTIVES':
+            console.log('Saving plans with directives:', machineOutput.data);
             await savePlans(machineOutput.data);
+            toast({
+              title: 'Plans Saved!',
+              description: 'Check the Nutrition and Training pages to see your plans.',
+            });
             break;
             
           case 'PROFILE_UPDATE':
