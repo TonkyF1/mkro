@@ -150,11 +150,8 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="text-sm text-muted-foreground space-y-1">
-                  <div>{dayMacros.calories}kcal • £{dayMacros.cost.toFixed(2)}</div>
-                  <div className={remaining >= 0 ? 'text-green-600' : 'text-orange-600'}>
-                    Remaining: {remaining > 0 ? '+' : ''}{remaining}kcal
-                  </div>
+                <div className="text-sm text-muted-foreground">
+                  {dayMacros.calories}kcal • £{dayMacros.cost.toFixed(2)}
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
