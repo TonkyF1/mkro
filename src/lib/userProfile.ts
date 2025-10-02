@@ -1,20 +1,8 @@
 import { UserProfile } from '@/types/user';
 
-const USER_PROFILE_KEY = 'lovable-meals-user-profile';
-
-export const saveUserProfile = (profile: UserProfile): void => {
-  localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(profile));
-};
-
-export const loadUserProfile = (): UserProfile | null => {
-  try {
-    const stored = localStorage.getItem(USER_PROFILE_KEY);
-    if (!stored) return null;
-    return JSON.parse(stored) as UserProfile;
-  } catch {
-    return null;
-  }
-};
+// SECURITY: Removed localStorage caching of sensitive health data
+// All profile data should be fetched from Supabase with proper authentication
+// and RLS policies. Never cache sensitive health information in the browser.
 
 export const calculateDailyWaterGoal = (weight: number, weightUnit: 'kg' | 'lbs'): number => {
   const weightInKg = weightUnit === 'lbs' ? weight * 0.453592 : weight;

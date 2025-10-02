@@ -32,7 +32,8 @@ export const useUserProfile = () => {
       if (error) throw error;
       setProfile(data as UserProfile);
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      // SECURITY: Don't log error details that might contain sensitive data
+      console.error('Error fetching profile');
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -71,7 +72,8 @@ export const useUserProfile = () => {
     } catch (error) {
       // Revert optimistic update on error
       await fetchProfile();
-      console.error('Error saving profile:', error);
+      // SECURITY: Don't log error details that might contain sensitive data
+      console.error('Error saving profile');
       toast({
         variant: 'destructive',
         title: 'Error',

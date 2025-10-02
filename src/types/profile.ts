@@ -1,3 +1,13 @@
+/**
+ * SECURITY NOTICE: This interface contains sensitive personal health information (PHI)
+ * 
+ * Data Protection Requirements:
+ * - NEVER cache profile data in localStorage, sessionStorage, or any client-side storage
+ * - NEVER log profile data to console in production
+ * - Always fetch from Supabase with proper authentication and RLS policies
+ * - Handle with HIPAA/GDPR compliance in mind
+ * - Sensitive fields: health_conditions, allergies, age, height, weight, stress_level
+ */
 export interface UserProfile {
   id?: string;
   user_id?: string;

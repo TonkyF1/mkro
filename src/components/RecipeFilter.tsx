@@ -2,7 +2,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Filter, X, User } from 'lucide-react';
-import { loadUserProfile } from '@/lib/userProfile';
+import { useUserProfile } from '@/hooks/useUserProfile';
 
 interface RecipeFilterProps {
   categories: string[];
@@ -24,10 +24,10 @@ export const RecipeFilter = ({
   onClearFilters
 }: RecipeFilterProps) => {
   const hasActiveFilters = selectedCategory !== 'all' || selectedTags.length > 0;
-  const userProfile = loadUserProfile();
+  const { profile } = useUserProfile();
   
-  // Get user's preferred dietary tags
-  const userPreferences = userProfile?.dietaryPreferences || [];
+  // Get user's preferred dietary tags from secure Supabase profile
+  const userPreferences = profile?.dietary_preferences || [];
   
   return (
     <div className="bg-card border border-border rounded-lg p-4 mb-6">
@@ -67,7 +67,7 @@ export const RecipeFilter = ({
       </div>
       
       {/* User Profile Preferences */}
-      {userProfile && userPreferences.length > 0 && (
+      {profile && userPreferences.length > 0 && (
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
             <User className="h-4 w-4 text-primary" />
