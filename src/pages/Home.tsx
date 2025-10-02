@@ -126,7 +126,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="space-y-24 pb-16 relative overflow-hidden">
+    <div className="space-y-12 pb-8 relative overflow-hidden">
       {/* Decorative Background */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
@@ -135,7 +135,7 @@ const Home = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="text-center space-y-8 pt-12 animate-fade-in">
+      <section className="text-center space-y-6 pt-4 animate-fade-in">
         <div className="inline-block">
           <Badge className="px-4 py-2 bg-primary/10 text-primary border-primary/20 text-sm font-medium">
             <Sparkles className="w-4 h-4 mr-2" />
@@ -180,7 +180,7 @@ const Home = () => {
       </section>
 
       {/* Features Grid */}
-      <section className="space-y-12">
+      <section className="space-y-8">
         <div className="text-center space-y-4">
           <h2 className="text-4xl md:text-5xl font-bold">
             Everything You Need to <span className="text-primary">Succeed</span>
