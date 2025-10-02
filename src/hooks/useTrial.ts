@@ -121,6 +121,10 @@ export const useTrial = () => {
     const promptsRemaining = Math.max(0, 20 - trial_prompts_used);
 
     const canUseFeature = (feature: string) => {
+      // Allow all features during trial period
+      if (!isTrialExpired) return true;
+      
+      // Only lock premium features after trial expires
       if (feature === 'coach' && isTrialExpired) return false;
       if (feature === 'shopping' && isTrialExpired) return false;
       return true;
