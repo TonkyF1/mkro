@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAuth } from '@/hooks/useAuth';
 import { useTrial } from '@/hooks/useTrial';
+import { useToast } from '@/hooks/use-toast';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { supabase } from '@/integrations/supabase/client';
 import ProfileEdit from '@/components/ProfileEdit';
 import { MacroGoalEditor } from '@/components/MacroGoalEditor';
 import { 
@@ -25,23 +32,109 @@ import {
   LogOut,
   Sparkles,
   Lock,
-  Check
+  Check,
+  Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { GOALS, ACTIVITY_LEVELS, BUDGET_OPTIONS, COOKING_TIME_OPTIONS } from '@/types/profile';
+
+const signUpSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+const signInSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
+});
 
 const Profile = () => {
   const { profile, loading } = useUserProfile();
   const { user, signOut } = useAuth();
   const { isTrialExpired, isDevelopmentMode } = useTrial();
+  const { toast } = useToast();
   const [editingProfile, setEditingProfile] = useState(false);
   const [editingMacros, setEditingMacros] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
   const navigate = useNavigate();
+
+  const signUpForm = useForm({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: { name: '', email: '', password: '' },
+  });
+
+  const signInForm = useForm({
+    resolver: zodResolver(signInSchema),
+    defaultValues: { email: '', password: '' },
+  });
   const isPremium = profile?.is_premium || false;
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/auth');
+  };
+
+  const onSignUp = async (data) => {
+    setIsAuthLoading(true);
+    try {
+      const redirectUrl = `${window.location.origin}/questionnaire`;
+      const { error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: { name: data.name },
+        },
+      });
+
+      if (error) throw error;
+      toast({
+        title: 'Check your email',
+        description: "We've sent you a confirmation link to complete your registration.",
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Sign up failed',
+        description: error.message,
+      });
+    } finally {
+      setIsAuthLoading(false);
+      signUpForm.reset();
+    }
+  };
+
+  const onSignIn = async (data) => {
+    setIsAuthLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (error) throw error;
+      toast({
+        title: 'Sign in successful',
+        description: 'Welcome back!',
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Sign in failed',
+        description: error.message,
+      });
+    } finally {
+      setIsAuthLoading(false);
+      signInForm.reset();
+    }
+  };
+
+  const toggleAuthMode = () => {
+    setIsSignUp(!isSignUp);
+    signUpForm.reset();
+    signInForm.reset();
   };
 
   if (loading) {
@@ -57,19 +150,137 @@ const Profile = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="max-w-md w-full p-8 text-center space-y-6">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-            <User className="w-10 h-10 text-primary" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold mb-2">Welcome to MKRO</h2>
-            <p className="text-muted-foreground">Please sign in to view your profile</p>
-          </div>
-          <Button onClick={() => navigate('/auth')} className="w-full" size="lg">
-            Sign In
-          </Button>
-        </Card>
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <Card>
+            <CardHeader className="text-center">
+              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <User className="w-10 h-10 text-primary" />
+              </div>
+              <CardTitle className="text-2xl font-bold">
+                {isSignUp ? 'Create Your Account' : 'Welcome to MKRO'}
+              </CardTitle>
+              <CardDescription>
+                {isSignUp
+                  ? 'Join us to start your personalized nutrition journey'
+                  : 'Sign in to view your profile and access personalized features'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isSignUp ? (
+                <Form {...signUpForm}>
+                  <form onSubmit={signUpForm.handleSubmit(onSignUp)} className="space-y-4">
+                    <FormField
+                      control={signUpForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Full Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter your full name" {...field} disabled={isAuthLoading} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={signUpForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="Enter your email" {...field} disabled={isAuthLoading} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={signUpForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="Create a password" {...field} disabled={isAuthLoading} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="w-full" disabled={isAuthLoading}>
+                      {isAuthLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Create Account
+                    </Button>
+                  </form>
+                </Form>
+              ) : (
+                <Form {...signInForm}>
+                  <form onSubmit={signInForm.handleSubmit(onSignIn)} className="space-y-4">
+                    <FormField
+                      control={signInForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="Enter your email" {...field} disabled={isAuthLoading} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={signInForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="Enter your password" {...field} disabled={isAuthLoading} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="w-full" disabled={isAuthLoading}>
+                      {isAuthLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Sign In
+                    </Button>
+                  </form>
+                </Form>
+              )}
+              <div className="mt-6 text-center text-sm text-muted-foreground">
+                {isSignUp ? (
+                  <>
+                    Already have an account?{' '}
+                    <button
+                      type="button"
+                      onClick={toggleAuthMode}
+                      disabled={isAuthLoading}
+                      className="text-primary hover:underline font-medium"
+                    >
+                      Sign in
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    Don't have an account?{' '}
+                    <button
+                      type="button"
+                      onClick={toggleAuthMode}
+                      disabled={isAuthLoading}
+                      className="text-primary hover:underline font-medium"
+                    >
+                      Sign up here
+                    </button>
+                  </>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
