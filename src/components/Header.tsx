@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import mkroLogo from '@/assets/mkro-logo.png';
+import mkroLogo from '@/assets/mkro-logo.svg';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const Header = () => {
           <img 
             src={mkroLogo} 
             alt="MKRO" 
-            className="object-contain h-28 sm:h-32"
+            className="object-contain h-32 sm:h-40"
           />
           <p className="mt-2 text-sm sm:text-base italic text-foreground tracking-wide">
             Training & Meal Planning Coach
