@@ -75,7 +75,7 @@ const formatInlineText = (text: string): string => {
 const MKROCoach = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isTrialExpired, isDevelopmentMode, canUsePrompt } = useTrial();
+  const { isTrialExpired, isDevelopmentMode, canUseFeature } = useTrial();
   const { profile, saveProfile } = useUserProfile();
   const { savePlans } = useWeeklyPlans();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -88,36 +88,33 @@ const MKROCoach = () => {
   const {
     isConnected,
     isSpeaking,
-    startSession,
-    endSession,
-  } = useRealtimeVoice({
-    profile,
-    onTranscript: (text, isFinal) => {
-      if (isFinal && text) {
-        setMessages(prev => [...prev, {
-          role: 'user',
-          content: text,
-        }]);
-      }
-    },
-    onResponse: (text, isFinal) => {
-      if (isFinal && text) {
-        setMessages(prev => {
-          const lastMessage = prev[prev.length - 1];
-          if (lastMessage?.role === 'assistant') {
-            return [...prev.slice(0, -1), {
-              ...lastMessage,
+    connect,
+    disconnect,
+  } = useRealtimeVoice(
+    profile || undefined,
+    {
+      onTranscript: (text, isFinal) => {
+        if (isFinal && text) {
+          // Voice responses come through as transcripts
+          setMessages(prev => {
+            const lastMessage = prev[prev.length - 1];
+            if (lastMessage?.role === 'assistant') {
+              // Update existing assistant message
+              return [...prev.slice(0, -1), {
+                ...lastMessage,
+                content: text,
+              }];
+            }
+            // Add new assistant message
+            return [...prev, {
+              role: 'assistant',
               content: text,
             }];
-          }
-          return [...prev, {
-            role: 'assistant',
-            content: text,
-          }];
-        });
-      }
-    },
-  });
+          });
+        }
+      },
+    }
+  );
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -183,7 +180,7 @@ const MKROCoach = () => {
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
 
-    if (!canUsePrompt()) {
+    if (!canUseFeature('ai-coach')) {
       toast({
         variant: 'destructive',
         title: 'Trial Limit Reached',
@@ -193,7 +190,7 @@ const MKROCoach = () => {
     }
 
     if (mode === 'voice' && !isConnected) {
-      await startSession();
+      await connect();
       return;
     }
 
@@ -272,13 +269,13 @@ const MKROCoach = () => {
 
   const toggleMode = async () => {
     if (mode === 'voice' && isConnected) {
-      await endSession();
+      await disconnect();
     }
     setMode(prev => prev === 'text' ? 'voice' : 'text');
   };
 
   if (!isDevelopmentMode && isTrialExpired) {
-    return <UpgradePrompt />;
+    return <UpgradePrompt feature="AI Coach" />;
   }
 
   return (
@@ -346,86 +343,85 @@ const MKROCoach = () => {
             )}
 
             {messages.map((message, index) => (
-              <div key={index} className="flex gap-3">
-                <Avatar className="w-10 h-10 flex-shrink-0">
-                  <div className={`w-full h-full flex items-center justify-center ${
-                    message.role === 'user' 
-                      ? 'bg-primary text-white' 
-                      : 'bg-gradient-to-br from-primary/80 to-primary/60 text-white'
-                  }`}>
-                    {message.role === 'user' ? (
-                      profile?.name?.charAt(0).toUpperCase() || 'U'
-                    ) : (
-                      <Brain className="w-5 h-5" />
-                    )}
-                  </div>
-                </Avatar>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm">
-                      {message.role === 'user' ? (profile?.name || 'You') : 'MKRO Coach'}
-                    </span>
-                    <Badge variant="outline" className="text-xs">
-                      {message.role === 'user' ? 'You' : 'AI'}
-                    </Badge>
-                  </div>
-                  {message.role === 'assistant' && (
-                    <>
+              <div key={index} className="space-y-2">
+                <div className="flex gap-3">
+                  <Avatar className="w-10 h-10 flex-shrink-0">
+                    <div className={`w-full h-full flex items-center justify-center ${
+                      message.role === 'user' 
+                        ? 'bg-primary text-white' 
+                        : 'bg-gradient-to-br from-primary/80 to-primary/60 text-white'
+                    }`}>
+                      {message.role === 'user' ? (
+                        profile?.name?.charAt(0).toUpperCase() || 'U'
+                      ) : (
+                        <Brain className="w-5 h-5" />
+                      )}
+                    </div>
+                  </Avatar>
+                  <div className="flex-1 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm">
+                        {message.role === 'user' ? (profile?.name || 'You') : 'MKRO Coach'}
+                      </span>
+                      <Badge variant="outline" className="text-xs">
+                        {message.role === 'user' ? 'You' : 'AI'}
+                      </Badge>
+                    </div>
+                    {message.role === 'assistant' && (
                       <div 
                         className="prose prose-sm max-w-none dark:prose-invert"
                         dangerouslySetInnerHTML={{ __html: formatCoachMessage(message.content) }}
                       />
-                    </>
-                  )}
-                  {message.role === 'user' && (
-                    <p className="text-sm">{message.content}</p>
-                  )}
+                    )}
+                    {message.role === 'user' && (
+                      <p className="text-sm">{message.content}</p>
+                    )}
+                  </div>
                 </div>
+                
+                {/* Save buttons after plan proposal */}
+                {index === messages.length - 1 && message.role === 'assistant' && pendingSave && (
+                  <div className="flex flex-wrap gap-2 mt-2 ml-14">
+                    <Button 
+                      onClick={() => handleSaveAction('both')}
+                      disabled={isLoading}
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      Save Both
+                    </Button>
+                    <Button 
+                      onClick={() => handleSaveAction('nutrition')}
+                      disabled={isLoading}
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      Food Only
+                    </Button>
+                    <Button 
+                      onClick={() => handleSaveAction('training')}
+                      disabled={isLoading}
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <Dumbbell className="w-4 h-4" />
+                      Training Only
+                    </Button>
+                    <Button 
+                      onClick={() => handleSaveAction('none')}
+                      disabled={isLoading}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      Don't Save
+                    </Button>
+                  </div>
+                )}
               </div>
-              
-              {/* Save buttons after plan proposal */}
-              {index === messages.length - 1 && message.role === 'assistant' && pendingSave && (
-                <div className="flex flex-wrap gap-2 mt-4 ml-14">
-                  <Button 
-                    onClick={() => handleSaveAction('both')}
-                    disabled={isLoading}
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Calendar className="w-4 h-4" />
-                    Save Both
-                  </Button>
-                  <Button 
-                    onClick={() => handleSaveAction('nutrition')}
-                    disabled={isLoading}
-                    variant="outline"
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Calendar className="w-4 h-4" />
-                    Food Only
-                  </Button>
-                  <Button 
-                    onClick={() => handleSaveAction('training')}
-                    disabled={isLoading}
-                    variant="outline"
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Dumbbell className="w-4 h-4" />
-                    Training Only
-                  </Button>
-                  <Button 
-                    onClick={() => handleSaveAction('none')}
-                    disabled={isLoading}
-                    variant="ghost"
-                    size="sm"
-                  >
-                    Don't Save
-                  </Button>
-                </div>
-              )}
-            </div>
             ))}
 
             {isLoading && (
@@ -479,7 +475,7 @@ const MKROCoach = () => {
           {mode === 'voice' && (
             <div className="flex justify-center">
               <Button
-                onClick={isConnected ? endSession : startSession}
+                onClick={isConnected ? disconnect : connect}
                 size="lg"
                 variant={isConnected ? 'destructive' : 'default'}
                 className="gap-2"
