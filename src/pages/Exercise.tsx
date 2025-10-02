@@ -51,7 +51,7 @@ const Exercise = () => {
       const calories = Math.round(duration * 5); // Rough estimate: 5 cal per min
       
       newCompleted[day] = {
-        workouts: exercises.length,
+        workouts: 1,
         calories,
         duration
       };
