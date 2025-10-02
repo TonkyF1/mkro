@@ -13,11 +13,20 @@ const Exercise = () => {
   const { trainingPlan, loading, fetchPlans } = useWeeklyPlans();
   const { toast } = useToast();
 
+  const getStoredKey = (day: string) => {
+    const idx = DAYS.indexOf(day);
+    const dayN = `Day ${idx + 1}`;
+    if (trainingPlan?.days?.[day]) return day;
+    if (trainingPlan?.days?.[dayN]) return dayN;
+    return day;
+  };
+
   const handleDeleteDay = async (day: string) => {
     if (!trainingPlan?.id) return;
     try {
       const updatedDays = { ...(trainingPlan.days || {}) } as any;
-      delete updatedDays[day];
+      const key = getStoredKey(day);
+      delete updatedDays[key];
       const { error } = await supabase
         .from('weekly_training_plans')
         .update({ days: updatedDays })
@@ -35,9 +44,10 @@ const Exercise = () => {
     if (!trainingPlan?.id) return;
     try {
       const updatedDays: any = { ...(trainingPlan.days || {}) };
-      const exercises = Array.isArray(updatedDays[day]?.exercises) ? [...updatedDays[day].exercises] : [];
+      const key = getStoredKey(day);
+      const exercises = Array.isArray(updatedDays[key]?.exercises) ? [...updatedDays[key].exercises] : [];
       exercises.splice(idx, 1);
-      updatedDays[day] = { ...(updatedDays[day] || {}), exercises };
+      updatedDays[key] = { ...(updatedDays[key] || {}), exercises };
       const { error } = await supabase
         .from('weekly_training_plans')
         .update({ days: updatedDays })
@@ -124,8 +134,9 @@ const Exercise = () => {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {DAYS.map(day => {
-                const dayPlan = trainingPlan.days[day];
+              {DAYS.map((day, idx) => {
+                const key = trainingPlan.days[day] ? day : `Day ${idx + 1}`;
+                const dayPlan = trainingPlan.days[key];
                 if (!dayPlan) return null;
                 
                 return (

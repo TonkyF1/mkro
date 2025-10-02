@@ -34,7 +34,8 @@ const Planner = () => {
     if (nutritionPlan?.days) {
       const daysData = nutritionPlan.days;
       const updatedPlan = DAYS.map(day => {
-        const dayPlan = daysData[day];
+        const index = DAYS.indexOf(day);
+        const dayPlan = daysData[day] || daysData[`Day ${index + 1}`];
         if (dayPlan) {
           // Transform coach format to MealPlanner format
           const transformedDay: any = { date: day };

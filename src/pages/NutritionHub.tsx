@@ -81,13 +81,14 @@ const NutritionHub = () => {
   useEffect(() => {
     if (nutritionPlan?.days) {
       const daysData = nutritionPlan.days as any;
-      const updated = DAYS.map((day) => {
-        const dayPlan = daysData[day];
+      const updated = DAYS.map((day, idx) => {
+        const dayPlan = daysData[day] || daysData[`Day ${idx + 1}`];
         if (!dayPlan) return { date: day } as any;
         const transformed: any = { date: day };
         const mapMeal = (arr?: any[], category?: string) => {
           if (!arr || arr.length === 0) return undefined;
           const m = arr[0];
+          const cost = category === 'breakfast' ? 5 : category === 'lunch' ? 7 : category === 'dinner' ? 10 : 3;
           return {
             id: `${day}-${category}`,
             name: m.title,
@@ -100,7 +101,7 @@ const NutritionHub = () => {
             instructions: '',
             prepTime: 20,
             servings: 1,
-            estimatedCost: 0,
+            estimatedCost: cost,
             dietaryTags: []
           };
         };
