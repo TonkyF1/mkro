@@ -6,8 +6,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTrial } from '@/hooks/useTrial';
 import { useVoiceRecording } from '@/hooks/useVoiceRecording';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useRealtimeVoice } from '@/hooks/useRealtimeVoice';
 import UpgradePrompt from './UpgradePrompt';
-import { Send, Bot, User, Calendar, Dumbbell, Mic, MicOff, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Calendar, Dumbbell, Mic, MicOff, Loader2, Phone, PhoneOff, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { detectPlanType, parseMealPlan, parseWorkoutPlan } from '@/utils/coachResponseParser';
 
@@ -93,10 +95,33 @@ const MKROCoach = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [mode, setMode] = useState<'text' | 'voice'>('text');
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { canUseFeature, promptsRemaining, incrementPromptUsage, isDevelopmentMode, isTrialExpired } = useTrial();
   const { isRecording, isProcessing, startRecording, stopRecording, cancelRecording } = useVoiceRecording();
+  const { profile } = useUserProfile();
+  
+  const { 
+    isConnected: isVoiceConnected, 
+    isSpeaking, 
+    status: voiceStatus,
+    connect: connectVoice, 
+    disconnect: disconnectVoice,
+    sendText: sendVoiceText 
+  } = useRealtimeVoice(profile, {
+    onTranscript: (text, isFinal) => {
+      if (isFinal && text.trim()) {
+        const coachMessage: ChatMessage = {
+          id: `${Date.now()}-${Math.random()}`,
+          type: 'coach',
+          content: text,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, coachMessage]);
+      }
+    }
+  });
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -215,9 +240,18 @@ const MKROCoach = () => {
 
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
+    
+    const messageText = currentMessage;
     setCurrentMessage('');
 
-    await sendCoachingMessage(currentMessage, updatedMessages);
+    // If in voice mode and connected, use voice
+    if (mode === 'voice' && isVoiceConnected) {
+      sendVoiceText(messageText);
+      return;
+    }
+
+    // Otherwise use text mode
+    await sendCoachingMessage(messageText, updatedMessages);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -271,6 +305,16 @@ const MKROCoach = () => {
     }
   };
 
+  const toggleMode = async () => {
+    if (mode === 'text') {
+      setMode('voice');
+      await connectVoice();
+    } else {
+      setMode('text');
+      disconnectVoice();
+    }
+  };
+
   // Show upgrade prompt if trial expired and not in development
   if (!canUseFeature('coach') && !isDevelopmentMode) {
     return (
@@ -285,18 +329,51 @@ const MKROCoach = () => {
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-3 text-2xl">
-            <Bot className="w-8 h-8 text-primary" />
-            <div className="flex flex-col gap-1">
-              <span className="font-bold">MKRO</span>
-              <span className="text-sm font-normal text-muted-foreground">Your AI PT & Nutrition Coach</span>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-3 text-2xl">
+              <Bot className="w-8 h-8 text-primary" />
+              <div className="flex flex-col gap-1">
+                <span className="font-bold">MKRO</span>
+                <span className="text-sm font-normal text-muted-foreground">Your AI PT & Nutrition Coach</span>
+              </div>
+              {!isDevelopmentMode && promptsRemaining <= 5 && promptsRemaining > 0 && (
+                <span className="text-sm text-muted-foreground ml-auto">
+                  {promptsRemaining} prompts left
+                </span>
+              )}
+            </CardTitle>
+            <div className="flex gap-2">
+              <Button
+                variant={mode === 'voice' ? 'default' : 'outline'}
+                size="sm"
+                onClick={toggleMode}
+                disabled={isLoading || isProcessing}
+                className={cn(
+                  "gap-2",
+                  mode === 'voice' && isVoiceConnected && "bg-green-600 hover:bg-green-700"
+                )}
+              >
+                {mode === 'voice' ? (
+                  <>
+                    <PhoneOff className="w-4 h-4" />
+                    {isVoiceConnected ? 'Disconnect' : 'Connecting...'}
+                  </>
+                ) : (
+                  <>
+                    <Phone className="w-4 h-4" />
+                    Voice Chat
+                  </>
+                )}
+              </Button>
             </div>
-            {!isDevelopmentMode && promptsRemaining <= 5 && promptsRemaining > 0 && (
-              <span className="text-sm text-muted-foreground ml-auto">
-                {promptsRemaining} prompts left
-              </span>
-            )}
-          </CardTitle>
+          </div>
+          {mode === 'voice' && (
+            <div className="text-sm text-muted-foreground mt-2">
+              {isSpeaking && <span className="text-primary animate-pulse">● AI is speaking...</span>}
+              {isVoiceConnected && !isSpeaking && <span className="text-green-600">● Connected - Start speaking!</span>}
+              {voiceStatus === 'connecting' && <span className="text-yellow-600">● Connecting...</span>}
+            </div>
+          )}
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
@@ -391,30 +468,34 @@ const MKROCoach = () => {
                 value={currentMessage}
                 onChange={(e) => setCurrentMessage(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="Ask MKRO about training, nutrition, or get your personalized plan..."
+                placeholder={mode === 'voice' && isVoiceConnected 
+                  ? "Type or speak your message..." 
+                  : "Ask MKRO about training, nutrition, or get your personalized plan..."}
                 className="flex-1 min-h-[60px] resize-none"
                 disabled={isLoading || isRecording || isProcessing}
               />
               <div className="flex flex-col gap-2">
-                <Button 
-                  onClick={handleVoiceClick}
-                  disabled={isLoading || isProcessing}
-                  size="lg"
-                  variant={isRecording ? "destructive" : "outline"}
-                  className={cn(
-                    "px-6",
-                    isRecording && "animate-pulse"
-                  )}
-                  title={isRecording ? "Stop recording" : "Start voice input"}
-                >
-                  {isProcessing ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : isRecording ? (
-                    <MicOff className="w-4 h-4" />
-                  ) : (
-                    <Mic className="w-4 h-4" />
-                  )}
-                </Button>
+                {mode === 'text' && (
+                  <Button 
+                    onClick={handleVoiceClick}
+                    disabled={isLoading || isProcessing}
+                    size="lg"
+                    variant={isRecording ? "destructive" : "outline"}
+                    className={cn(
+                      "px-6",
+                      isRecording && "animate-pulse"
+                    )}
+                    title={isRecording ? "Stop recording" : "Start voice input"}
+                  >
+                    {isProcessing ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : isRecording ? (
+                      <MicOff className="w-4 h-4" />
+                    ) : (
+                      <Mic className="w-4 h-4" />
+                    )}
+                  </Button>
+                )}
                 <Button 
                   onClick={sendMessage}
                   disabled={!currentMessage.trim() || isLoading || isRecording || isProcessing}

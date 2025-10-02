@@ -9,5 +9,17 @@ verify_jwt = false
 [functions.generate-recipe-image]
 verify_jwt = false
 
+[functions.generate-feature-image]
+verify_jwt = false
+
 [functions.scan-food]
+verify_jwt = false
+
+[functions.search-uk-foods]
+verify_jwt = false
+
+[functions.voice-to-text]
+verify_jwt = false
+
+[functions.realtime-voice-coach]
 verify_jwt = false
