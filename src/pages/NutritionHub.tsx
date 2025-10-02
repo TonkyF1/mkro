@@ -41,7 +41,33 @@ const NutritionHub = () => {
   const [aiMealPlan, setAiMealPlan] = useState<ParsedMealPlan[]>([]);
   const [showShoppingList, setShowShoppingList] = useState(false);
   const { nutritionPlan, fetchPlans, activeWeekStart } = useWeeklyPlans();
-  const { weeklyStreak } = useMealCompletions();
+  const { weeklyStreak, isMealCompleted } = useMealCompletions();
+
+  // Calculate today's completed calories
+  const getTodaysDayName = () => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[new Date().getDay()];
+  };
+
+  const calculateTodaysCalories = () => {
+    const today = getTodaysDayName();
+    const todaysPlan = mealPlan.find(day => day.date === today);
+    
+    if (!todaysPlan) return 0;
+
+    let totalCalories = 0;
+    const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
+    
+    mealTypes.forEach(mealType => {
+      if (todaysPlan[mealType as keyof typeof todaysPlan] && isMealCompleted(today, mealType)) {
+        totalCalories += (todaysPlan[mealType as keyof typeof todaysPlan] as any)?.calories || 0;
+      }
+    });
+
+    return totalCalories;
+  };
+
+  const todaysCalories = calculateTodaysCalories();
 
   useEffect(() => {
     const handleStorageUpdate = () => {
@@ -184,7 +210,7 @@ const NutritionHub = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Today's Calories</p>
-                  <p className="text-2xl font-bold">0 / {profile?.target_protein ? (profile.target_protein * 4 + profile.target_carbs * 4 + profile.target_fats * 9) : 2000}</p>
+                  <p className="text-2xl font-bold">{todaysCalories} / {profile?.target_protein ? (profile.target_protein * 4 + profile.target_carbs * 4 + profile.target_fats * 9) : 2000}</p>
                 </div>
               </div>
             </Card>
