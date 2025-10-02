@@ -16,7 +16,7 @@ const Header = () => {
           <img 
             src={mkroLogo} 
             alt="MKRO" 
-            className="object-contain h-24 sm:h-28"
+            className="object-contain h-28 sm:h-32"
           />
           <p className="mt-2 text-sm sm:text-base italic text-foreground tracking-wide">
             Training & Meal Planning Coach
