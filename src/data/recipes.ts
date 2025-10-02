@@ -2,6 +2,7 @@ import avocadoToastImage from '@/assets/avocado-toast.jpg';
 import berrySmoothieBowlImage from '@/assets/berry-smoothie-bowl.jpg';
 import buddhaBowlImage from '@/assets/buddha-bowl.jpg';
 import energyBallsImage from '@/assets/energy-balls.jpg';
+import proteinSmoothieImage from '@/assets/protein-smoothie-new.jpg';
 
 export interface Recipe {
   id: string;
@@ -895,7 +896,8 @@ export const recipes: Recipe[] = [
     substitution: 'Use whey protein for non-vegan',
     imageDescription: 'Creamy protein smoothie in a glass, topped with chia seeds',
     category: 'snack',
-    estimatedCost: 2.50
+    estimatedCost: 2.50,
+    image: proteinSmoothieImage
   },
   {
     id: 'beef-turkey-jerky',
