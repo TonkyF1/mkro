@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import Coach from "./pages/Coach";
 import Exercise from "./pages/Exercise";
 import NutritionHub from "./pages/NutritionHub";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <Routes>
+              <Route path="/auth" element={<Auth />} />
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/recipes" element={<Recipes />} />
