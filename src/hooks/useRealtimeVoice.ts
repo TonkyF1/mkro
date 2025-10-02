@@ -97,38 +97,15 @@ export const useRealtimeVoice = (profile: UserProfile | null, options: RealtimeV
       updateStatus('connecting');
       console.log('Starting voice connection with profile:', profile.name);
 
-      // Initialize audio context
-      try {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ 
-          sampleRate: 24000 
-        });
-        
-        // Check if AudioContext was created successfully
-        if (!audioContextRef.current) {
-          throw new Error('Failed to create AudioContext');
-        }
-
-        // Resume AudioContext if it's suspended (required by some browsers)
-        if (audioContextRef.current.state === 'suspended') {
-          await audioContextRef.current.resume();
-        }
-
-        console.log('AudioContext created successfully, state:', audioContextRef.current.state);
-      } catch (audioError) {
-        console.error('AudioContext creation error:', audioError);
-        throw new Error('Failed to initialize audio system. Please check your browser settings.');
-      }
-
-      // Request microphone access
+      // 1) Request microphone access first (more reliable on iOS Safari)
       try {
         mediaStreamRef.current = await navigator.mediaDevices.getUserMedia({
           audio: {
-            sampleRate: 24000,
-            channelCount: 1,
+            // Avoid strict constraints that can fail on mobile Safari
             echoCancellation: true,
             noiseSuppression: true,
             autoGainControl: true,
-          }
+          } as MediaTrackConstraints
         });
         console.log('Microphone access granted');
       } catch (micError) {
@@ -136,15 +113,31 @@ export const useRealtimeVoice = (profile: UserProfile | null, options: RealtimeV
         throw new Error('Microphone access denied. Please allow microphone access to use voice chat.');
       }
 
+      // 2) Initialize AudioContext AFTER permission (fixes iOS init issues)
+      try {
+        const AC: any = (window as any).AudioContext || (window as any).webkitAudioContext;
+        if (!AC) throw new Error('Web Audio API not supported in this browser');
+        audioContextRef.current = new AC();
+
+        // Resume if needed (autoplay policy)
+        if (audioContextRef.current.state === 'suspended') {
+          await audioContextRef.current.resume();
+        }
+        console.log('AudioContext created. sampleRate=', audioContextRef.current.sampleRate, 'state=', audioContextRef.current.state);
+      } catch (audioError) {
+        console.error('AudioContext creation error:', audioError);
+        throw new Error('Failed to initialize audio system. Please check your browser settings.');
+      }
+
       // Double-check AudioContext before using it
       if (!audioContextRef.current) {
         throw new Error('AudioContext is not available');
       }
 
-      // Create audio processor
-      const source = audioContextRef.current.createMediaStreamSource(mediaStreamRef.current);
+      // 3) Create audio processor
+      const source = audioContextRef.current.createMediaStreamSource(mediaStreamRef.current!);
       processorRef.current = audioContextRef.current.createScriptProcessor(4096, 1, 1);
-      
+
       processorRef.current.onaudioprocess = (e) => {
         if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
 
