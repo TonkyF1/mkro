@@ -98,18 +98,48 @@ export const useRealtimeVoice = (profile: UserProfile | null, options: RealtimeV
       console.log('Starting voice connection with profile:', profile.name);
 
       // Initialize audio context
-      audioContextRef.current = new AudioContext({ sampleRate: 24000 });
+      try {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ 
+          sampleRate: 24000 
+        });
+        
+        // Check if AudioContext was created successfully
+        if (!audioContextRef.current) {
+          throw new Error('Failed to create AudioContext');
+        }
+
+        // Resume AudioContext if it's suspended (required by some browsers)
+        if (audioContextRef.current.state === 'suspended') {
+          await audioContextRef.current.resume();
+        }
+
+        console.log('AudioContext created successfully, state:', audioContextRef.current.state);
+      } catch (audioError) {
+        console.error('AudioContext creation error:', audioError);
+        throw new Error('Failed to initialize audio system. Please check your browser settings.');
+      }
 
       // Request microphone access
-      mediaStreamRef.current = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          sampleRate: 24000,
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        }
-      });
+      try {
+        mediaStreamRef.current = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            sampleRate: 24000,
+            channelCount: 1,
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          }
+        });
+        console.log('Microphone access granted');
+      } catch (micError) {
+        console.error('Microphone access error:', micError);
+        throw new Error('Microphone access denied. Please allow microphone access to use voice chat.');
+      }
+
+      // Double-check AudioContext before using it
+      if (!audioContextRef.current) {
+        throw new Error('AudioContext is not available');
+      }
 
       // Create audio processor
       const source = audioContextRef.current.createMediaStreamSource(mediaStreamRef.current);
