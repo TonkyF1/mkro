@@ -41,14 +41,14 @@ const Home = () => {
       icon: <Camera className="w-6 h-6" />,
       title: 'AI Food Scanner',
       description: 'Scan meals instantly to get calories & macros in seconds',
-      action: () => navigate('/food-diary'),
+      action: () => navigate('/nutrition'),
       gradient: 'from-primary/20 to-primary/5'
     },
     {
       icon: <Scan className="w-6 h-6" />,
       title: 'Barcode Scanner',
       description: 'Quick UK product lookup with comprehensive nutritional data',
-      action: () => navigate('/food-diary'),
+      action: () => navigate('/nutrition'),
       gradient: 'from-accent/20 to-accent/5'
     },
     {

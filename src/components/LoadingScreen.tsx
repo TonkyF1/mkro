@@ -1,5 +1,5 @@
 import React from 'react';
-import mkroLogo from '@/assets/mkro-logo.png';
+import mkroLogo from '@/assets/mkro-logo-new.svg';
 
 const LoadingScreen = () => {
 
