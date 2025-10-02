@@ -113,22 +113,46 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
   };
 
   const savePlans = async (saveDirectives: any, options?: { replace?: boolean }) => {
-    if (!user) return;
+    console.log('[useWeeklyPlans] savePlans called with:', {
+      user: user?.id,
+      saveDirectives,
+      options
+    });
+    
+    if (!user) {
+      const error = new Error('No authenticated user found');
+      console.error('[useWeeklyPlans] Save failed - no user:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Authentication Required',
+        description: 'You must be signed in to save plans.',
+      });
+      throw error;
+    }
 
     try {
       const { week_start_iso, write } = saveDirectives;
+      
+      console.log('[useWeeklyPlans] Processing save for user:', user.id, 'week:', week_start_iso);
 
       // Save nutrition plan if specified
       if (write.nutrition) {
+        console.log('[useWeeklyPlans] Saving nutrition plan:', write.nutrition);
         const { days, data } = write.nutrition;
         
         // Get existing plan or create new
-        const { data: existing } = await supabase
+        const { data: existing, error: fetchError } = await supabase
           .from('weekly_nutrition_plans')
           .select('*')
           .eq('user_id', user.id)
           .eq('week_start', week_start_iso)
           .maybeSingle();
+
+        if (fetchError) {
+          console.error('[useWeeklyPlans] Error fetching existing nutrition plan:', fetchError);
+        }
+        
+        console.log('[useWeeklyPlans] Existing nutrition plan:', existing);
 
         // Determine new days content (replace vs merge)
         const newDays: any = options?.replace ? (data as any) : { ...((existing?.days as any) || {}) };
@@ -139,6 +163,8 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
             newDays[day] = data[day];
           });
         }
+        
+        console.log('[useWeeklyPlans] Upserting nutrition with days:', Object.keys(newDays));
         
         // Upsert
         const { error } = await supabase
@@ -151,19 +177,31 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
             onConflict: 'user_id,week_start'
           });
 
-        if (error) throw error;
+        if (error) {
+          console.error('[useWeeklyPlans] Error upserting nutrition plan:', error);
+          throw error;
+        }
+        
+        console.log('[useWeeklyPlans] Nutrition plan saved successfully');
       }
 
       // Save training plan if specified
       if (write.training) {
+        console.log('[useWeeklyPlans] Saving training plan:', write.training);
         const { days, data } = write.training;
         
-        const { data: existing } = await supabase
+        const { data: existing, error: fetchError } = await supabase
           .from('weekly_training_plans')
           .select('*')
           .eq('user_id', user.id)
           .eq('week_start', week_start_iso)
           .maybeSingle();
+
+        if (fetchError) {
+          console.error('[useWeeklyPlans] Error fetching existing training plan:', fetchError);
+        }
+        
+        console.log('[useWeeklyPlans] Existing training plan:', existing);
 
         const newDays: any = options?.replace ? (data as any) : { ...((existing?.days as any) || {}) };
         
@@ -172,6 +210,8 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
             newDays[day] = data[day];
           });
         }
+        
+        console.log('[useWeeklyPlans] Upserting training with days:', Object.keys(newDays));
         
         const { error } = await supabase
           .from('weekly_training_plans')
@@ -183,7 +223,12 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
             onConflict: 'user_id,week_start'
           });
 
-        if (error) throw error;
+        if (error) {
+          console.error('[useWeeklyPlans] Error upserting training plan:', error);
+          throw error;
+        }
+        
+        console.log('[useWeeklyPlans] Training plan saved successfully');
       }
 
       toast({

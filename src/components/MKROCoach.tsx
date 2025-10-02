@@ -181,6 +181,8 @@ const MKROCoach = () => {
   };
 
   const handleSaveAction = async (action: 'nutrition' | 'training' | 'both' | 'none') => {
+    console.log('[MKROCoach] handleSaveAction called:', { action, hasPendingSave: !!pendingSave });
+    
     if (!pendingSave || action === 'none') {
       setPendingSave(null);
       return;
@@ -188,7 +190,8 @@ const MKROCoach = () => {
 
     try {
       setIsLoading(true);
-      console.log('Saving action:', action, 'with data:', pendingSave);
+      console.log('[MKROCoach] Pending save data:', pendingSave);
+      console.log('[MKROCoach] Action:', action);
       
       const saveDirectives = {
         ...pendingSave,
@@ -199,7 +202,10 @@ const MKROCoach = () => {
           : pendingSave.write
       };
 
-      console.log('Final save directives:', saveDirectives);
+      console.log('[MKROCoach] Final save directives:', saveDirectives);
+      console.log('[MKROCoach] Nutrition data:', saveDirectives.write.nutrition);
+      console.log('[MKROCoach] Training data:', saveDirectives.write.training);
+      
       await savePlans(saveDirectives, { replace: true });
       setPendingSave(null);
       
@@ -208,7 +214,7 @@ const MKROCoach = () => {
         description: 'Your weekly plans are now available in the Nutrition and Training pages.',
       });
     } catch (error) {
-      console.error('Save error:', error);
+      console.error('[MKROCoach] Save error:', error);
       toast({
         variant: 'destructive',
         title: 'Save Failed',
@@ -264,12 +270,17 @@ const MKROCoach = () => {
       
       // Handle machine output
       if (machineOutput) {
-        console.log('Processing machine output:', machineOutput.type, machineOutput.data);
+        console.log('[MKROCoach] Processing machine output:', machineOutput.type);
+        console.log('[MKROCoach] Machine output data:', JSON.stringify(machineOutput.data, null, 2));
         
         switch (machineOutput.type) {
           case 'PLAN_PROPOSAL':
-            console.log('Plan proposal received:', machineOutput.data);
-            setPendingSave({
+            console.log('[MKROCoach] Plan proposal received');
+            console.log('[MKROCoach] Week start:', machineOutput.data.week_start_iso);
+            console.log('[MKROCoach] Nutrition partial:', machineOutput.data.nutrition_week_partial);
+            console.log('[MKROCoach] Training partial:', machineOutput.data.training_week_partial);
+            
+            const pendingSaveData = {
               week_start_iso: machineOutput.data.week_start_iso,
               write: {
                 nutrition: {
@@ -281,7 +292,11 @@ const MKROCoach = () => {
                   data: machineOutput.data.training_week_partial
                 }
               }
-            });
+            };
+            
+            console.log('[MKROCoach] Setting pending save:', pendingSaveData);
+            setPendingSave(pendingSaveData);
+            
             toast({
               title: 'Plan Ready!',
               description: 'Choose how you want to save your new plan.',
