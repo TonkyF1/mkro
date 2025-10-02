@@ -14,6 +14,7 @@ import Coach from "./pages/Coach";
 import Exercise from "./pages/Exercise";
 import NutritionHub from "./pages/NutritionHub";
 import Auth from "./pages/Auth";
+import Questionnaire from "./pages/Questionnaire";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/questionnaire" element={<Questionnaire />} />
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/recipes" element={<Recipes />} />
