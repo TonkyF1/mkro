@@ -13,10 +13,10 @@ const MainLayout = () => {
   const { profile, loading: profileLoading } = useUserProfile();
 
   useEffect(() => {
-    if (!authLoading && !profileLoading && user && !profile?.completed_at) {
+    if (!authLoading && !profileLoading && user && !profile?.completed_at && location.pathname !== '/questionnaire') {
       navigate('/questionnaire');
     }
-  }, [user, profile, authLoading, profileLoading, navigate]);
+  }, [user, profile, authLoading, profileLoading, location.pathname, navigate]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
