@@ -230,10 +230,10 @@ const Home = () => {
                   <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary">
                     {step.icon}
                   </div>
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
-                    {index + 1}
-                  </div>
-                  <CardTitle className="text-lg">{step.title}</CardTitle>
+                  <CardTitle className="text-lg flex items-center justify-center gap-2">
+                    <span className="text-primary font-bold">{index + 1}</span>
+                    {step.title}
+                  </CardTitle>
                   <CardDescription>{step.description}</CardDescription>
                 </CardHeader>
               </Card>
