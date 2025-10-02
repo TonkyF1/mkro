@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, Plus, Trash2, ChefHat } from 'lucide-react';
+import { Calendar, Plus, Trash2, ChefHat, ShoppingCart } from 'lucide-react';
 import { Recipe } from '@/data/recipes';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useMealCompletions } from '@/hooks/useMealCompletions';
@@ -154,9 +154,10 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
         <Button 
           onClick={() => onGenerateShoppingList(mealPlan)}
           variant="default"
-          size="lg"
+          size="icon"
+          className="h-10 w-10"
         >
-          Generate Shopping List
+          <ShoppingCart className="h-5 w-5" />
         </Button>
       </div>
 
