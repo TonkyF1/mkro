@@ -13,6 +13,27 @@ serve(async (req) => {
   }
 
   try {
+    // Get authenticated user
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error('Missing Authorization header');
+      throw new Error('Authentication required');
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      console.error('Auth error:', userError);
+      throw new Error('Authentication failed');
+    }
+
+    console.log('Authenticated user:', user.id);
+
     const { messages, profile } = await req.json();
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     
@@ -20,8 +41,26 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY not configured');
     }
 
+    // Fetch user profile if not provided
+    let userProfile = profile;
+    if (!userProfile) {
+      console.log('Fetching user profile from database');
+      const { data: profileData, error: profileError } = await supabaseClient
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+      } else {
+        userProfile = profileData;
+      }
+    }
+
     // Build system prompt based on profile
-    const systemPrompt = buildSystemPrompt(profile);
+    const systemPrompt = buildSystemPrompt(userProfile);
+    console.log('Processing request for user:', user.id, 'with', messages.length, 'messages');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -48,6 +87,8 @@ serve(async (req) => {
 
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
+    
+    console.log('AI response generated successfully, length:', aiResponse?.length);
 
     return new Response(
       JSON.stringify({ response: aiResponse }),

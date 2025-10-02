@@ -138,29 +138,46 @@ const MKROCoach = () => {
   }, [messages]);
 
   const sendCoachingMessage = async (userInput: string, history: ChatMessage[]) => {
-    const { data, error } = await supabase.functions.invoke('mkro-coach', {
-      body: {
-        messages: [
-          ...history.map(msg => ({
-            role: msg.role,
-            content: msg.content
-          })),
-          { role: 'user', content: userInput }
-        ],
-        profile: profile || undefined
+    try {
+      const { data, error } = await supabase.functions.invoke('mkro-coach', {
+        body: {
+          messages: [
+            ...history.map(msg => ({
+              role: msg.role,
+              content: msg.content
+            })),
+            { role: 'user', content: userInput }
+          ],
+          profile: profile || undefined
+        }
+      });
+
+      if (error) {
+        console.error('Error sending coaching message:', error);
+        
+        // Handle authentication errors specifically
+        if (error.message?.includes('Authentication') || error.message?.includes('auth')) {
+          toast({
+            variant: 'destructive',
+            title: 'Authentication Required',
+            description: 'Please sign in to use the coach. Redirecting to profile page...',
+          });
+          setTimeout(() => navigate('/profile'), 2000);
+          throw new Error('Authentication required');
+        }
+        
+        throw new Error(error.message || 'Failed to send message');
       }
-    });
 
-    if (error) {
-      console.error('Error sending coaching message:', error);
-      throw new Error(error.message || 'Failed to send message');
+      if (!data || !data.response) {
+        throw new Error('Invalid response from server');
+      }
+
+      return data.response;
+    } catch (error) {
+      console.error('Error in sendCoachingMessage:', error);
+      throw error;
     }
-
-    if (!data || !data.response) {
-      throw new Error('Invalid response from server');
-    }
-
-    return data.response;
   };
 
   const handleSaveAction = async (action: 'nutrition' | 'training' | 'both' | 'none') => {
