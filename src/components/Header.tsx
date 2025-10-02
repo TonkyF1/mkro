@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import mkroTagline from '@/assets/mkro-tagline.svg';
+import mkroLogo from '@/assets/mkro-logo-new.svg';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -14,9 +14,9 @@ const Header = () => {
           onClick={() => navigate('/')}
         >
           <img 
-            src={mkroTagline} 
-            alt="MKRO - Training & Meal Planning Coach" 
-            className="object-contain w-full max-w-md"
+            src={mkroLogo} 
+            alt="MKRO - Your AI Health Coach" 
+            className="object-contain w-full max-w-2xl"
           />
         </div>
         <div className="flex-1" />
