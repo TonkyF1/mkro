@@ -233,6 +233,33 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ mealPlans, onBack })
     );
   }
 
+  // Show message if no completed meals
+  if (mealPlans.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-2">
+          <ShoppingCart className="h-5 w-5 text-primary" />
+          <h2 className="text-2xl font-bold">Shopping List</h2>
+        </div>
+        <Card className="border-2 border-dashed border-primary/20">
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+            <ShoppingCart className="h-16 w-16 text-muted-foreground" />
+            <div className="space-y-2">
+              <h3 className="text-xl font-semibold">No Logged Meals Yet</h3>
+              <p className="text-muted-foreground max-w-md">
+                Check off the meals you've logged in your weekly meal plan to generate a shopping list with those ingredients.
+              </p>
+            </div>
+            <Button onClick={onBack} variant="default" size="lg">
+              <Check className="h-4 w-4 mr-2" />
+              Go Log Meals
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

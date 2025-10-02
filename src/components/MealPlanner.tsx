@@ -113,6 +113,28 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
     onMealPlanChange?.(updatedPlan);
   };
 
+  const getCompletedMeals = () => {
+    const completedMealsList: MealPlan[] = [];
+    
+    mealPlan.forEach((day) => {
+      const completedDay: MealPlan = { date: day.date };
+      
+      MEAL_SLOTS.forEach((mealType) => {
+        const meal = day[mealType];
+        if (meal && isMealCompleted(day.date, mealType)) {
+          completedDay[mealType] = meal;
+        }
+      });
+      
+      // Only add days that have at least one completed meal
+      if (Object.keys(completedDay).length > 1) { // More than just 'date'
+        completedMealsList.push(completedDay);
+      }
+    });
+    
+    return completedMealsList;
+  };
+
   const calculateDayMacros = (day: MealPlan) => {
     const meals = [day.breakfast, day.lunch, day.dinner, day.snack].filter(Boolean) as Recipe[];
     return meals.reduce(
@@ -152,7 +174,7 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
           <h2 className="text-2xl font-bold">Weekly Meal Plan</h2>
         </div>
         <Button 
-          onClick={() => onGenerateShoppingList(mealPlan)}
+          onClick={() => onGenerateShoppingList(getCompletedMeals())}
           variant="default"
           size="icon"
           className="h-10 w-10"
