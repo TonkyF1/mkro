@@ -18,6 +18,9 @@ export const useRealtimeVoice = (profile: UserProfile | null, options: RealtimeV
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const audioQueueRef = useRef<Uint8Array[]>([]);
   const isPlayingRef = useRef(false);
+  const hasPendingAudioRef = useRef(false);
+  const lastAudioActivityRef = useRef<number>(0);
+  const silenceIntervalRef = useRef<number | null>(null);
   const { toast } = useToast();
 
   const updateStatus = useCallback((newStatus: typeof status) => {
@@ -142,19 +145,32 @@ export const useRealtimeVoice = (profile: UserProfile | null, options: RealtimeV
         if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
 
         const inputData = e.inputBuffer.getChannelData(0);
+        // Basic energy-based VAD
+        let sum = 0;
+        for (let i = 0; i < inputData.length; i++) {
+          sum += inputData[i] * inputData[i];
+        }
+        const rms = Math.sqrt(sum / inputData.length);
+        const speaking = rms > 0.01; // simple threshold
+
         const int16Array = new Int16Array(inputData.length);
-        
         for (let i = 0; i < inputData.length; i++) {
           const s = Math.max(-1, Math.min(1, inputData[i]));
           int16Array[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
         }
 
         const base64Audio = btoa(String.fromCharCode(...new Uint8Array(int16Array.buffer)));
-        
+
         wsRef.current.send(JSON.stringify({
           type: 'input_audio_buffer.append',
           audio: base64Audio
         }));
+
+        // Track activity to trigger commit on silence
+        hasPendingAudioRef.current = true;
+        if (speaking) {
+          lastAudioActivityRef.current = Date.now();
+        }
       };
 
       source.connect(processorRef.current);
@@ -168,6 +184,20 @@ export const useRealtimeVoice = (profile: UserProfile | null, options: RealtimeV
 
       wsRef.current.onopen = () => {
         console.log('WebSocket connected, sending session init...');
+
+        // Start silence checker (commit on ~800ms silence)
+        if (silenceIntervalRef.current) clearInterval(silenceIntervalRef.current);
+        lastAudioActivityRef.current = Date.now();
+        silenceIntervalRef.current = setInterval(() => {
+          if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+          const silentFor = Date.now() - lastAudioActivityRef.current;
+          if (hasPendingAudioRef.current && silentFor > 800) {
+            console.log('Silence detected, committing audio and requesting response');
+            wsRef.current.send(JSON.stringify({ type: 'input_audio_buffer.commit' }));
+            wsRef.current.send(JSON.stringify({ type: 'response.create' }));
+            hasPendingAudioRef.current = false;
+          }
+        }, 250) as unknown as number;
         
         // Send session initialization with profile
         wsRef.current?.send(JSON.stringify({
@@ -230,6 +260,10 @@ export const useRealtimeVoice = (profile: UserProfile | null, options: RealtimeV
         console.log('WebSocket closed:', event.code, event.reason);
         setIsConnected(false);
         updateStatus('disconnected');
+        if (silenceIntervalRef.current) {
+          clearInterval(silenceIntervalRef.current);
+          silenceIntervalRef.current = null;
+        }
         if (event.code !== 1000) {
           toast({
             title: "Connection closed",
