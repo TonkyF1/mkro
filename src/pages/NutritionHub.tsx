@@ -41,7 +41,7 @@ const NutritionHub = () => {
   const [aiMealPlan, setAiMealPlan] = useState<ParsedMealPlan[]>([]);
   const [showShoppingList, setShowShoppingList] = useState(false);
   const { nutritionPlan, fetchPlans, activeWeekStart } = useWeeklyPlans();
-  const { weeklyStreak, isMealCompleted } = useMealCompletions();
+  const { weeklyStreak, isMealCompleted, fetchCompletions } = useMealCompletions();
 
   // Calculate today's completed calories
   const getTodaysDayName = () => {
@@ -59,8 +59,9 @@ const NutritionHub = () => {
     const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
     
     mealTypes.forEach(mealType => {
-      if (todaysPlan[mealType as keyof typeof todaysPlan] && isMealCompleted(today, mealType)) {
-        totalCalories += (todaysPlan[mealType as keyof typeof todaysPlan] as any)?.calories || 0;
+      const meal = todaysPlan[mealType as keyof typeof todaysPlan];
+      if (meal && isMealCompleted(today, mealType)) {
+        totalCalories += (meal as any)?.calories || 0;
       }
     });
 
@@ -144,12 +145,19 @@ const NutritionHub = () => {
     }
   }, [nutritionPlan]);
 
-  // Refresh on save events from coach
+  // Refresh on save events from coach and meal completions
   useEffect(() => {
-    const onUpdate = () => fetchPlans();
+    const onUpdate = () => {
+      fetchPlans();
+      fetchCompletions();
+    };
     window.addEventListener('mkro:plans-updated', onUpdate as any);
-    return () => window.removeEventListener('mkro:plans-updated', onUpdate as any);
-  }, [fetchPlans]);
+    window.addEventListener('meal-completion-updated', onUpdate as any);
+    return () => {
+      window.removeEventListener('mkro:plans-updated', onUpdate as any);
+      window.removeEventListener('meal-completion-updated', onUpdate as any);
+    };
+  }, [fetchPlans, fetchCompletions]);
 
   const clearAIMealPlan = () => {
     localStorage.removeItem('mkro_meal_plan');

@@ -106,6 +106,9 @@ export const useMealCompletions = (weekStart?: string) => {
       }
 
       await fetchCompletions();
+      
+      // Dispatch event to notify other components
+      window.dispatchEvent(new CustomEvent('meal-completion-updated'));
     } catch (error) {
       console.error('Error toggling meal completion:', error);
       toast({

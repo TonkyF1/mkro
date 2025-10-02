@@ -45,15 +45,18 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
     toggleMealCompletion, 
     deleteDayMeals, 
     isMealCompleted, 
-    weeklyStreak 
+    weeklyStreak,
+    fetchCompletions
   } = useMealCompletions();
 
   // Update meal plan when initialMealPlan changes
   useEffect(() => {
     if (initialMealPlan) {
       setMealPlan(initialMealPlan);
+      // Refetch completions when meal plan changes
+      fetchCompletions();
     }
-  }, [initialMealPlan]);
+  }, [initialMealPlan, fetchCompletions]);
 
   // Show reward when reaching 5 days
   useEffect(() => {
@@ -62,6 +65,15 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
       setLastStreak(weeklyStreak);
     }
   }, [weeklyStreak, lastStreak]);
+
+  // Listen for completion changes
+  useEffect(() => {
+    const handleCompletionUpdate = () => {
+      fetchCompletions();
+    };
+    window.addEventListener('meal-completion-updated', handleCompletionUpdate);
+    return () => window.removeEventListener('meal-completion-updated', handleCompletionUpdate);
+  }, [fetchCompletions]);
 
   const addRecipeToSlot = (recipe: Recipe, dayIndex: number, mealType: string) => {
     const updatedPlan = mealPlan.map((day, index) =>
