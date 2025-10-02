@@ -183,7 +183,7 @@ const MKROCoach = () => {
       };
 
       console.log('Final save directives:', saveDirectives);
-      await savePlans(saveDirectives);
+      await savePlans(saveDirectives, { replace: true });
       setPendingSave(null);
       
       toast({
@@ -273,7 +273,7 @@ const MKROCoach = () => {
             
           case 'SAVE_DIRECTIVES':
             console.log('Saving plans with directives:', machineOutput.data);
-            await savePlans(machineOutput.data);
+            await savePlans(machineOutput.data, { replace: true });
             toast({
               title: 'Plans Saved!',
               description: 'Check the Nutrition and Training pages to see your plans.',

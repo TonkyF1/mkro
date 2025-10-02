@@ -112,7 +112,7 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
     }
   };
 
-  const savePlans = async (saveDirectives: any) => {
+  const savePlans = async (saveDirectives: any, options?: { replace?: boolean }) => {
     if (!user) return;
 
     try {
@@ -130,20 +130,23 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
           .eq('week_start', week_start_iso)
           .maybeSingle();
 
-        const currentDays = existing?.days || {};
-        
-        // Merge new days with existing
-        days.forEach((day: string) => {
-          currentDays[day] = data[day];
-        });
+        // Determine new days content (replace vs merge)
+        const newDays: any = options?.replace ? (data as any) : { ...((existing?.days as any) || {}) };
 
+        if (!options?.replace) {
+          // Merge new days with existing subset
+          days.forEach((day: string) => {
+            newDays[day] = data[day];
+          });
+        }
+        
         // Upsert
         const { error } = await supabase
           .from('weekly_nutrition_plans')
           .upsert({
             user_id: user.id,
             week_start: week_start_iso,
-            days: currentDays,
+            days: newDays,
           }, {
             onConflict: 'user_id,week_start'
           });
@@ -162,17 +165,20 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
           .eq('week_start', week_start_iso)
           .maybeSingle();
 
-        const currentDays = existing?.days || {};
-        days.forEach((day: string) => {
-          currentDays[day] = data[day];
-        });
-
+        const newDays: any = options?.replace ? (data as any) : { ...((existing?.days as any) || {}) };
+        
+        if (!options?.replace) {
+          days.forEach((day: string) => {
+            newDays[day] = data[day];
+          });
+        }
+        
         const { error } = await supabase
           .from('weekly_training_plans')
           .upsert({
             user_id: user.id,
             week_start: week_start_iso,
-            days: currentDays,
+            days: newDays,
           }, {
             onConflict: 'user_id,week_start'
           });
