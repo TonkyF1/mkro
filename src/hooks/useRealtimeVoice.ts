@@ -82,10 +82,20 @@ export const useRealtimeVoice = (profile: UserProfile | null, options: RealtimeV
   }, [playNextInQueue]);
 
   const connect = useCallback(async () => {
-    if (isConnected || !profile) return;
+    if (isConnected || !profile) {
+      if (!profile) {
+        toast({
+          title: "Profile Required",
+          description: "Please complete your profile first.",
+          variant: "destructive",
+        });
+      }
+      return;
+    }
 
     try {
       updateStatus('connecting');
+      console.log('Starting voice connection with profile:', profile.name);
 
       // Initialize audio context
       audioContextRef.current = new AudioContext({ sampleRate: 24000 });
@@ -127,14 +137,14 @@ export const useRealtimeVoice = (profile: UserProfile | null, options: RealtimeV
       source.connect(processorRef.current);
       processorRef.current.connect(audioContextRef.current.destination);
 
-      // Get project ID from URL
-      const projectId = 'clemkvxneggnokmvgmbj';
-      const wsUrl = `wss://${projectId}.supabase.co/functions/v1/realtime-voice-coach`;
+      // Connect to edge function WebSocket
+      const wsUrl = `wss://clemkvxneggnokmvgmbj.supabase.co/functions/v1/realtime-voice-coach`;
+      console.log('Connecting to:', wsUrl);
       
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
-        console.log('WebSocket connected');
+        console.log('WebSocket connected, sending session init...');
         
         // Send session initialization with profile
         wsRef.current?.send(JSON.stringify({
@@ -152,8 +162,8 @@ export const useRealtimeVoice = (profile: UserProfile | null, options: RealtimeV
             setIsConnected(true);
             updateStatus('connected');
             toast({
-              title: "Voice chat ready",
-              description: "Start speaking to MKRO!",
+              title: "Voice chat ready!",
+              description: "Start speaking to MKRO",
             });
           } else if (message.type === 'response.audio.delta') {
             const binaryString = atob(message.delta);
@@ -188,15 +198,22 @@ export const useRealtimeVoice = (profile: UserProfile | null, options: RealtimeV
         updateStatus('error');
         toast({
           title: "Connection error",
-          description: "Failed to connect to voice service.",
+          description: "Failed to connect to voice service. Check console for details.",
           variant: "destructive",
         });
       };
 
-      wsRef.current.onclose = () => {
-        console.log('WebSocket closed');
+      wsRef.current.onclose = (event) => {
+        console.log('WebSocket closed:', event.code, event.reason);
         setIsConnected(false);
         updateStatus('disconnected');
+        if (event.code !== 1000) {
+          toast({
+            title: "Connection closed",
+            description: `Code: ${event.code}`,
+            variant: "destructive",
+          });
+        }
       };
 
     } catch (error) {

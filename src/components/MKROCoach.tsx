@@ -5,11 +5,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTrial } from '@/hooks/useTrial';
-import { useVoiceRecording } from '@/hooks/useVoiceRecording';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useRealtimeVoice } from '@/hooks/useRealtimeVoice';
 import UpgradePrompt from './UpgradePrompt';
-import { Send, Bot, User, Calendar, Dumbbell, Mic, MicOff, Loader2, Phone, PhoneOff, MessageSquare } from 'lucide-react';
+import { Send, Bot, User, Calendar, Dumbbell, Loader2, Phone, PhoneOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { detectPlanType, parseMealPlan, parseWorkoutPlan } from '@/utils/coachResponseParser';
 
@@ -99,7 +98,6 @@ const MKROCoach = () => {
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { canUseFeature, promptsRemaining, incrementPromptUsage, isDevelopmentMode, isTrialExpired } = useTrial();
-  const { isRecording, isProcessing, startRecording, stopRecording, cancelRecording } = useVoiceRecording();
   const { profile } = useUserProfile();
   
   const { 
@@ -261,50 +259,6 @@ const MKROCoach = () => {
     }
   };
 
-  const handleVoiceClick = async () => {
-    if (isRecording) {
-      try {
-        const audioBase64 = await stopRecording();
-        
-        toast({
-          title: "Processing voice...",
-          description: "Converting speech to text...",
-        });
-
-        const { data, error } = await supabase.functions.invoke('voice-to-text', {
-          body: { audio: audioBase64 }
-        });
-
-        if (error) {
-          console.error('Voice-to-text error:', error);
-          toast({
-            title: "Error",
-            description: "Failed to process voice input. Please try again.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        if (data?.text) {
-          setCurrentMessage(data.text);
-          toast({
-            title: "Voice captured!",
-            description: "You can edit the text or send it as is.",
-          });
-        }
-      } catch (error) {
-        console.error('Error handling voice:', error);
-        toast({
-          title: "Error",
-          description: "Failed to process voice input.",
-          variant: "destructive",
-        });
-      }
-    } else {
-      startRecording();
-    }
-  };
-
   const toggleMode = async () => {
     if (mode === 'text') {
       setMode('voice');
@@ -347,7 +301,7 @@ const MKROCoach = () => {
                 variant={mode === 'voice' ? 'default' : 'outline'}
                 size="sm"
                 onClick={toggleMode}
-                disabled={isLoading || isProcessing}
+                disabled={isLoading}
                 className={cn(
                   "gap-2",
                   mode === 'voice' && isVoiceConnected && "bg-green-600 hover:bg-green-700"
@@ -472,33 +426,32 @@ const MKROCoach = () => {
                   ? "Type or speak your message..." 
                   : "Ask MKRO about training, nutrition, or get your personalized plan..."}
                 className="flex-1 min-h-[60px] resize-none"
-                disabled={isLoading || isRecording || isProcessing}
+                disabled={isLoading}
               />
               <div className="flex flex-col gap-2">
-                {mode === 'text' && (
-                  <Button 
-                    onClick={handleVoiceClick}
-                    disabled={isLoading || isProcessing}
-                    size="lg"
-                    variant={isRecording ? "destructive" : "outline"}
-                    className={cn(
-                      "px-6",
-                      isRecording && "animate-pulse"
-                    )}
-                    title={isRecording ? "Stop recording" : "Start voice input"}
-                  >
-                    {isProcessing ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : isRecording ? (
-                      <MicOff className="w-4 h-4" />
-                    ) : (
-                      <Mic className="w-4 h-4" />
-                    )}
-                  </Button>
-                )}
+                <Button 
+                  onClick={toggleMode}
+                  disabled={isLoading}
+                  size="lg"
+                  variant={mode === 'voice' && isVoiceConnected ? "default" : "outline"}
+                  className={cn(
+                    "px-6",
+                    mode === 'voice' && isVoiceConnected && "bg-green-600 hover:bg-green-700",
+                    mode === 'voice' && voiceStatus === 'connecting' && "animate-pulse"
+                  )}
+                  title={mode === 'voice' && isVoiceConnected ? "Disconnect voice" : "Start voice conversation"}
+                >
+                  {mode === 'voice' && voiceStatus === 'connecting' ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : mode === 'voice' && isVoiceConnected ? (
+                    <PhoneOff className="w-4 h-4" />
+                  ) : (
+                    <Phone className="w-4 h-4" />
+                  )}
+                </Button>
                 <Button 
                   onClick={sendMessage}
-                  disabled={!currentMessage.trim() || isLoading || isRecording || isProcessing}
+                  disabled={!currentMessage.trim() || isLoading}
                   size="lg"
                   className="px-6"
                 >
