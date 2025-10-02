@@ -8,7 +8,7 @@ import { useTrial } from '@/hooks/useTrial';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useRealtimeVoice } from '@/hooks/useRealtimeVoice';
 import UpgradePrompt from './UpgradePrompt';
-import { Send, Bot, User, Calendar, Dumbbell, Loader2, Phone, PhoneOff } from 'lucide-react';
+import { Send, Bot, User, Calendar, Dumbbell, Loader2, Mic, MicOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { detectPlanType, parseMealPlan, parseWorkoutPlan } from '@/utils/coachResponseParser';
 
@@ -296,30 +296,6 @@ const MKROCoach = () => {
                 </span>
               )}
             </CardTitle>
-            <div className="flex gap-2">
-              <Button
-                variant={mode === 'voice' ? 'default' : 'outline'}
-                size="sm"
-                onClick={toggleMode}
-                disabled={isLoading}
-                className={cn(
-                  "gap-2",
-                  mode === 'voice' && isVoiceConnected && "bg-green-600 hover:bg-green-700"
-                )}
-              >
-                {mode === 'voice' ? (
-                  <>
-                    <PhoneOff className="w-4 h-4" />
-                    {isVoiceConnected ? 'Disconnect' : 'Connecting...'}
-                  </>
-                ) : (
-                  <>
-                    <Phone className="w-4 h-4" />
-                    Voice Chat
-                  </>
-                )}
-              </Button>
-            </div>
           </div>
           {mode === 'voice' && (
             <div className="text-sm text-muted-foreground mt-2">
@@ -444,9 +420,9 @@ const MKROCoach = () => {
                   {mode === 'voice' && voiceStatus === 'connecting' ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : mode === 'voice' && isVoiceConnected ? (
-                    <PhoneOff className="w-4 h-4" />
+                    <MicOff className="w-4 h-4" />
                   ) : (
-                    <Phone className="w-4 h-4" />
+                    <Mic className="w-4 h-4" />
                   )}
                 </Button>
                 <Button 
