@@ -5,8 +5,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTrial } from '@/hooks/useTrial';
+import { useVoiceRecording } from '@/hooks/useVoiceRecording';
 import UpgradePrompt from './UpgradePrompt';
-import { Send, Bot, User, Calendar, Dumbbell } from 'lucide-react';
+import { Send, Bot, User, Calendar, Dumbbell, Mic, MicOff, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { detectPlanType, parseMealPlan, parseWorkoutPlan } from '@/utils/coachResponseParser';
 
@@ -95,6 +96,7 @@ const MKROCoach = () => {
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { canUseFeature, promptsRemaining, incrementPromptUsage, isDevelopmentMode, isTrialExpired } = useTrial();
+  const { isRecording, isProcessing, startRecording, stopRecording, cancelRecording } = useVoiceRecording();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -225,6 +227,50 @@ const MKROCoach = () => {
     }
   };
 
+  const handleVoiceClick = async () => {
+    if (isRecording) {
+      try {
+        const audioBase64 = await stopRecording();
+        
+        toast({
+          title: "Processing voice...",
+          description: "Converting speech to text...",
+        });
+
+        const { data, error } = await supabase.functions.invoke('voice-to-text', {
+          body: { audio: audioBase64 }
+        });
+
+        if (error) {
+          console.error('Voice-to-text error:', error);
+          toast({
+            title: "Error",
+            description: "Failed to process voice input. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (data?.text) {
+          setCurrentMessage(data.text);
+          toast({
+            title: "Voice captured!",
+            description: "You can edit the text or send it as is.",
+          });
+        }
+      } catch (error) {
+        console.error('Error handling voice:', error);
+        toast({
+          title: "Error",
+          description: "Failed to process voice input.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      startRecording();
+    }
+  };
+
   // Show upgrade prompt if trial expired and not in development
   if (!canUseFeature('coach') && !isDevelopmentMode) {
     return (
@@ -347,16 +393,37 @@ const MKROCoach = () => {
                 onKeyDown={handleKeyPress}
                 placeholder="Ask MKRO about training, nutrition, or get your personalized plan..."
                 className="flex-1 min-h-[60px] resize-none"
-                disabled={isLoading}
+                disabled={isLoading || isRecording || isProcessing}
               />
-              <Button 
-                onClick={sendMessage}
-                disabled={!currentMessage.trim() || isLoading}
-                size="lg"
-                className="px-6"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button 
+                  onClick={handleVoiceClick}
+                  disabled={isLoading || isProcessing}
+                  size="lg"
+                  variant={isRecording ? "destructive" : "outline"}
+                  className={cn(
+                    "px-6",
+                    isRecording && "animate-pulse"
+                  )}
+                  title={isRecording ? "Stop recording" : "Start voice input"}
+                >
+                  {isProcessing ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : isRecording ? (
+                    <MicOff className="w-4 h-4" />
+                  ) : (
+                    <Mic className="w-4 h-4" />
+                  )}
+                </Button>
+                <Button 
+                  onClick={sendMessage}
+                  disabled={!currentMessage.trim() || isLoading || isRecording || isProcessing}
+                  size="lg"
+                  className="px-6"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
