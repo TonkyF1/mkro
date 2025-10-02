@@ -78,7 +78,17 @@ const MKROCoach = () => {
   const { isTrialExpired, isDevelopmentMode, canUseFeature } = useTrial();
   const { profile, saveProfile } = useUserProfile();
   const { savePlans } = useWeeklyPlans();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    const saved = localStorage.getItem('mkro_coach_conversation');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  });
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<'text' | 'voice'>('text');
@@ -118,6 +128,13 @@ const MKROCoach = () => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Save conversation to localStorage whenever messages change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('mkro_coach_conversation', JSON.stringify(messages));
+    }
   }, [messages]);
 
   const sendCoachingMessage = async (userInput: string, history: ChatMessage[]) => {
