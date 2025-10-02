@@ -11,6 +11,7 @@ import { ParsedMealPlan } from '@/utils/coachResponseParser';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useWeeklyPlans } from '@/hooks/useWeeklyPlans';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -36,6 +37,7 @@ const NutritionHub = () => {
   const { toast } = useToast();
   const [mealPlan, setMealPlan] = useState(() => loadMealPlanFromStorage());
   const [aiMealPlan, setAiMealPlan] = useState<ParsedMealPlan[]>([]);
+  const { nutritionPlan, fetchPlans, activeWeekStart } = useWeeklyPlans();
 
   useEffect(() => {
     const handleStorageUpdate = () => {
@@ -73,117 +75,50 @@ const NutritionHub = () => {
     };
   }, []);
 
+  // Load plans from database (highest priority)
   useEffect(() => {
-    const loadAIMealPlan = () => {
-      const stored = localStorage.getItem('mkro_meal_plan');
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored) as ParsedMealPlan[];
-          setAiMealPlan(parsed);
-          
-          if (parsed.length > 0) {
-            const newMealPlan = DAYS.map((day, dayIndex) => {
-              const aiDay = parsed.find(p => {
-                const dayName = p.day?.toLowerCase() || '';
-                return day.toLowerCase().includes(dayName) || dayName.includes(day.toLowerCase());
-              }) || parsed[dayIndex];
+    if (nutritionPlan?.days) {
+      const daysData = nutritionPlan.days as any;
+      const updated = DAYS.map((day) => {
+        const dayPlan = daysData[day];
+        if (!dayPlan) return { date: day } as any;
+        const transformed: any = { date: day };
+        const mapMeal = (arr?: any[], category?: string) => {
+          if (!arr || arr.length === 0) return undefined;
+          const m = arr[0];
+          return {
+            id: `${day}-${category}`,
+            name: m.title,
+            calories: m.kcal,
+            protein: m.protein_g,
+            carbs: m.carbs_g,
+            fats: m.fat_g,
+            category,
+            ingredients: [],
+            instructions: '',
+            prepTime: 20,
+            servings: 1,
+            estimatedCost: 0,
+            dietaryTags: []
+          };
+        };
+        transformed.breakfast = mapMeal(dayPlan.Breakfast, 'breakfast');
+        transformed.lunch = mapMeal(dayPlan.Lunch, 'lunch');
+        transformed.dinner = mapMeal(dayPlan.Dinner, 'dinner');
+        transformed.snack = mapMeal(dayPlan.Snacks, 'snack');
+        return transformed;
+      });
+      setMealPlan(updated);
+      saveMealPlanToStorage(updated);
+    }
+  }, [nutritionPlan]);
 
-              const dayPlan: any = { date: day };
-
-              if (aiDay) {
-                if (aiDay.breakfast && aiDay.breakfast.calories) {
-                  dayPlan.breakfast = {
-                    id: `ai-breakfast-${dayIndex}`,
-                    name: aiDay.breakfast.name,
-                    category: 'breakfast',
-                    calories: aiDay.breakfast.calories,
-                    protein: aiDay.breakfast.protein || 0,
-                    carbs: aiDay.breakfast.carbs || 0,
-                    fats: aiDay.breakfast.fats || 0,
-                    estimatedCost: 0,
-                    prepTime: '15 minutes',
-                    servingSize: '1 serving',
-                    description: aiDay.breakfast.name,
-                    ingredients: [],
-                    instructions: '',
-                    dietaryTags: []
-                  };
-                }
-                if (aiDay.lunch && aiDay.lunch.calories) {
-                  dayPlan.lunch = {
-                    id: `ai-lunch-${dayIndex}`,
-                    name: aiDay.lunch.name,
-                    category: 'lunch',
-                    calories: aiDay.lunch.calories,
-                    protein: aiDay.lunch.protein || 0,
-                    carbs: aiDay.lunch.carbs || 0,
-                    fats: aiDay.lunch.fats || 0,
-                    estimatedCost: 0,
-                    prepTime: '30 minutes',
-                    servingSize: '1 serving',
-                    description: aiDay.lunch.name,
-                    ingredients: [],
-                    instructions: '',
-                    dietaryTags: []
-                  };
-                }
-                if (aiDay.dinner && aiDay.dinner.calories) {
-                  dayPlan.dinner = {
-                    id: `ai-dinner-${dayIndex}`,
-                    name: aiDay.dinner.name,
-                    category: 'dinner',
-                    calories: aiDay.dinner.calories,
-                    protein: aiDay.dinner.protein || 0,
-                    carbs: aiDay.dinner.carbs || 0,
-                    fats: aiDay.dinner.fats || 0,
-                    estimatedCost: 0,
-                    prepTime: '45 minutes',
-                    servingSize: '1 serving',
-                    description: aiDay.dinner.name,
-                    ingredients: [],
-                    instructions: '',
-                    dietaryTags: []
-                  };
-                }
-                if (aiDay.snack && aiDay.snack.calories) {
-                  dayPlan.snack = {
-                    id: `ai-snack-${dayIndex}`,
-                    name: aiDay.snack.name,
-                    category: 'snack',
-                    calories: aiDay.snack.calories,
-                    protein: aiDay.snack.protein || 0,
-                    carbs: aiDay.snack.carbs || 0,
-                    fats: aiDay.snack.fats || 0,
-                    estimatedCost: 0,
-                    prepTime: '5 minutes',
-                    servingSize: '1 serving',
-                    description: aiDay.snack.name,
-                    ingredients: [],
-                    instructions: '',
-                    dietaryTags: []
-                  };
-                }
-              }
-
-              return dayPlan;
-            });
-
-            setMealPlan(newMealPlan);
-            saveMealPlanToStorage(newMealPlan);
-          }
-        } catch (e) {
-          console.error('Error parsing AI meal plan:', e);
-        }
-      }
-    };
-
-    loadAIMealPlan();
-    window.addEventListener('storage', loadAIMealPlan);
-    
-    return () => {
-      window.removeEventListener('storage', loadAIMealPlan);
-    };
-  }, []);
+  // Refresh on save events from coach
+  useEffect(() => {
+    const onUpdate = () => fetchPlans();
+    window.addEventListener('mkro:plans-updated', onUpdate as any);
+    return () => window.removeEventListener('mkro:plans-updated', onUpdate as any);
+  }, [fetchPlans]);
 
   const clearAIMealPlan = () => {
     localStorage.removeItem('mkro_meal_plan');

@@ -9,6 +9,7 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
   const [nutritionPlan, setNutritionPlan] = useState<any>(null);
   const [trainingPlan, setTrainingPlan] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [activeWeekStart, setActiveWeekStart] = useState<string | null>(null);
 
   // Get current week's Monday
   const getCurrentWeekStart = () => {
@@ -20,7 +21,7 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
     return monday.toISOString().split('T')[0];
   };
 
-  const weekStart = weekStartISO || getCurrentWeekStart();
+  const targetWeekStart = weekStartISO || getCurrentWeekStart();
 
   useEffect(() => {
     if (user) {
@@ -28,7 +29,37 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
     } else {
       setLoading(false);
     }
-  }, [user, weekStart]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, targetWeekStart]);
+
+  const fetchNearest = async (table: string, current: string) => {
+    // Use untyped client to avoid TS unions across tables
+    const client: any = supabase as any;
+
+    // 1) Try next upcoming or current
+    let res = await client
+      .from(table)
+      .select('*')
+      .eq('user_id', user!.id)
+      .gte('week_start', current)
+      .order('week_start', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (res?.data) return res.data as any;
+
+    // 2) Fallback to most recent past
+    res = await client
+      .from(table)
+      .select('*')
+      .eq('user_id', user!.id)
+      .lte('week_start', current)
+      .order('week_start', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    return res?.data || null;
+  };
 
   const fetchPlans = async () => {
     if (!user) return;
@@ -36,27 +67,38 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
     try {
       setLoading(true);
 
-      // Fetch nutrition plan
-      const { data: nutritionData, error: nutritionError } = await supabase
+      // Fetch nutrition plan for requested week
+      let { data: nutritionData } = await supabase
         .from('weekly_nutrition_plans')
         .select('*')
         .eq('user_id', user.id)
-        .eq('week_start', weekStart)
+        .eq('week_start', targetWeekStart)
         .maybeSingle();
 
-      if (nutritionError) throw nutritionError;
+      if (!nutritionData) {
+        nutritionData = await fetchNearest('weekly_nutrition_plans', targetWeekStart);
+      }
       setNutritionPlan(nutritionData);
 
       // Fetch training plan
-      const { data: trainingData, error: trainingError } = await supabase
+      let { data: trainingData } = await supabase
         .from('weekly_training_plans')
         .select('*')
         .eq('user_id', user.id)
-        .eq('week_start', weekStart)
+        .eq('week_start', targetWeekStart)
         .maybeSingle();
 
-      if (trainingError) throw trainingError;
+      if (!trainingData) {
+        trainingData = await fetchNearest('weekly_training_plans', targetWeekStart);
+      }
       setTrainingPlan(trainingData);
+
+      // Update active week
+      setActiveWeekStart(
+        (nutritionData && nutritionData.week_start) ||
+        (trainingData && trainingData.week_start) ||
+        targetWeekStart
+      );
 
     } catch (error) {
       console.error('Error fetching plans:', error);
@@ -113,7 +155,6 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
       if (write.training) {
         const { days, data } = write.training;
         
-        // Get existing plan or create new
         const { data: existing } = await supabase
           .from('weekly_training_plans')
           .select('*')
@@ -122,13 +163,10 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
           .maybeSingle();
 
         const currentDays = existing?.days || {};
-        
-        // Merge new days with existing
         days.forEach((day: string) => {
           currentDays[day] = data[day];
         });
 
-        // Upsert
         const { error } = await supabase
           .from('weekly_training_plans')
           .upsert({
@@ -147,8 +185,12 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
         description: 'Weekly plans saved successfully!',
       });
 
-      // Refresh plans
+      // Refresh to the saved week
+      setActiveWeekStart(week_start_iso);
       await fetchPlans();
+
+      // Broadcast a custom event so other tabs/pages can refresh
+      window.dispatchEvent(new CustomEvent('mkro:plans-updated', { detail: { week_start_iso } }));
 
     } catch (error) {
       console.error('Error saving plans:', error);
@@ -167,5 +209,6 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
     loading,
     fetchPlans,
     savePlans,
+    activeWeekStart,
   };
 };

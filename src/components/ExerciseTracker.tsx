@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Trash2, Dumbbell, Bot, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ParsedWorkout } from '@/utils/coachResponseParser';
+import { useWeeklyPlans } from '@/hooks/useWeeklyPlans';
 
 interface Exercise {
   id: string;
@@ -39,6 +40,8 @@ const ExerciseTracker = () => {
     duration: 0,
     calories: 0,
   });
+
+  const { trainingPlan, fetchPlans } = useWeeklyPlans();
 
   // Load AI workout plan and auto-populate weekly plan
   useEffect(() => {
@@ -108,22 +111,31 @@ const ExerciseTracker = () => {
     };
   }, []);
 
-  const addAIWorkoutToLog = (workout: ParsedWorkout) => {
-    const exercise: Exercise = {
-      id: Date.now().toString(),
-      name: workout.name,
-      type: workout.type,
-      duration: workout.duration,
-      date: new Date().toISOString().split('T')[0],
-    };
+  // Load training plan from database
+  useEffect(() => {
+    if (trainingPlan?.days) {
+      const daysData = trainingPlan.days as any;
+      const newWeekly = DAYS.map((day) => {
+        const plan = daysData[day];
+        const exs = (plan?.exercises || []).map((ex: any, idx: number) => ({
+          id: `${day}-db-${idx}`,
+          name: ex.name,
+          type: 'strength',
+          duration: 0,
+          date: '',
+        }));
+        return { day, exercises: exs } as WeeklyWorkout;
+      });
+      setWeeklyPlan(newWeekly);
+    }
+  }, [trainingPlan]);
 
-    setExercises([...exercises, exercise]);
-    toast({
-      title: 'Exercise Added',
-      description: `${exercise.name} has been logged from your MKRO plan!`,
-    });
-  };
-
+  // Refresh on save events from coach
+  useEffect(() => {
+    const onUpdate = () => fetchPlans();
+    window.addEventListener('mkro:plans-updated', onUpdate as any);
+    return () => window.removeEventListener('mkro:plans-updated', onUpdate as any);
+  }, [fetchPlans]);
   const clearAIWorkoutPlan = () => {
     localStorage.removeItem('mkro_workout_plan');
     setAiWorkoutPlan([]);
