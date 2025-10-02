@@ -266,28 +266,6 @@ const ExerciseTracker = () => {
 
       {/* Today's Log Tab */}
       <TabsContent value="today" className="mt-6 space-y-6">
-        {/* Weekly Stats */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Dumbbell className="h-5 w-5" />
-            <h3 className="text-xl font-semibold">Weekly Exercise Summary</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-primary">{weeklyStats.count}</p>
-              <p className="text-sm text-muted-foreground">Workouts</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-primary">{weeklyStats.totalDuration}</p>
-              <p className="text-sm text-muted-foreground">Minutes</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-primary">{weeklyStats.totalCalories}</p>
-              <p className="text-sm text-muted-foreground">Calories Burned</p>
-            </div>
-          </div>
-        </Card>
-
         {/* Add New Exercise */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4">Log Exercise</h3>

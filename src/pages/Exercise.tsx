@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ExerciseTracker from '@/components/ExerciseTracker';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Dumbbell, TrendingUp, Flame, Activity, Loader2, Trash2 } from 'lucide-react';
 import { useWeeklyPlans } from '@/hooks/useWeeklyPlans';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +13,19 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 const Exercise = () => {
   const { trainingPlan, loading, fetchPlans } = useWeeklyPlans();
   const { toast } = useToast();
+  const [completedDays, setCompletedDays] = useState<Record<string, { workouts: number; calories: number; duration: number }>>({});
+
+  // Load completed days from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('completed_workout_days');
+    if (stored) {
+      try {
+        setCompletedDays(JSON.parse(stored));
+      } catch (e) {
+        console.error('Error loading completed days:', e);
+      }
+    }
+  }, []);
 
   const getStoredKey = (day: string) => {
     const idx = DAYS.indexOf(day);
@@ -19,6 +33,33 @@ const Exercise = () => {
     if (trainingPlan?.days?.[day]) return day;
     if (trainingPlan?.days?.[dayN]) return dayN;
     return day;
+  };
+
+  const handleToggleComplete = (day: string) => {
+    const key = getStoredKey(day);
+    const dayPlan = trainingPlan?.days?.[key];
+    if (!dayPlan) return;
+
+    const newCompleted = { ...completedDays };
+    if (newCompleted[day]) {
+      delete newCompleted[day];
+      toast({ title: 'Unmarked', description: `${day} marked as incomplete.` });
+    } else {
+      // Calculate stats from the day's exercises
+      const exercises = dayPlan.exercises || [];
+      const duration = exercises.reduce((sum: number, ex: any) => sum + (ex.sets || 1) * 3, 0); // Rough estimate: 3 min per set
+      const calories = Math.round(duration * 5); // Rough estimate: 5 cal per min
+      
+      newCompleted[day] = {
+        workouts: exercises.length,
+        calories,
+        duration
+      };
+      toast({ title: 'Completed!', description: `${day} workout marked as complete.` });
+    }
+    
+    setCompletedDays(newCompleted);
+    localStorage.setItem('completed_workout_days', JSON.stringify(newCompleted));
   };
 
   const handleDeleteDay = async (day: string) => {
@@ -32,6 +73,13 @@ const Exercise = () => {
         .update({ days: updatedDays })
         .eq('id', trainingPlan.id);
       if (error) throw error;
+      
+      // Also remove from completed days
+      const newCompleted = { ...completedDays };
+      delete newCompleted[day];
+      setCompletedDays(newCompleted);
+      localStorage.setItem('completed_workout_days', JSON.stringify(newCompleted));
+      
       toast({ title: 'Deleted', description: `Removed ${day} workout.` });
       fetchPlans();
     } catch (e: any) {
@@ -40,26 +88,15 @@ const Exercise = () => {
     }
   };
 
-  const handleDeleteExercise = async (day: string, idx: number) => {
-    if (!trainingPlan?.id) return;
-    try {
-      const updatedDays: any = { ...(trainingPlan.days || {}) };
-      const key = getStoredKey(day);
-      const exercises = Array.isArray(updatedDays[key]?.exercises) ? [...updatedDays[key].exercises] : [];
-      exercises.splice(idx, 1);
-      updatedDays[key] = { ...(updatedDays[key] || {}), exercises };
-      const { error } = await supabase
-        .from('weekly_training_plans')
-        .update({ days: updatedDays })
-        .eq('id', trainingPlan.id);
-      if (error) throw error;
-      toast({ title: 'Deleted', description: `Removed exercise from ${day}.` });
-      fetchPlans();
-    } catch (e: any) {
-      console.error(e);
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete exercise.' });
-    }
-  };
+  // Calculate weekly stats from completed days
+  const weeklyStats = Object.values(completedDays).reduce(
+    (acc, day) => ({
+      workouts: acc.workouts + day.workouts,
+      calories: acc.calories + day.calories,
+      activeDays: acc.activeDays + 1
+    }),
+    { workouts: 0, calories: 0, activeDays: 0 }
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -87,7 +124,7 @@ const Exercise = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">This Week</p>
-                  <p className="text-2xl font-bold">0 workouts</p>
+                  <p className="text-2xl font-bold">{weeklyStats.workouts} workouts</p>
                 </div>
               </div>
             </Card>
@@ -98,7 +135,7 @@ const Exercise = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Calories</p>
-                  <p className="text-2xl font-bold">0 kcal</p>
+                  <p className="text-2xl font-bold">{weeklyStats.calories} kcal</p>
                 </div>
               </div>
             </Card>
@@ -109,7 +146,7 @@ const Exercise = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Active Days</p>
-                  <p className="text-2xl font-bold">0 days</p>
+                  <p className="text-2xl font-bold">{weeklyStats.activeDays} days</p>
                 </div>
               </div>
             </Card>
@@ -143,29 +180,37 @@ const Exercise = () => {
                   <Card key={day} className="p-4 bg-card border-primary/10 hover:border-primary/30 transition-colors">
                     <div className="space-y-3">
                       <div className="flex items-start justify-between">
-                        <div>
+                        <div className="flex-1">
                           <h3 className="font-bold text-lg">{day}</h3>
                           <p className="text-sm text-primary font-semibold">{dayPlan.focus}</p>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => handleDeleteDay(day)} aria-label={`Delete ${day} workout`}>
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2">
+                            <Checkbox 
+                              id={`complete-${day}`}
+                              checked={!!completedDays[day]}
+                              onCheckedChange={() => handleToggleComplete(day)}
+                              aria-label={`Mark ${day} as complete`}
+                            />
+                            <label htmlFor={`complete-${day}`} className="text-xs text-muted-foreground cursor-pointer">
+                              Done
+                            </label>
+                          </div>
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteDay(day)} aria-label={`Delete ${day} workout`}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
                       
                       {dayPlan.exercises && dayPlan.exercises.length > 0 && (
                         <div className="space-y-1.5">
                             {dayPlan.exercises.map((ex: any, idx: number) => (
-                              <div key={idx} className="text-sm p-2 bg-muted/50 rounded flex items-start justify-between gap-2">
-                                <div>
-                                  <div className="font-medium">{ex.name}</div>
-                                  <div className="text-xs text-muted-foreground">
-                                    {ex.sets} sets × {ex.reps} reps
-                                    {ex.rest_sec && ` • ${ex.rest_sec}s rest`}
-                                  </div>
+                              <div key={idx} className="text-sm p-2 bg-muted/50 rounded">
+                                <div className="font-medium">{ex.name}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {ex.sets} sets × {ex.reps} reps
+                                  {ex.rest_sec && ` • ${ex.rest_sec}s rest`}
                                 </div>
-                                <Button variant="ghost" size="icon" onClick={() => handleDeleteExercise(day, idx)} aria-label="Delete exercise">
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
                               </div>
                             ))}
                         </div>
