@@ -159,15 +159,6 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
                   <div key={mealType} className="border rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium capitalize">{mealType}</span>
-                      {day[mealType] && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeRecipeFromSlot(dayIndex, mealType)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
                     </div>
                     
                     {day[mealType] ? (
