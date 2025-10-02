@@ -11,6 +11,7 @@ interface RecipeDetailProps {
   recipe: Recipe;
   onBack: () => void;
   onAddToShoppingList: (recipe: Recipe) => void;
+  onAddToMealPlan?: (recipe: Recipe, day: string, mealType: string) => void;
 }
 
 export const RecipeDetail = ({ recipe, onBack, onAddToShoppingList }: RecipeDetailProps) => {

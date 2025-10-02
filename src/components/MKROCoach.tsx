@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTrial } from '@/hooks/useTrial';
@@ -280,40 +281,53 @@ const MKROCoach = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-3 text-2xl">
-              <Bot className="w-8 h-8 text-primary" />
-              <div className="flex flex-col gap-1">
-                <span className="font-bold">MKRO</span>
-                <span className="text-sm font-normal text-muted-foreground">Your AI PT & Nutrition Coach</span>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="max-w-5xl mx-auto p-6 space-y-6">
+        {/* Header Card */}
+        <Card className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg">
+                  <Bot className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                    MKRO Coach
+                  </CardTitle>
+                  <p className="text-muted-foreground">Your AI PT & Nutrition Coach</p>
+                </div>
               </div>
               {!isDevelopmentMode && promptsRemaining <= 5 && promptsRemaining > 0 && (
-                <span className="text-sm text-muted-foreground ml-auto">
+                <Badge variant="secondary" className="text-sm">
                   {promptsRemaining} prompts left
-                </span>
+                </Badge>
               )}
-            </CardTitle>
-          </div>
-          {mode === 'voice' && (
-            <div className="text-sm text-muted-foreground mt-2">
-              {isSpeaking && <span className="text-primary animate-pulse">● AI is speaking...</span>}
-              {isVoiceConnected && !isSpeaking && <span className="text-green-600">● Connected - Start speaking!</span>}
-              {voiceStatus === 'connecting' && <span className="text-yellow-600">● Connecting...</span>}
             </div>
-          )}
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <div className="h-96 overflow-y-auto border rounded-lg p-4 space-y-4 bg-muted/20">
+            {mode === 'voice' && (
+              <div className="text-sm text-muted-foreground mt-2">
+                {isSpeaking && <span className="text-primary animate-pulse">● AI is speaking...</span>}
+                {isVoiceConnected && !isSpeaking && <span className="text-green-600">● Connected - Start speaking!</span>}
+                {voiceStatus === 'connecting' && <span className="text-yellow-600">● Connecting...</span>}
+              </div>
+            )}
+          </CardHeader>
+        </Card>
+
+        {/* Chat Card */}
+        <Card className="shadow-xl">
+          <CardContent className="p-6 space-y-4">
+            <div className="h-[500px] overflow-y-auto border rounded-xl p-6 space-y-4 bg-gradient-to-br from-muted/30 to-muted/10">
               {messages.length === 0 && (
-                <div className="text-center text-muted-foreground py-12">
-                  <Bot className="w-16 h-16 mx-auto mb-4 text-primary" />
-                  <h2 className="text-xl font-bold mb-2 text-foreground">Hi! I'm MKRO</h2>
-                  <p className="text-base mb-1">Your AI PT & Nutrition Coach</p>
-                  <p className="text-sm">Start chatting to get your personalized fitness plan!</p>
+                <div className="text-center py-16">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <Bot className="w-10 h-10 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold mb-3 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                    Hi! I'm MKRO
+                  </h2>
+                  <p className="text-base mb-2">Your AI PT & Nutrition Coach</p>
+                  <p className="text-sm text-muted-foreground">Start chatting to get your personalized fitness plan!</p>
                 </div>
               )}
               {messages.map((message) => (
@@ -398,46 +412,22 @@ const MKROCoach = () => {
                 value={currentMessage}
                 onChange={(e) => setCurrentMessage(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder={mode === 'voice' && isVoiceConnected 
-                  ? "Type or speak your message..." 
-                  : "Ask MKRO about training, nutrition, or get your personalized plan..."}
+                placeholder="Ask MKRO about training, nutrition, or get your personalized plan..."
                 className="flex-1 min-h-[60px] resize-none"
                 disabled={isLoading}
               />
-              <div className="flex flex-col gap-2">
-                <Button 
-                  onClick={toggleMode}
-                  disabled={isLoading}
-                  size="lg"
-                  variant={mode === 'voice' && isVoiceConnected ? "default" : "outline"}
-                  className={cn(
-                    "px-6",
-                    mode === 'voice' && isVoiceConnected && "bg-green-600 hover:bg-green-700",
-                    mode === 'voice' && voiceStatus === 'connecting' && "animate-pulse"
-                  )}
-                  title={mode === 'voice' && isVoiceConnected ? "Disconnect voice" : "Start voice conversation"}
-                >
-                  {mode === 'voice' && voiceStatus === 'connecting' ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : mode === 'voice' && isVoiceConnected ? (
-                    <MicOff className="w-4 h-4" />
-                  ) : (
-                    <Mic className="w-4 h-4" />
-                  )}
-                </Button>
-                <Button 
-                  onClick={sendMessage}
-                  disabled={!currentMessage.trim() || isLoading}
-                  size="lg"
-                  className="px-6"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
+              <Button 
+                onClick={sendMessage}
+                disabled={!currentMessage.trim() || isLoading}
+                size="lg"
+                className="px-6"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

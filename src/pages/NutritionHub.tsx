@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Utensils, Bot } from 'lucide-react';
+import { Calendar, Utensils, Bot, Apple, Droplet, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FoodDiary from '@/components/FoodDiary';
 import { HydrationTracker } from '@/components/HydrationTracker';
@@ -37,7 +37,28 @@ const NutritionHub = () => {
   const [mealPlan, setMealPlan] = useState(() => loadMealPlanFromStorage());
   const [aiMealPlan, setAiMealPlan] = useState<ParsedMealPlan[]>([]);
 
-  // Reload meal plan from storage when component mounts or becomes visible
+  useEffect(() => {
+    const handleStorageUpdate = () => {
+      const stored = localStorage.getItem('mealPlan');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            setMealPlan(parsed);
+          }
+        } catch (e) {
+          console.error("Error parsing mealPlan from localStorage:", e);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageUpdate);
+    };
+  }, []);
+
   useEffect(() => {
     const reloadMealPlan = () => {
       const updatedPlan = loadMealPlanFromStorage();
@@ -52,7 +73,6 @@ const NutritionHub = () => {
     };
   }, []);
 
-  // Load AI-generated meal plan and auto-populate weekly planner
   useEffect(() => {
     const loadAIMealPlan = () => {
       const stored = localStorage.getItem('mkro_meal_plan');
@@ -61,18 +81,15 @@ const NutritionHub = () => {
           const parsed = JSON.parse(stored) as ParsedMealPlan[];
           setAiMealPlan(parsed);
           
-          // Auto-populate weekly meal plan from AI recommendations
           if (parsed.length > 0) {
             const newMealPlan = DAYS.map((day, dayIndex) => {
               const aiDay = parsed.find(p => {
                 const dayName = p.day?.toLowerCase() || '';
                 return day.toLowerCase().includes(dayName) || dayName.includes(day.toLowerCase());
-              }) || parsed[dayIndex]; // Fallback to sequential if day name doesn't match
+              }) || parsed[dayIndex];
 
               const dayPlan: any = { date: day };
 
-              // Convert AI meal data to Recipe-like objects for each meal slot
-              // Only populate if caloric info is available
               if (aiDay) {
                 if (aiDay.breakfast && aiDay.breakfast.calories) {
                   dayPlan.breakfast = {
@@ -102,7 +119,7 @@ const NutritionHub = () => {
                     carbs: aiDay.lunch.carbs || 0,
                     fats: aiDay.lunch.fats || 0,
                     estimatedCost: 0,
-                    prepTime: '20 minutes',
+                    prepTime: '30 minutes',
                     servingSize: '1 serving',
                     description: aiDay.lunch.name,
                     ingredients: [],
@@ -120,7 +137,7 @@ const NutritionHub = () => {
                     carbs: aiDay.dinner.carbs || 0,
                     fats: aiDay.dinner.fats || 0,
                     estimatedCost: 0,
-                    prepTime: '30 minutes',
+                    prepTime: '45 minutes',
                     servingSize: '1 serving',
                     description: aiDay.dinner.name,
                     ingredients: [],
@@ -171,89 +188,142 @@ const NutritionHub = () => {
   const clearAIMealPlan = () => {
     localStorage.removeItem('mkro_meal_plan');
     setAiMealPlan([]);
-    // Reset to empty meal plan
-    const emptyPlan = DAYS.map(day => ({ date: day }));
-    setMealPlan(emptyPlan);
-    saveMealPlanToStorage(emptyPlan);
+    setMealPlan(DAYS.map(day => ({ date: day })));
+    saveMealPlanToStorage(DAYS.map(day => ({ date: day })));
     toast({
       title: "AI Plan Cleared",
       description: "The MKRO Coach meal plan has been removed.",
     });
   };
 
-  const generateShoppingList = (meals: any) => {
-    setMealPlan(meals);
-    saveMealPlanToStorage(meals);
-    navigate('/shopping');
+  const navigateToCoach = () => {
+    navigate('/coach');
+  };
+
+  const handleMealPlanUpdate = (updatedPlan: any) => {
+    setMealPlan(updatedPlan);
+    saveMealPlanToStorage(updatedPlan);
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      {/* Hydration Tracker - Always visible at top */}
-      <HydrationTracker userProfile={profile} />
-
-      {/* AI Meal Plan Banner */}
-      {aiMealPlan.length > 0 && (
-        <Card className="p-4 bg-primary/5 border-primary/20">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Bot className="h-5 w-5 text-primary" />
-              <div>
-                <h3 className="font-semibold">MKRO Coach Meal Plan Available</h3>
-                <p className="text-sm text-muted-foreground">
-                  {aiMealPlan.length} days of meals planned for you
-                </p>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
+        {/* Header */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg">
+              <Apple className="w-8 h-8 text-white" />
             </div>
-            <Button variant="outline" size="sm" onClick={clearAIMealPlan}>
-              Clear
-            </Button>
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                Nutrition Hub
+              </h1>
+              <p className="text-muted-foreground">Track your meals and reach your goals</p>
+            </div>
           </div>
-        </Card>
-      )}
 
-      {/* Tabs for Daily vs Weekly view */}
-      <Tabs defaultValue="today" className="w-full">
-        <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
-          <TabsTrigger value="today" className="flex items-center gap-2">
-            <Utensils className="h-4 w-4" />
-            Today's Log
-          </TabsTrigger>
-          <TabsTrigger value="weekly" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            Weekly Plan
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="today" className="mt-6">
-          <FoodDiary />
-        </TabsContent>
-
-        <TabsContent value="weekly" className="mt-6">
-          {aiMealPlan.length > 0 && (
-            <Card className="p-4 bg-primary/5 border-primary/20 mb-6">
+          {/* Quick Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="p-4 bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20">
               <div className="flex items-center gap-3">
-                <Bot className="h-5 w-5 text-primary" />
+                <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                  <Apple className="w-6 h-6 text-green-600" />
+                </div>
                 <div>
-                  <h3 className="font-semibold">MKRO Coach Recommendations Active</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Your personalized meal plan has been auto-populated below
-                  </p>
+                  <p className="text-sm text-muted-foreground">Today's Calories</p>
+                  <p className="text-2xl font-bold">0 / {profile?.target_protein ? (profile.target_protein * 4 + profile.target_carbs * 4 + profile.target_fats * 9) : 2000}</p>
                 </div>
               </div>
             </Card>
-          )}
-          <MealPlanner
-            recipes={recipes} 
-            onGenerateShoppingList={generateShoppingList}
-            initialMealPlan={mealPlan}
-            onMealPlanChange={(updatedPlan) => {
-              setMealPlan(updatedPlan);
-              saveMealPlanToStorage(updatedPlan);
-            }}
-          />
-        </TabsContent>
-      </Tabs>
+            <Card className="p-4 bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <Droplet className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Hydration</p>
+                  <p className="text-2xl font-bold">0 / {profile?.hydration_goal || 2000}ml</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-4 bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-500/20">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Weekly Streak</p>
+                  <p className="text-2xl font-bold">0 days</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* AI Meal Plan Banner */}
+        {aiMealPlan.length > 0 && (
+          <Card className="p-6 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                  <Bot className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">AI Meal Plan Active</h3>
+                  <p className="text-sm text-muted-foreground">MKRO Coach has created a personalized plan for you</p>
+                </div>
+              </div>
+              <Button variant="outline" onClick={clearAIMealPlan}>
+                Clear Plan
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {/* Tabs */}
+        <Card>
+          <Tabs defaultValue="diary" className="w-full">
+            <div className="border-b">
+              <TabsList className="w-full grid grid-cols-3 h-auto p-2">
+                <TabsTrigger value="diary" className="gap-2 py-3">
+                  <Utensils className="w-4 h-4" />
+                  <span className="hidden sm:inline">Food Diary</span>
+                  <span className="sm:hidden">Diary</span>
+                </TabsTrigger>
+                <TabsTrigger value="planner" className="gap-2 py-3">
+                  <Calendar className="w-4 h-4" />
+                  <span className="hidden sm:inline">Meal Planner</span>
+                  <span className="sm:hidden">Planner</span>
+                </TabsTrigger>
+                <TabsTrigger value="hydration" className="gap-2 py-3">
+                  <Droplet className="w-4 h-4" />
+                  <span className="hidden sm:inline">Hydration</span>
+                  <span className="sm:hidden">Water</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <div className="p-6">
+              <TabsContent value="diary" className="mt-0">
+                <FoodDiary />
+              </TabsContent>
+
+              <TabsContent value="planner" className="mt-0">
+                <MealPlanner 
+                  initialMealPlan={mealPlan}
+                  recipes={recipes}
+                  onMealPlanChange={handleMealPlanUpdate}
+                  onGenerateShoppingList={() => {}}
+                />
+              </TabsContent>
+
+              <TabsContent value="hydration" className="mt-0">
+                <HydrationTracker />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </Card>
+      </div>
     </div>
   );
 };

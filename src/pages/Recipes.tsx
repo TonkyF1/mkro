@@ -7,7 +7,9 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useToast } from '@/hooks/use-toast';
 import { testImageGeneration } from '@/utils/testImageGeneration';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, ChefHat, Sparkles, TrendingUp, Filter } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -98,75 +100,142 @@ const Recipes = () => {
 
   
   useEffect(() => {
-    if (selectedRecipe) {
-      window.scrollTo({ top: 0, behavior: 'auto' });
-    }
-  }, [selectedRecipe]);
+    const handleStorageUpdate = () => {
+      // Trigger UI refresh when meal plan updates
+      setSelectedRecipe(null);
+    };
+
+    window.addEventListener('storage', handleStorageUpdate);
+    return () => window.removeEventListener('storage', handleStorageUpdate);
+  }, []);
 
   if (selectedRecipe) {
     return (
-      <RecipeDetail 
-        recipe={selectedRecipe} 
-        onBack={() => setSelectedRecipe(null)} 
+      <RecipeDetail
+        recipe={selectedRecipe}
+        onBack={() => setSelectedRecipe(null)}
+        onAddToMealPlan={addRecipeToMealPlan}
         onAddToShoppingList={handleAddToShoppingList}
       />
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="mb-6 w-full flex flex-col items-center justify-center text-center">
-        <h1 className="text-2xl font-bold text-foreground mb-2">
-          Welcome back, {profile?.name?.toUpperCase()}!
-        </h1>
-        <p className="text-muted-foreground">
-          Ready to plan your nutritious meals?
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
+        {/* Header */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg">
+              <ChefHat className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                Recipe Library
+              </h1>
+              <p className="text-muted-foreground">Discover delicious and nutritious recipes</p>
+            </div>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="p-4 bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Recipes</p>
+                  <p className="text-2xl font-bold">{recipes.length}</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-4 bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Filtered Results</p>
+                  <p className="text-2xl font-bold">{filteredRecipes.length}</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-4 bg-gradient-to-br from-amber-500/10 to-amber-600/10 border-amber-500/20">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                  <Filter className="w-6 h-6 text-amber-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Active Filters</p>
+                  <p className="text-2xl font-bold">{selectedTags.length + (selectedCategory !== 'all' ? 1 : 0)}</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Search Bar */}
+          <Card className="p-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search recipes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-12 text-base"
+              />
+            </div>
+          </Card>
+        </div>
+
+        {/* Filters */}
+        <Card className="p-6">
+          <RecipeFilter
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            dietaryTags={dietaryTags}
+            selectedTags={selectedTags}
+            onTagToggle={handleTagToggle}
+            onClearFilters={handleClearFilters}
+          />
+        </Card>
+
+        {/* Recipe Grid */}
+        {recipesLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <p className="text-muted-foreground">Loading delicious recipes...</p>
+            </div>
+          </div>
+        ) : recipesError ? (
+          <Card className="p-12 text-center">
+            <p className="text-destructive">Error loading recipes. Please try again.</p>
+          </Card>
+        ) : filteredRecipes.length === 0 ? (
+          <Card className="p-12 text-center space-y-4">
+            <div className="w-20 h-20 rounded-full bg-muted mx-auto flex items-center justify-center">
+              <Search className="w-10 h-10 text-muted-foreground" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold mb-2">No recipes found</h3>
+              <p className="text-muted-foreground">Try adjusting your filters or search query</p>
+            </div>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredRecipes.map((recipe) => (
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                onClick={() => setSelectedRecipe(recipe)}
+              />
+            ))}
+          </div>
+        )}
       </div>
-      
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-        <Input
-          type="text"
-          placeholder="Search recipes..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9"
-        />
-      </div>
-      
-      <RecipeFilter
-        categories={categories}
-        dietaryTags={dietaryTags}
-        selectedCategory={selectedCategory}
-        selectedTags={selectedTags}
-        onCategoryChange={setSelectedCategory}
-        onTagToggle={handleTagToggle}
-        onClearFilters={handleClearFilters}
-      />
-      
-      {recipesLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-64 bg-muted animate-pulse rounded-lg"></div>
-          ))}
-        </div>
-      ) : recipesError ? (
-        <div className="text-center py-8">
-          <p className="text-destructive">Error loading recipes: {recipesError}</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredRecipes.map((recipe) => (
-            <RecipeCard 
-              key={recipe.id} 
-              recipe={recipe} 
-              onClick={() => setSelectedRecipe(recipe)}
-              onAddToMealPlan={addRecipeToMealPlan}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 };
