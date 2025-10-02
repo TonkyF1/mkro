@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useWeeklyPlans } from '@/hooks/useWeeklyPlans';
+import { useMealCompletions } from '@/hooks/useMealCompletions';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -40,6 +41,7 @@ const NutritionHub = () => {
   const [aiMealPlan, setAiMealPlan] = useState<ParsedMealPlan[]>([]);
   const [showShoppingList, setShowShoppingList] = useState(false);
   const { nutritionPlan, fetchPlans, activeWeekStart } = useWeeklyPlans();
+  const { weeklyStreak } = useMealCompletions();
 
   useEffect(() => {
     const handleStorageUpdate = () => {
@@ -204,7 +206,7 @@ const NutritionHub = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Weekly Streak</p>
-                  <p className="text-2xl font-bold">0 days</p>
+                  <p className="text-2xl font-bold">{weeklyStreak} {weeklyStreak === 1 ? 'day' : 'days'}</p>
                 </div>
               </div>
             </Card>

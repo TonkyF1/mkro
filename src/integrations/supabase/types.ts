@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      meal_completions: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          day_name: string
+          id: string
+          meal_type: string
+          updated_at: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          day_name: string
+          id?: string
+          meal_type: string
+          updated_at?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          day_name?: string
+          id?: string
+          meal_type?: string
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
       meal_history: {
         Row: {
           calories: number

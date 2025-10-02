@@ -3,6 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Plus, Trash2, ChefHat } from 'lucide-react';
 import { Recipe } from '@/data/recipes';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useMealCompletions } from '@/hooks/useMealCompletions';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { RewardModal } from './RewardModal';
 
 interface MealPlan {
   date: string;
@@ -33,6 +37,16 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
   );
   const [selectedSlot, setSelectedSlot] = useState<{ dayIndex: number; mealType: string } | null>(null);
   const [showRecipeSelector, setShowRecipeSelector] = useState(false);
+  const [showReward, setShowReward] = useState(false);
+  const [lastStreak, setLastStreak] = useState(0);
+  
+  const { profile } = useUserProfile();
+  const { 
+    toggleMealCompletion, 
+    deleteDayMeals, 
+    isMealCompleted, 
+    weeklyStreak 
+  } = useMealCompletions();
 
   // Update meal plan when initialMealPlan changes
   useEffect(() => {
@@ -40,6 +54,14 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
       setMealPlan(initialMealPlan);
     }
   }, [initialMealPlan]);
+
+  // Show reward when reaching 5 days
+  useEffect(() => {
+    if (weeklyStreak >= 5 && weeklyStreak > lastStreak) {
+      setShowReward(true);
+      setLastStreak(weeklyStreak);
+    }
+  }, [weeklyStreak, lastStreak]);
 
   const addRecipeToSlot = (recipe: Recipe, dayIndex: number, mealType: string) => {
     const updatedPlan = mealPlan.map((day, index) =>
@@ -77,6 +99,14 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
     );
   };
 
+  const calculateRemainingCalories = (day: MealPlan) => {
+    const targetCalories = profile?.target_protein && profile?.target_carbs && profile?.target_fats
+      ? (profile.target_protein * 4 + profile.target_carbs * 4 + profile.target_fats * 9)
+      : 2000;
+    const dayMacros = calculateDayMacros(day);
+    return targetCalories - dayMacros.calories;
+  };
+
   const openRecipeSelector = (dayIndex: number, mealType: string) => {
     setSelectedSlot({ dayIndex, mealType });
     setShowRecipeSelector(true);
@@ -105,12 +135,26 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {mealPlan.map((day, dayIndex) => {
           const dayMacros = calculateDayMacros(day);
+          const remaining = calculateRemainingCalories(day);
           return (
             <Card key={day.date} className="glass-card">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg">{day.date}</CardTitle>
-                <div className="text-sm text-muted-foreground">
-                  {dayMacros.calories}kcal • £{dayMacros.cost.toFixed(2)}
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">{day.date}</CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => deleteDayMeals(day.date)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <div>{dayMacros.calories}kcal • £{dayMacros.cost.toFixed(2)}</div>
+                  <div className={remaining >= 0 ? 'text-green-600' : 'text-orange-600'}>
+                    Remaining: {remaining > 0 ? '+' : ''}{remaining}kcal
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -131,18 +175,25 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
                     
                     {day[mealType] ? (
                       <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          {day[mealType]!.image && (
-                            <img 
-                              src={day[mealType]!.image} 
-                              alt={day[mealType]!.name}
-                              className="w-8 h-8 rounded object-cover"
-                            />
-                          )}
-                          <div className="flex-1">
-                            <div className="font-medium text-sm">{day[mealType]!.name}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {day[mealType]!.calories}kcal • £{day[mealType]!.estimatedCost.toFixed(2)}
+                        <div className="flex items-start gap-2">
+                          <Checkbox
+                            checked={isMealCompleted(day.date, mealType)}
+                            onCheckedChange={() => toggleMealCompletion(day.date, mealType)}
+                            className="mt-1"
+                          />
+                          <div className="flex items-center gap-2 flex-1">
+                            {day[mealType]!.image && (
+                              <img 
+                                src={day[mealType]!.image} 
+                                alt={day[mealType]!.name}
+                                className="w-8 h-8 rounded object-cover"
+                              />
+                            )}
+                            <div className="flex-1">
+                              <div className="font-medium text-sm">{day[mealType]!.name}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {day[mealType]!.calories}kcal • £{day[mealType]!.estimatedCost.toFixed(2)}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -207,6 +258,12 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
           </div>
         </div>
       )}
+
+      <RewardModal 
+        isOpen={showReward} 
+        onClose={() => setShowReward(false)} 
+        streak={weeklyStreak} 
+      />
     </div>
   );
 };
