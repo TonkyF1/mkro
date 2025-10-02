@@ -1,43 +1,15 @@
-import React, { useEffect, useRef } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { useUserProfile } from '@/hooks/useUserProfile';
+import React, { useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import PageNavigation from '@/components/PageNavigation';
 import TrialBanner from '@/components/TrialBanner';
 
 const MainLayout = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
-  const { profile, loading: profileLoading } = useUserProfile();
-  const redirectedRef = useRef(false);
-
-  useEffect(() => {
-    if (
-      !authLoading &&
-      !profileLoading &&
-      user &&
-      !profile?.completed_at &&
-      location.pathname !== '/questionnaire' &&
-      !redirectedRef.current
-    ) {
-      redirectedRef.current = true;
-      navigate('/questionnaire', { replace: true });
-    }
-  }, [user, profile, authLoading, profileLoading, location.pathname, navigate]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [location.pathname]);
-
-  if (authLoading || profileLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
