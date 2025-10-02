@@ -85,6 +85,22 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
     onMealPlanChange?.(updatedPlan);
   };
 
+  const clearDayMeals = async (dayIndex: number) => {
+    const dayName = mealPlan[dayIndex].date;
+    
+    // Clear from database
+    await deleteDayMeals(dayName);
+    
+    // Clear from state
+    const updatedPlan = mealPlan.map((day, index) =>
+      index === dayIndex
+        ? { date: day.date, breakfast: undefined, lunch: undefined, dinner: undefined, snack: undefined }
+        : day
+    );
+    setMealPlan(updatedPlan);
+    onMealPlanChange?.(updatedPlan);
+  };
+
   const calculateDayMacros = (day: MealPlan) => {
     const meals = [day.breakfast, day.lunch, day.dinner, day.snack].filter(Boolean) as Recipe[];
     return meals.reduce(
@@ -144,7 +160,7 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => deleteDayMeals(day.date)}
+                    onClick={() => clearDayMeals(dayIndex)}
                     className="text-destructive hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
