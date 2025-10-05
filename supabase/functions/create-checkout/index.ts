@@ -11,7 +11,8 @@ const rawStripeKeys: Array<[string, string | undefined]> = [
   ["STRIPE API", Deno.env.get("STRIPE API")],
 ];
 const resolvedStripe = rawStripeKeys.find(([_, v]) => !!(v && v.trim()));
-const stripeKey = (resolvedStripe?.[1] || "").trim();
+const stripeKeyRaw = resolvedStripe?.[1] || "";
+const stripeKey = stripeKeyRaw.trim().replace(/^['"]|['"]$/g, "");
 if (!stripeKey || !stripeKey.startsWith("sk_")) {
   console.error(
     "Stripe secret key is missing or invalid. Checked env vars:",
@@ -31,6 +32,13 @@ serve(async (req) => {
   }
 
   try {
+    if (!stripeKey || !stripeKey.startsWith("sk_")) {
+      console.error("Stripe key invalid or missing. Using env:", resolvedStripe?.[0] || "<none>");
+      return new Response(
+        JSON.stringify({ error: "Server misconfigured: Stripe secret key missing or invalid" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey, {
