@@ -20,7 +20,6 @@ import {
   Award
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import mkroLogo from '@/assets/mkro-logo-new.svg';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -79,15 +78,6 @@ const Home = () => {
         <section className="pt-20 pb-32 px-6">
           <div className="max-w-7xl mx-auto">
             <div className="text-center space-y-8 animate-fade-in">
-              {/* Logo */}
-              <div className="flex justify-center mb-8">
-                <img 
-                  src={mkroLogo} 
-                  alt="MKRO" 
-                  className="h-32 w-auto drop-shadow-2xl animate-float"
-                />
-              </div>
-              
               {/* Headline */}
               <div className="space-y-4">
                 <h1 className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tight">
