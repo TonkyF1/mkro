@@ -29,10 +29,10 @@ const WeeklyReports = () => {
   const isPremium = profile?.is_premium || profile?.subscription_status === 'premium';
 
   useEffect(() => {
-    if (isPremium && user) {
+    if (user) {
       generateReport();
     }
-  }, [isPremium, user]);
+  }, [user]);
 
   const generateReport = async () => {
     if (!user) return;
@@ -59,15 +59,6 @@ const WeeklyReports = () => {
       setLoading(false);
     }
   };
-
-  if (!isPremium) {
-    return (
-      <PremiumGate 
-        feature="Weekly AI Reports"
-        description="Get personalized weekly insights and recommendations powered by AI to optimize your nutrition and training."
-      />
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 relative overflow-hidden">
