@@ -28,6 +28,11 @@ const Premium = () => {
   const [loading, setLoading] = useState<string | null>(null);
 
   const isPremium = profile?.is_premium || profile?.subscription_status === 'premium';
+  
+  // Get trial status
+  const trialPromptsUsed = profile?.trial_prompts_used || 0;
+  const trialPromptsRemaining = Math.max(0, 20 - trialPromptsUsed);
+  const isInTrial = trialPromptsRemaining > 0 && !isPremium;
 
   // Stripe Price IDs - Replace with your actual Stripe price IDs
   const MONTHLY_PRICE_ID = 'price_monthly_test'; // Replace with your monthly price ID
@@ -99,6 +104,14 @@ const Premium = () => {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Unlock the full power of AI-driven nutrition, training, and health optimization
           </p>
+          {isInTrial && (
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-sm font-semibold">
+                Free Trial Active: {trialPromptsRemaining} AI prompts remaining
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Pricing Cards */}
@@ -107,15 +120,29 @@ const Premium = () => {
           <Card className="relative overflow-hidden border-2">
             <CardHeader>
               <div className="flex items-center justify-between mb-2">
-                <CardTitle className="text-2xl">Free Plan</CardTitle>
-                <Badge variant="outline">Current</Badge>
+                <CardTitle className="text-2xl">Free Trial</CardTitle>
+                {!isPremium && <Badge variant="outline">Current</Badge>}
               </div>
               <CardDescription className="text-3xl font-bold text-foreground">
-                £0<span className="text-sm font-normal text-muted-foreground">/month</span>
+                £0<span className="text-sm font-normal text-muted-foreground">/forever</span>
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {isInTrial && (
+                <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 mb-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-semibold">
+                      {trialPromptsRemaining} AI Coach prompts remaining
+                    </span>
+                  </div>
+                </div>
+              )}
               <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-sm">20 AI Coach prompts free trial</span>
+                </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                   <span className="text-sm">Limited recipe access</span>
@@ -123,10 +150,6 @@ const Premium = () => {
                 <li className="flex items-start gap-2">
                   <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                   <span className="text-sm">Basic nutrition tracking</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">Standard AI Coach (20 prompts trial)</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
@@ -153,7 +176,7 @@ const Premium = () => {
                   £9.99<span className="text-sm font-normal text-muted-foreground">/month</span>
                 </CardDescription>
                 <CardDescription className="text-sm text-muted-foreground">
-                  or £99.99/year (Save 17%)
+                  or £69.99/year (Save 30%)
                 </CardDescription>
               </div>
             </CardHeader>
@@ -174,6 +197,11 @@ const Premium = () => {
                 </Button>
               ) : (
                 <div className="space-y-3">
+                  {isInTrial && (
+                    <div className="text-center text-sm text-muted-foreground mb-2">
+                      Continue after your {trialPromptsRemaining} free prompts
+                    </div>
+                  )}
                   <Button
                     className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
                     size="lg"
@@ -185,7 +213,7 @@ const Premium = () => {
                     ) : (
                       <Zap className="mr-2 h-5 w-5" />
                     )}
-                    Upgrade Monthly
+                    Upgrade - £9.99/month
                   </Button>
                   <Button
                     className="w-full"
@@ -199,8 +227,11 @@ const Premium = () => {
                     ) : (
                       <Crown className="mr-2 h-5 w-5" />
                     )}
-                    Upgrade Yearly (Save 17%)
+                    Upgrade - £69.99/year (Save 30%)
                   </Button>
+                  <p className="text-center text-xs text-muted-foreground pt-2">
+                    Start with {isInTrial ? `${trialPromptsRemaining} remaining free prompts` : '20 free AI Coach prompts'}
+                  </p>
                 </div>
               )}
             </CardContent>
