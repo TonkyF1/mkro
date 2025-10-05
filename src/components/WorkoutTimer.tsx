@@ -14,6 +14,10 @@ export const WorkoutTimer = () => {
   const [countdownTime, setCountdownTime] = useState(60);
   const [workTime, setWorkTime] = useState(30);
   const [restTime, setRestTime] = useState(10);
+  // String inputs to allow easy editing (including empty state)
+  const [countdownInput, setCountdownInput] = useState('60');
+  const [workInput, setWorkInput] = useState('30');
+  const [restInput, setRestInput] = useState('10');
   const [currentInterval, setCurrentInterval] = useState<'work' | 'rest'>('work');
   const [intervalCount, setIntervalCount] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -59,12 +63,25 @@ export const WorkoutTimer = () => {
   };
 
   const handlePlayPause = () => {
-    if (!isRunning && mode === 'countdown' && time === 0) {
-      setTime(countdownTime);
+    if (!isRunning) {
+      const parsedCountdown = parseInt(countdownInput || '', 10);
+      const parsedWork = parseInt(workInput || '', 10);
+      const parsedRest = parseInt(restInput || '', 10);
+
+      const newCountdown = isNaN(parsedCountdown) ? 0 : parsedCountdown;
+      const newWork = isNaN(parsedWork) ? 0 : parsedWork;
+      const newRest = isNaN(parsedRest) ? 0 : parsedRest;
+
+      setCountdownTime(newCountdown);
+      setWorkTime(newWork);
+      setRestTime(newRest);
+
+      if (mode === 'countdown' && time === 0) {
+        setTime(newCountdown);
+      }
     }
     setIsRunning(!isRunning);
   };
-
   const handleReset = () => {
     setIsRunning(false);
     setTime(0);
@@ -80,13 +97,22 @@ export const WorkoutTimer = () => {
 
   const getProgressPercentage = () => {
     if (mode === 'countdown') {
+      if (countdownTime <= 0) return 0;
       return ((countdownTime - time) / countdownTime) * 100;
     } else if (mode === 'interval') {
       const targetTime = currentInterval === 'work' ? workTime : restTime;
+      if (targetTime <= 0) return 0;
       return (time / targetTime) * 100;
     }
     return 0;
   };
+  useEffect(() => {
+    if (!isRunning) {
+      setCountdownInput(countdownTime.toString());
+      setWorkInput(workTime.toString());
+      setRestInput(restTime.toString());
+    }
+  }, [isRunning]);
 
   return (
     <Card className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-slate-700 shadow-2xl">
@@ -184,9 +210,11 @@ export const WorkoutTimer = () => {
                 <label className="text-sm font-medium text-slate-300">Countdown (seconds)</label>
                 <Input
                   type="number"
-                  value={countdownTime}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value);
+                  inputMode="numeric"
+                  value={countdownInput}
+                  onChange={(e) => setCountdownInput(e.target.value)}
+                  onBlur={() => {
+                    const val = parseInt(countdownInput || '', 10);
                     setCountdownTime(isNaN(val) ? 0 : val);
                   }}
                   className="bg-slate-800/50 border-slate-700 text-white"
@@ -199,9 +227,11 @@ export const WorkoutTimer = () => {
                   <label className="text-sm font-medium text-emerald-400">Work (seconds)</label>
                   <Input
                     type="number"
-                    value={workTime}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value);
+                    inputMode="numeric"
+                    value={workInput}
+                    onChange={(e) => setWorkInput(e.target.value)}
+                    onBlur={() => {
+                      const val = parseInt(workInput || '', 10);
                       setWorkTime(isNaN(val) ? 0 : val);
                     }}
                     className="bg-slate-800/50 border-slate-700 text-white"
@@ -211,9 +241,11 @@ export const WorkoutTimer = () => {
                   <label className="text-sm font-medium text-rose-400">Rest (seconds)</label>
                   <Input
                     type="number"
-                    value={restTime}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value);
+                    inputMode="numeric"
+                    value={restInput}
+                    onChange={(e) => setRestInput(e.target.value)}
+                    onBlur={() => {
+                      const val = parseInt(restInput || '', 10);
                       setRestTime(isNaN(val) ? 0 : val);
                     }}
                     className="bg-slate-800/50 border-slate-700 text-white"
