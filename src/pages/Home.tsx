@@ -26,58 +26,52 @@ import {
   ArrowRight,
   Calendar
 } from 'lucide-react';
-import aiCoachIcon from '@/assets/ai-coach-icon.png';
-import foodScannerIcon from '@/assets/food-scanner-icon.png';
-import shoppingListIcon from '@/assets/shopping-list-icon.png';
-import mealPlannerIcon from '@/assets/meal-planner-icon.png';
-import exerciseTrackerIcon from '@/assets/exercise-tracker-icon.png';
-import recipeLibraryIcon from '@/assets/recipe-library-icon.png';
 
 const Home = () => {
   const navigate = useNavigate();
 
   const mainFeatures = [
     {
-      icon: <Camera className="w-6 h-6" />,
+      icon: <Camera className="w-8 h-8" />,
       title: 'AI Food Scanner',
       description: 'Scan meals instantly to get calories & macros in seconds',
       action: () => navigate('/nutrition'),
-      gradient: 'from-primary/20 to-primary/5'
+      gradient: 'from-violet-600 to-purple-600'
     },
     {
-      icon: <Scan className="w-6 h-6" />,
+      icon: <Scan className="w-8 h-8" />,
       title: 'Barcode Scanner',
       description: 'Quick UK product lookup with comprehensive nutritional data',
       action: () => navigate('/nutrition'),
-      gradient: 'from-accent/20 to-accent/5'
+      gradient: 'from-blue-500 to-cyan-600'
     },
     {
-      icon: <BrainCircuit className="w-6 h-6" />,
+      icon: <BrainCircuit className="w-8 h-8" />,
       title: 'AI MKRO Coach',
       description: 'Personalised advice & plans tailored to your goals 24/7',
       action: () => navigate('/coach'),
-      gradient: 'from-hydration/20 to-hydration/5'
+      gradient: 'from-orange-500 to-red-600'
     },
     {
-      icon: <ChefHat className="w-6 h-6" />,
+      icon: <ChefHat className="w-8 h-8" />,
       title: 'AI Recipes',
       description: 'Recipes tailored to your diet, preferences & goals',
       action: () => navigate('/recipes'),
-      gradient: 'from-primary/20 to-primary/5'
+      gradient: 'from-emerald-500 to-teal-600'
     },
     {
-      icon: <Dumbbell className="w-6 h-6" />,
+      icon: <Dumbbell className="w-8 h-8" />,
       title: 'Training Generator',
       description: 'Goal-based fitness plans that adapt to your progress',
       action: () => navigate('/exercise'),
-      gradient: 'from-accent/20 to-accent/5'
+      gradient: 'from-pink-500 to-rose-600'
     },
     {
-      icon: <ShoppingCart className="w-6 h-6" />,
+      icon: <ShoppingCart className="w-8 h-8" />,
       title: 'Auto Plans & Lists',
       description: 'Automatic meal planning with smart grocery lists',
       action: () => navigate('/planner'),
-      gradient: 'from-hydration/20 to-hydration/5'
+      gradient: 'from-amber-500 to-orange-600'
     }
   ];
 
@@ -85,22 +79,26 @@ const Home = () => {
     {
       icon: <Target className="w-8 h-8" />,
       title: 'Set Your Goals',
-      description: 'Tell MKRO what you want to achieve'
+      description: 'Tell MKRO what you want to achieve',
+      gradient: 'from-violet-600 to-purple-600'
     },
     {
       icon: <Sparkles className="w-8 h-8" />,
       title: 'AI Generates Plans',
-      description: 'Get personalised meal & training plans'
+      description: 'Get personalised meal & training plans',
+      gradient: 'from-blue-500 to-cyan-600'
     },
     {
       icon: <ShoppingCart className="w-8 h-8" />,
       title: 'Shop Smart',
-      description: 'Follow your auto-generated grocery list'
+      description: 'Follow your auto-generated grocery list',
+      gradient: 'from-emerald-500 to-teal-600'
     },
     {
       icon: <TrendingUp className="w-8 h-8" />,
       title: 'Track & Achieve',
-      description: 'Monitor progress and hit your goals'
+      description: 'Monitor progress and hit your goals',
+      gradient: 'from-orange-500 to-red-600'
     }
   ];
 
@@ -126,153 +124,174 @@ const Home = () => {
   ];
 
   return (
-    <div className="space-y-12 pb-8 relative overflow-hidden">
-      {/* Decorative Background */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-0 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 right-1/4 w-64 h-64 bg-hydration/10 rounded-full blur-3xl" />
+    <div className="space-y-24 pb-12 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      {/* Animated Background Orbs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-gradient-to-br from-violet-500/20 to-purple-600/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-gradient-to-br from-blue-500/20 to-cyan-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-gradient-to-br from-pink-500/20 to-rose-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
       {/* Hero Section */}
-      <section className="text-center space-y-6 pt-4 animate-fade-in">
+      <section className="text-center space-y-12 pt-12 animate-fade-in relative z-10 max-w-7xl mx-auto px-6">
         <div className="inline-block">
-          <Badge className="px-4 py-2 bg-primary/10 text-primary border-primary/20 text-sm font-medium">
+          <Badge className="px-6 py-3 bg-gradient-to-r from-violet-500/10 to-purple-500/10 text-violet-700 dark:text-violet-300 border-2 border-violet-200 dark:border-violet-800 text-sm font-semibold rounded-full">
             <Sparkles className="w-4 h-4 mr-2" />
             Your AI-Powered Health Platform
           </Badge>
         </div>
         
-        <div className="space-y-4 max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight">
-            Plan smarter.
-            <span className="block text-primary">Eat better.</span>
-            <span className="block text-accent">Train stronger.</span>
+        <div className="space-y-8">
+          <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-none">
+            <span className="block">Plan smarter.</span>
+            <span className="block bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+              Eat better.
+            </span>
+            <span className="block bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">
+              Train stronger.
+            </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-400 max-w-4xl mx-auto leading-relaxed font-medium">
             Your complete AI health coach with smart meal planning, food scanning, and personalised training programs
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-          <Button size="lg" onClick={() => navigate('/coach')} className="gap-2 text-lg h-14 px-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+        <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
+          <Button size="lg" onClick={() => navigate('/coach')} className="gap-2 text-lg px-8 py-6 h-auto">
             <MessageSquare className="w-5 h-5" />
             Start Free Today
           </Button>
-          <Button size="lg" variant="outline" onClick={() => navigate('/recipes')} className="gap-2 text-lg h-14 px-8 border-2 transition-all duration-300 hover:scale-105">
+          <Button size="lg" variant="outline" onClick={() => navigate('/recipes')} className="gap-2 text-lg px-8 py-6 h-auto">
             Explore Features
             <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
 
         {/* Trust Signal */}
-        <div className="flex items-center justify-center gap-8 pt-8 text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium">Used by early adopters</span>
+        <div className="flex items-center justify-center gap-12 pt-12 text-slate-600 dark:text-slate-400">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+              <Users className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-sm font-semibold">Early Adopters</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Zap className="w-5 h-5 text-accent" />
-            <span className="text-sm font-medium">Powered by AI</span>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+              <Zap className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-sm font-semibold">AI Powered</span>
           </div>
         </div>
       </section>
 
       {/* Features Grid */}
-      <section className="space-y-8">
-        <div className="text-center space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Everything You Need to <span className="text-primary">Succeed</span>
+      <section className="space-y-12 max-w-7xl mx-auto px-6 relative z-10">
+        <div className="text-center space-y-6">
+          <h2 className="text-4xl md:text-5xl font-black">
+            Everything You Need to{' '}
+            <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+              Succeed
+            </span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
             Powerful AI-driven features to help you achieve your health goals
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {mainFeatures.map((feature, index) => (
-            <Card 
-              key={index} 
-              className="border-2 border-border hover:border-primary/40 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group cursor-pointer"
+            <div 
+              key={index}
+              className="group relative p-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-transparent transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl cursor-pointer overflow-hidden"
               onClick={feature.action}
             >
-              <CardHeader className="space-y-4">
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300`}>
-                  {feature.icon}
+              <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
+              <div className="relative space-y-4">
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                  <div className="text-white">{feature.icon}</div>
                 </div>
-                <CardTitle className="text-xl">{feature.title}</CardTitle>
-                <CardDescription className="text-base">
-                  {feature.description}
-                </CardDescription>
-              </CardHeader>
-            </Card>
+                <h3 className="text-2xl font-bold">{feature.title}</h3>
+                <p className="text-slate-600 dark:text-slate-400">{feature.description}</p>
+              </div>
+            </div>
           ))}
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="space-y-12">
-        <div className="text-center space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold">
-            How <span className="text-primary">MKRO</span> Works
+      <section className="space-y-12 max-w-7xl mx-auto px-6 relative z-10">
+        <div className="text-center space-y-6">
+          <h2 className="text-4xl md:text-5xl font-black">
+            How{' '}
+            <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+              MKRO
+            </span>{' '}
+            Works
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
             Four simple steps to transform your health journey
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {howItWorksSteps.map((step, index) => (
             <div key={index} className="relative">
-              <Card className="border-2 border-border hover:border-primary/40 transition-all duration-300 text-center h-full">
-                <CardHeader className="space-y-4 pb-6">
-                  <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary">
-                    {step.icon}
+              <Card className="border-2 border-slate-200 dark:border-slate-800 hover:border-transparent hover:shadow-2xl transition-all duration-500 text-center h-full overflow-hidden group">
+                <div className={`absolute inset-0 bg-gradient-to-br ${step.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
+                <CardHeader className="space-y-6 pb-8 relative">
+                  <div className={`mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br ${step.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                    <div className="text-white">{step.icon}</div>
                   </div>
-                  <CardTitle className="text-lg flex items-center justify-center gap-2">
-                    <span className="text-primary font-bold">{index + 1}</span>
-                    {step.title}
+                  <CardTitle className="text-xl flex items-center justify-center gap-3">
+                    <span className={`text-3xl font-black bg-gradient-to-r ${step.gradient} bg-clip-text text-transparent`}>
+                      {index + 1}
+                    </span>
+                    <span>{step.title}</span>
                   </CardTitle>
-                  <CardDescription>{step.description}</CardDescription>
+                  <CardDescription className="text-base">{step.description}</CardDescription>
                 </CardHeader>
               </Card>
               {index < howItWorksSteps.length - 1 && (
-                <ArrowRight className="hidden lg:block absolute top-1/2 -right-8 w-6 h-6 text-muted-foreground" />
+                <ArrowRight className="hidden lg:block absolute top-1/2 -right-4 w-8 h-8 text-slate-300 dark:text-slate-700 z-10" />
               )}
             </div>
           ))}
         </div>
       </section>
 
-      {/* Social Proof / Testimonials */}
-      <section className="space-y-12">
-        <div className="text-center space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Loved by Our <span className="text-primary">Community</span>
+      {/* Testimonials */}
+      <section className="space-y-12 max-w-7xl mx-auto px-6 relative z-10">
+        <div className="text-center space-y-6">
+          <h2 className="text-4xl md:text-5xl font-black">
+            Loved by Our{' '}
+            <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+              Community
+            </span>
           </h2>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-xl text-slate-600 dark:text-slate-400">
             See what early users are saying about MKRO
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6">
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="border-2 border-border hover:border-primary/40 transition-all duration-300 hover:shadow-lg">
-              <CardHeader className="space-y-4">
+            <Card key={index} className="border-2 border-slate-200 dark:border-slate-800 hover:border-transparent hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <CardHeader className="space-y-6 relative">
                 <div className="flex items-center gap-1">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-accent text-accent" />
+                    <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
-                <CardDescription className="text-base italic text-foreground">
+                <CardDescription className="text-base italic text-foreground font-medium">
                   "{testimonial.text}"
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative">
                 <div>
-                  <p className="font-semibold">{testimonial.name}</p>
-                  <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                  <p className="font-bold text-lg">{testimonial.name}</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">{testimonial.role}</p>
                 </div>
               </CardContent>
             </Card>
@@ -280,219 +299,93 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Progress & Motivation Section */}
-      <section className="space-y-8 max-w-4xl mx-auto">
-        {/* Streak Reward Feature */}
-        <Card className="border-2 border-accent/30 bg-gradient-to-br from-accent/10 via-purple-500/5 to-transparent overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-yellow-400/20 to-orange-500/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-accent/10 rounded-full blur-2xl" />
+      {/* Streak Section */}
+      <section className="space-y-12 max-w-5xl mx-auto px-6 relative z-10">
+        <Card className="border-2 border-amber-300 dark:border-amber-700 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl" />
           
-          <CardHeader className="text-center space-y-4 relative z-10">
-            <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 via-orange-500 to-pink-500 flex items-center justify-center shadow-2xl">
+          <CardHeader className="text-center space-y-6 relative z-10">
+            <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 via-orange-500 to-pink-500 flex items-center justify-center shadow-2xl">
               <Award className="w-10 h-10 text-white" />
             </div>
-            <CardTitle className="text-3xl md:text-4xl">
-              Unlock Rewards with Your <span className="text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 bg-clip-text">5-Day Streak!</span>
+            <CardTitle className="text-4xl md:text-5xl font-black">
+              Unlock Rewards with Your{' '}
+              <span className="bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 bg-clip-text text-transparent">
+                5-Day Streak!
+              </span>
             </CardTitle>
-            <CardDescription className="text-lg">
+            <CardDescription className="text-lg text-slate-600 dark:text-slate-400">
               Track your meals for 5 days in a row and unlock a premium celebration experience with confetti, achievements, and progress insights
             </CardDescription>
           </CardHeader>
-          <CardContent className="relative z-10 space-y-6">
-            <div className="grid sm:grid-cols-3 gap-4">
-              <div className="text-center p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-border">
-                <div className="mx-auto w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mb-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-600" />
+          <CardContent className="relative z-10 space-y-8 p-8">
+            <div className="grid sm:grid-cols-3 gap-6">
+              <div className="text-center p-6 rounded-2xl bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-800">
+                <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mb-4 shadow-lg">
+                  <CheckCircle2 className="w-8 h-8 text-white" />
                 </div>
-                <p className="font-semibold text-sm">Check Off Meals</p>
-                <p className="text-xs text-muted-foreground mt-1">Mark each meal as complete</p>
+                <p className="font-bold text-lg mb-2">Check Off Meals</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Mark each meal as complete</p>
               </div>
-              <div className="text-center p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-border">
-                <div className="mx-auto w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-3">
-                  <Calendar className="w-6 h-6 text-blue-600" />
+              <div className="text-center p-6 rounded-2xl bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-800">
+                <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center mb-4 shadow-lg">
+                  <Calendar className="w-8 h-8 text-white" />
                 </div>
-                <p className="font-semibold text-sm">Track 5 Days</p>
-                <p className="text-xs text-muted-foreground mt-1">Build your weekly streak</p>
+                <p className="font-bold text-lg mb-2">Track 5 Days</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Build your weekly streak</p>
               </div>
-              <div className="text-center p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-border">
-                <div className="mx-auto w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400/30 to-orange-500/30 flex items-center justify-center mb-3">
-                  <Sparkles className="w-6 h-6 text-orange-500" />
+              <div className="text-center p-6 rounded-2xl bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-2 border-slate-200 dark:border-slate-800">
+                <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mb-4 shadow-lg">
+                  <Sparkles className="w-8 h-8 text-white" />
                 </div>
-                <p className="font-semibold text-sm">Get Rewarded</p>
-                <p className="text-xs text-muted-foreground mt-1">Unlock celebrations</p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
-              <div className="flex items-center gap-3">
-                <TrendingUp className="w-6 h-6 text-primary flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="font-semibold">Real-Time Progress Tracking</p>
-                  <p className="text-sm text-muted-foreground">See your streak grow and calories tracked at the top of your Nutrition Hub</p>
-                </div>
+                <p className="font-bold text-lg mb-2">Get Rewarded</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Unlock celebrations</p>
               </div>
             </div>
 
             <div className="text-center">
-              <Button size="lg" onClick={() => navigate('/nutrition')} className="gap-2 shadow-lg">
+              <Button size="lg" onClick={() => navigate('/nutrition')} className="gap-2 px-8 py-6 h-auto text-lg">
                 <Calendar className="w-5 h-5" />
                 Start Tracking Today
               </Button>
             </div>
           </CardContent>
         </Card>
-
-        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-          <CardHeader className="text-center space-y-4">
-            <div className="mx-auto w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
-              <Clock className="w-8 h-8 text-primary" />
-            </div>
-            <CardTitle className="text-3xl">Stay on Track with 7-Day Check-ins</CardTitle>
-            <CardDescription className="text-lg">
-              Regular motivation and progress reviews to keep you accountable and moving forward
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
-                <CheckCircle2 className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <p className="font-semibold">Weekly Progress Reviews</p>
-                  <p className="text-sm text-muted-foreground">Track your journey with detailed insights</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
-                <Bell className="w-6 h-6 text-accent flex-shrink-0 mt-1" />
-                <div>
-                  <p className="font-semibold">Smart Reminders</p>
-                  <p className="text-sm text-muted-foreground">Push notifications coming soon</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
-                <Target className="w-6 h-6 text-hydration flex-shrink-0 mt-1" />
-                <div>
-                  <p className="font-semibold">Goal Adjustments</p>
-                  <p className="text-sm text-muted-foreground">Plans that adapt to your progress</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
-                <Award className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <p className="font-semibold">Streak Rewards</p>
-                  <p className="text-sm text-muted-foreground">Premium celebrations for consistency</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </section>
 
-      {/* Smart Features Section */}
-      <section className="space-y-8">
-        <div className="text-center space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Smart Features That <span className="text-accent">Stand Out</span>
-          </h2>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          <Card 
-            className="border-2 border-border hover:border-accent/40 transition-all duration-300 hover:shadow-lg cursor-pointer"
-            onClick={() => navigate('/recipes')}
-          >
-            <CardHeader className="space-y-4">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center">
-                <ChefHat className="w-7 h-7 text-accent" />
-              </div>
-              <CardTitle className="text-2xl">Smart Leftovers</CardTitle>
-              <CardDescription className="text-base">
-                MKRO suggests creative recipes to use your leftover ingredients, helping you reduce waste and save money
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card 
-            className="border-2 border-border hover:border-primary/40 transition-all duration-300 hover:shadow-lg cursor-pointer"
-            onClick={() => navigate('/recipes')}
-          >
-            <CardHeader className="space-y-4">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                <Leaf className="w-7 h-7 text-primary" />
-              </div>
-              <CardTitle className="text-2xl">Seasonal UK Ingredients</CardTitle>
-              <CardDescription className="text-base">
-                Get recommendations based on what's fresh and in season in the UK for the best taste and value
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-      </section>
-
-      {/* Premium Preview Section */}
-      <section className="max-w-4xl mx-auto">
-        <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-accent/5 to-transparent overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full blur-2xl" />
-          <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/10 rounded-full blur-2xl" />
+      {/* Final CTA */}
+      <section className="max-w-5xl mx-auto px-6 relative z-10">
+        <div className="text-center space-y-12 py-20 px-8 rounded-3xl bg-gradient-to-br from-violet-600 to-purple-600 text-white shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-float" />
+          <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-float" style={{ animationDelay: '1s' }} />
           
-          <CardHeader className="text-center space-y-4 relative z-10">
-            <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Crown className="w-8 h-8 text-white" />
-            </div>
-            <CardTitle className="text-3xl md:text-4xl">Premium Features Coming Soon</CardTitle>
-            <CardDescription className="text-lg">
-              Get early access to exclusive features and priority support
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="relative z-10">
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-card/50 backdrop-blur-sm">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span className="text-sm font-medium">Advanced AI Coaching</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-card/50 backdrop-blur-sm">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span className="text-sm font-medium">Custom Meal Plans</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-card/50 backdrop-blur-sm">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span className="text-sm font-medium">Priority Support</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-card/50 backdrop-blur-sm">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span className="text-sm font-medium">Unlimited Scans</span>
-              </div>
-            </div>
-            <div className="mt-6 text-center">
-              <Button size="lg" disabled className="gap-2">
-                <Crown className="w-5 h-5" />
-                Join Waitlist (Coming Soon)
+          <div className="relative z-10 space-y-8">
+            <h2 className="text-5xl md:text-6xl font-black">
+              Ready to Transform Your Health?
+            </h2>
+            <p className="text-xl text-violet-100 max-w-2xl mx-auto font-medium">
+              Join MKRO today and start your journey to a healthier, stronger you
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center pt-4">
+              <Button 
+                size="lg" 
+                onClick={() => navigate('/coach')} 
+                className="gap-2 text-lg px-8 py-6 h-auto bg-white text-violet-600 hover:bg-slate-100 shadow-xl hover:shadow-2xl"
+              >
+                <Sparkles className="w-5 h-5" />
+                Start Free Today
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                onClick={() => navigate('/nutrition')} 
+                className="gap-2 text-lg px-8 py-6 h-auto border-2 border-white text-white hover:bg-white hover:text-violet-600"
+              >
+                <Calendar className="w-5 h-5" />
+                Explore Features
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Final CTA Section */}
-      <section className="text-center space-y-8 py-16 px-6 rounded-2xl bg-gradient-to-br from-primary/20 via-accent/10 to-hydration/5 border-2 border-primary/30 shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-accent/20 rounded-full blur-2xl animate-float" />
-        <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/20 rounded-full blur-2xl animate-float" style={{ animationDelay: '1s' }} />
-        
-        <div className="relative z-10 space-y-6">
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Ready to Transform Your Health?
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Join MKRO today and start your journey to a healthier, stronger you
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button size="lg" onClick={() => navigate('/coach')} className="gap-2 text-lg h-14 px-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
-              <Sparkles className="w-5 h-5" />
-              Start Free Today
-            </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate('/nutrition')} className="gap-2 text-lg h-14 px-8 border-2 transition-all duration-300 hover:scale-105">
-              <Calendar className="w-5 h-5" />
-              Explore Features
-            </Button>
           </div>
         </div>
       </section>
