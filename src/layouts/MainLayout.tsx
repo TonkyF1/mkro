@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import PageNavigation from '@/components/PageNavigation';
 import TrialBanner from '@/components/TrialBanner';
-import mkroLogo from '@/assets/mkro-logo-new.svg';
+import mkroLogo from '@/assets/mkro-logo-bounce.svg';
 
 const MainLayout = () => {
   const location = useLocation();
@@ -20,7 +20,7 @@ const MainLayout = () => {
         <img 
           src={mkroLogo} 
           alt="MKRO - Your AI Health Coach" 
-          className="w-32 h-32 object-contain animate-bounce"
+          className="w-32 h-32 object-contain animate-bounce-slow hover:scale-110 transition-transform"
         />
         <p className="text-xs text-muted-foreground mt-2">Your AI Health Coach</p>
       </div>

@@ -103,6 +103,16 @@ export default {
         "gradient-shift": {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" }
+        },
+        "bounce-slow": {
+          "0%, 100%": { 
+            transform: "translateY(-5%)",
+            animationTimingFunction: "cubic-bezier(0.8, 0, 1, 1)"
+          },
+          "50%": { 
+            transform: "translateY(0)",
+            animationTimingFunction: "cubic-bezier(0, 0, 0.2, 1)"
+          }
         }
       },
       animation: {
@@ -114,7 +124,8 @@ export default {
         "float": "float 3s ease-in-out infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "shimmer": "shimmer 3s linear infinite",
-        "gradient-shift": "gradient-shift 8s ease infinite"
+        "gradient-shift": "gradient-shift 8s ease infinite",
+        "bounce-slow": "bounce-slow 2s infinite"
       },
       backgroundSize: {
         "300%": "300% 300%"
