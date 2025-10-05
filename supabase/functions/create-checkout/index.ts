@@ -2,7 +2,22 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-const stripeKey = Deno.env.get("STRIPE_TEST") || Deno.env.get("STRIPE TEST") || Deno.env.get("STRIPE_API") || Deno.env.get("STRIPE API") || "";
+const rawStripeKeys: Array<[string, string | undefined]> = [
+  ["STRIPE_TEST", Deno.env.get("STRIPE_TEST")],
+  ["STRIPE TEST", Deno.env.get("STRIPE TEST")],
+  ["STRIPE_SECRET_KEY", Deno.env.get("STRIPE_SECRET_KEY")],
+  ["STRIPE_SECRET", Deno.env.get("STRIPE_SECRET")],
+  ["STRIPE_API", Deno.env.get("STRIPE_API")],
+  ["STRIPE API", Deno.env.get("STRIPE API")],
+];
+const resolvedStripe = rawStripeKeys.find(([_, v]) => !!(v && v.trim()));
+const stripeKey = (resolvedStripe?.[1] || "").trim();
+if (!stripeKey || !stripeKey.startsWith("sk_")) {
+  console.error(
+    "Stripe secret key is missing or invalid. Checked env vars:",
+    rawStripeKeys.map(([n, v]) => `${n}:${v ? "set" : "missing"}`).join(", ")
+  );
+}
 const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
 const corsHeaders = {
