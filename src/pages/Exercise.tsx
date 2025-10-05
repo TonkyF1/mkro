@@ -5,11 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dumbbell, TrendingUp, Flame, Activity, Loader2, Trash2, Plus, Calendar as CalendarIcon } from 'lucide-react';
+import { Dumbbell, TrendingUp, Flame, Activity, Loader2, Trash2, Plus, Calendar as CalendarIcon, Timer } from 'lucide-react';
 import { useWeeklyPlans } from '@/hooks/useWeeklyPlans';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { WorkoutTimer } from '@/components/WorkoutTimer';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -220,8 +221,12 @@ const Exercise = () => {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="ai-plan" className="w-full">
-          <TabsList className="w-full max-w-md mx-auto grid grid-cols-2">
+        <Tabs defaultValue="timer" className="w-full">
+          <TabsList className="w-full max-w-2xl mx-auto grid grid-cols-3">
+            <TabsTrigger value="timer">
+              <Timer className="w-4 h-4 mr-2" />
+              Timer
+            </TabsTrigger>
             <TabsTrigger value="ai-plan">
               <CalendarIcon className="w-4 h-4 mr-2" />
               AI Plan
@@ -231,6 +236,11 @@ const Exercise = () => {
               Manual Log
             </TabsTrigger>
           </TabsList>
+
+          {/* Timer Tab */}
+          <TabsContent value="timer" className="mt-6">
+            <WorkoutTimer />
+          </TabsContent>
 
           {/* AI Plan Tab */}
           <TabsContent value="ai-plan" className="mt-6">
