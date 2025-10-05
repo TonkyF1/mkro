@@ -12,10 +12,13 @@ const Coach = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-8 flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <Brain className="w-12 h-12 animate-pulse text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[var(--gradient-mesh)]" />
+        <div className="relative text-center space-y-4 animate-scale-in">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent mx-auto flex items-center justify-center shadow-[var(--shadow-glow-primary)] animate-pulse">
+            <Brain className="w-10 h-10 text-white" />
+          </div>
+          <p className="text-muted-foreground text-lg">Loading your AI Coach...</p>
         </div>
       </div>
     );
@@ -23,18 +26,31 @@ const Coach = () => {
 
   if (!user) {
     return (
-      <div className="container mx-auto p-8">
-        <Card className="max-w-md mx-auto p-8 text-center">
-          <Brain className="w-16 h-16 text-primary mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Sign In Required</h2>
-          <p className="text-muted-foreground mb-6">
-            You need to be signed in to access the MKRO Coach. The coach provides personalized meal plans and training programs based on your profile.
-          </p>
-          <Button onClick={() => navigate('/profile')} className="w-full gap-2">
-            <LogIn className="w-4 h-4" />
-            Sign In / Sign Up
-          </Button>
-        </Card>
+      <div className="min-h-screen relative overflow-hidden">
+        <div className="absolute inset-0 bg-[var(--gradient-mesh)]" />
+        <div className="relative container mx-auto p-8 flex items-center justify-center min-h-screen">
+          <Card className="max-w-md p-8 text-center space-y-6 border-0 bg-card/50 backdrop-blur-xl shadow-[var(--shadow-2xl)]">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent mx-auto flex items-center justify-center shadow-[var(--shadow-glow-primary)]">
+              <Brain className="w-10 h-10 text-white" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-black mb-3 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Sign In Required
+              </h2>
+              <p className="text-muted-foreground text-lg leading-relaxed">
+                Access your AI MKRO Coach for personalized meal plans and training programs tailored to your goals
+              </p>
+            </div>
+            <Button 
+              onClick={() => navigate('/profile')} 
+              className="w-full gap-2 py-6 bg-gradient-to-r from-primary to-accent hover:shadow-[var(--shadow-glow-primary)] transition-all duration-300"
+              size="lg"
+            >
+              <LogIn className="w-5 h-5" />
+              Sign In / Sign Up
+            </Button>
+          </Card>
+        </div>
       </div>
     );
   }
