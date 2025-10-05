@@ -11,7 +11,7 @@ const LoadingScreen = () => {
           <img 
             src={mkroLogo} 
             alt="MKRO" 
-            className="w-32 h-32 object-contain animate-pulse"
+            className="w-24 h-24 object-contain animate-pulse"
           />
           <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping"></div>
         </div>

@@ -16,7 +16,7 @@ const Header = () => {
           <img 
             src={mkroLogo} 
             alt="MKRO - Your AI Health Coach" 
-            className="object-contain w-full max-w-2xl drop-shadow-lg group-hover:drop-shadow-2xl transition-all duration-300"
+            className="object-contain w-full max-w-xs drop-shadow-lg group-hover:drop-shadow-2xl transition-all duration-300"
           />
         </div>
         <div className="flex-1" />
