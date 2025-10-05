@@ -221,12 +221,8 @@ const Exercise = () => {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="timer" className="w-full">
+        <Tabs defaultValue="ai-plan" className="w-full">
           <TabsList className="w-full max-w-2xl mx-auto grid grid-cols-3">
-            <TabsTrigger value="timer">
-              <Timer className="w-4 h-4 mr-2" />
-              Timer
-            </TabsTrigger>
             <TabsTrigger value="ai-plan">
               <CalendarIcon className="w-4 h-4 mr-2" />
               AI Plan
@@ -235,12 +231,11 @@ const Exercise = () => {
               <Plus className="w-4 h-4 mr-2" />
               Manual Log
             </TabsTrigger>
+            <TabsTrigger value="timer">
+              <Timer className="w-4 h-4 mr-2" />
+              Timer
+            </TabsTrigger>
           </TabsList>
-
-          {/* Timer Tab */}
-          <TabsContent value="timer" className="mt-6">
-            <WorkoutTimer />
-          </TabsContent>
 
           {/* AI Plan Tab */}
           <TabsContent value="ai-plan" className="mt-6">
@@ -442,6 +437,11 @@ const Exercise = () => {
                 </div>
               )}
             </Card>
+          </TabsContent>
+
+          {/* Timer Tab */}
+          <TabsContent value="timer" className="mt-6">
+            <WorkoutTimer />
           </TabsContent>
         </Tabs>
       </div>

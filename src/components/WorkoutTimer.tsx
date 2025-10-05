@@ -103,7 +103,7 @@ export const WorkoutTimer = () => {
 
       <CardContent className="p-8 relative z-10">
         {/* Mode Selector */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 relative z-20">
           {(['stopwatch', 'countdown', 'interval'] as TimerMode[]).map((m) => (
             <Button
               key={m}
@@ -114,7 +114,7 @@ export const WorkoutTimer = () => {
                 handleReset();
               }}
               className={cn(
-                "flex-1 capitalize transition-all",
+                "flex-1 capitalize transition-all relative z-20",
                 mode === m && "bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700"
               )}
             >
@@ -129,25 +129,25 @@ export const WorkoutTimer = () => {
         <div className="relative mb-8">
           {/* Progress Ring */}
           {(mode === 'countdown' || mode === 'interval') && (
-            <svg className="absolute inset-0 w-full h-full -rotate-90">
+            <svg className="absolute inset-0 w-full h-full -rotate-90" style={{ zIndex: 1 }}>
               <circle
                 cx="50%"
                 cy="50%"
-                r="45%"
+                r="42%"
                 fill="none"
                 stroke="rgba(255,255,255,0.1)"
-                strokeWidth="8"
+                strokeWidth="12"
               />
               <circle
                 cx="50%"
                 cy="50%"
-                r="45%"
+                r="42%"
                 fill="none"
                 stroke="url(#gradient)"
-                strokeWidth="8"
+                strokeWidth="12"
                 strokeLinecap="round"
-                strokeDasharray={`${2 * Math.PI * 45} ${2 * Math.PI * 45}`}
-                strokeDashoffset={2 * Math.PI * 45 * (1 - getProgressPercentage() / 100)}
+                strokeDasharray={`${2 * Math.PI * 42} ${2 * Math.PI * 42}`}
+                strokeDashoffset={2 * Math.PI * 42 * (1 - getProgressPercentage() / 100)}
                 className="transition-all duration-1000"
               />
               <defs>
@@ -159,13 +159,13 @@ export const WorkoutTimer = () => {
             </svg>
           )}
 
-          <div className="flex flex-col items-center justify-center py-12">
-            <div className="text-8xl font-black text-white mb-2 tracking-tight">
+          <div className="flex flex-col items-center justify-center py-16 relative z-10">
+            <div className="text-9xl font-black text-white mb-4 tracking-tight">
               {formatTime(time)}
             </div>
             {mode === 'interval' && (
               <div className={cn(
-                "text-lg font-bold px-4 py-1 rounded-full",
+                "text-xl font-bold px-6 py-2 rounded-full",
                 currentInterval === 'work' 
                   ? "bg-emerald-500/20 text-emerald-400" 
                   : "bg-rose-500/20 text-rose-400"
