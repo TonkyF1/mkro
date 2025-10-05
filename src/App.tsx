@@ -15,6 +15,7 @@ import NutritionHub from "./pages/NutritionHub";
 import Auth from "./pages/Auth";
 import Premium from "./pages/Premium";
 import Admin from "./pages/Admin";
+import Timer from "./pages/Timer";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => {
                 <Route path="/recipes" element={<Recipes />} />
                 <Route path="/nutrition" element={<NutritionHub />} />
                 <Route path="/exercise" element={<Exercise />} />
+                <Route path="/timer" element={<Timer />} />
                 <Route path="/coach" element={<Coach />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/premium" element={<Premium />} />

@@ -179,8 +179,7 @@ const Exercise = () => {
             </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="group relative p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative flex items-center gap-4">
@@ -205,15 +204,18 @@ const Exercise = () => {
                 </div>
               </div>
             </div>
-            <div className="group relative p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-teal-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div 
+              className="group relative p-6 rounded-3xl bg-gradient-to-br from-pink-500/10 to-rose-600/10 border-2 border-pink-500/30 dark:border-pink-500/30 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl cursor-pointer"
+              onClick={() => navigate('/timer')}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-rose-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
-                  <Activity className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
+                  <Timer className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Calories Burned</p>
-                  <p className="text-3xl font-black">{manualCalories} kcal</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Workout Timer</p>
+                  <p className="text-3xl font-black">Open Timer →</p>
                 </div>
               </div>
             </div>
@@ -222,7 +224,7 @@ const Exercise = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="ai-plan" className="w-full">
-          <TabsList className="w-full max-w-2xl mx-auto grid grid-cols-3">
+          <TabsList className="w-full max-w-2xl mx-auto grid grid-cols-2">
             <TabsTrigger value="ai-plan">
               <CalendarIcon className="w-4 h-4 mr-2" />
               AI Plan
@@ -230,10 +232,6 @@ const Exercise = () => {
             <TabsTrigger value="manual-log">
               <Plus className="w-4 h-4 mr-2" />
               Manual Log
-            </TabsTrigger>
-            <TabsTrigger value="timer">
-              <Timer className="w-4 h-4 mr-2" />
-              Timer
             </TabsTrigger>
           </TabsList>
 
@@ -437,11 +435,6 @@ const Exercise = () => {
                 </div>
               )}
             </Card>
-          </TabsContent>
-
-          {/* Timer Tab */}
-          <TabsContent value="timer" className="mt-6">
-            <WorkoutTimer />
           </TabsContent>
         </Tabs>
       </div>
