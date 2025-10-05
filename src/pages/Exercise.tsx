@@ -1,19 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import ExerciseTracker from '@/components/ExerciseTracker';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Dumbbell, TrendingUp, Flame, Activity, Loader2, Trash2 } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dumbbell, TrendingUp, Flame, Activity, Loader2, Trash2, Plus, Calendar as CalendarIcon } from 'lucide-react';
 import { useWeeklyPlans } from '@/hooks/useWeeklyPlans';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+interface ManualWorkout {
+  id: string;
+  name: string;
+  type: string;
+  duration: number;
+  calories: number;
+  date: string;
+}
 
 const Exercise = () => {
   const { trainingPlan, loading, fetchPlans } = useWeeklyPlans();
   const { toast } = useToast();
-  const [completedDays, setCompletedDays] = useState<Record<string, { workouts: number; calories: number; duration: number }>>({});
+  const navigate = useNavigate();
+  const [completedDays, setCompletedDays] = useState<Record<string, boolean>>({});
+  const [manualWorkouts, setManualWorkouts] = useState<ManualWorkout[]>([]);
+  const [workoutName, setWorkoutName] = useState('');
+  const [workoutType, setWorkoutType] = useState('cardio');
+  const [workoutDuration, setWorkoutDuration] = useState('30');
+  const [workoutCalories, setWorkoutCalories] = useState('200');
 
   // Load completed days from localStorage
   useEffect(() => {
@@ -27,34 +45,25 @@ const Exercise = () => {
     }
   }, []);
 
-  const getStoredKey = (day: string) => {
-    const idx = DAYS.indexOf(day);
-    const dayN = `Day ${idx + 1}`;
-    if (trainingPlan?.days?.[day]) return day;
-    if (trainingPlan?.days?.[dayN]) return dayN;
-    return day;
-  };
+  // Load manual workouts from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('manual_workouts');
+    if (stored) {
+      try {
+        setManualWorkouts(JSON.parse(stored));
+      } catch (e) {
+        console.error('Error loading manual workouts:', e);
+      }
+    }
+  }, []);
 
   const handleToggleComplete = (day: string) => {
-    const key = getStoredKey(day);
-    const dayPlan = trainingPlan?.days?.[key];
-    if (!dayPlan) return;
-
     const newCompleted = { ...completedDays };
     if (newCompleted[day]) {
       delete newCompleted[day];
       toast({ title: 'Unmarked', description: `${day} marked as incomplete.` });
     } else {
-      // Calculate stats from the day's exercises
-      const exercises = dayPlan.exercises || [];
-      const duration = exercises.reduce((sum: number, ex: any) => sum + (ex.sets || 1) * 3, 0); // Rough estimate: 3 min per set
-      const calories = Math.round(duration * 5); // Rough estimate: 5 cal per min
-      
-      newCompleted[day] = {
-        workouts: 1,
-        calories,
-        duration
-      };
+      newCompleted[day] = true;
       toast({ title: 'Completed!', description: `${day} workout marked as complete.` });
     }
     
@@ -66,8 +75,7 @@ const Exercise = () => {
     if (!trainingPlan?.id) return;
     try {
       const updatedDays = { ...(trainingPlan.days || {}) } as any;
-      const key = getStoredKey(day);
-      delete updatedDays[key];
+      delete updatedDays[day];
       const { error } = await supabase
         .from('weekly_training_plans')
         .update({ days: updatedDays })
@@ -88,15 +96,63 @@ const Exercise = () => {
     }
   };
 
-  // Calculate weekly stats from completed days
-  const weeklyStats = Object.values(completedDays).reduce(
-    (acc, day) => ({
-      workouts: acc.workouts + day.workouts,
-      calories: acc.calories + day.calories,
-      activeDays: acc.activeDays + 1
-    }),
-    { workouts: 0, calories: 0, activeDays: 0 }
-  );
+  const addManualWorkout = () => {
+    if (!workoutName.trim()) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Please enter a workout name.' });
+      return;
+    }
+
+    const newWorkout: ManualWorkout = {
+      id: crypto.randomUUID(),
+      name: workoutName,
+      type: workoutType,
+      duration: parseInt(workoutDuration),
+      calories: parseInt(workoutCalories),
+      date: new Date().toISOString(),
+    };
+
+    const updated = [...manualWorkouts, newWorkout];
+    setManualWorkouts(updated);
+    localStorage.setItem('manual_workouts', JSON.stringify(updated));
+
+    // Reset form
+    setWorkoutName('');
+    setWorkoutType('cardio');
+    setWorkoutDuration('30');
+    setWorkoutCalories('200');
+
+    toast({ title: 'Logged!', description: 'Workout added to manual log.' });
+  };
+
+  const deleteManualWorkout = (id: string) => {
+    const updated = manualWorkouts.filter(w => w.id !== id);
+    setManualWorkouts(updated);
+    localStorage.setItem('manual_workouts', JSON.stringify(updated));
+    toast({ title: 'Deleted', description: 'Workout removed from log.' });
+  };
+
+  const getTodayWorkouts = () => {
+    const today = new Date().toDateString();
+    return manualWorkouts.filter(w => new Date(w.date).toDateString() === today);
+  };
+
+  const getThisWeekWorkouts = () => {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Monday
+    startOfWeek.setHours(0, 0, 0, 0);
+    
+    return manualWorkouts.filter(w => new Date(w.date) >= startOfWeek);
+  };
+
+  // Calculate weekly stats from completed AI plan days
+  const completedCount = Object.values(completedDays).filter(Boolean).length;
+  const totalDays = trainingPlan?.days ? Object.keys(trainingPlan.days).length : 0;
+
+  // Calculate manual workout stats
+  const weekWorkouts = getThisWeekWorkouts();
+  const manualWorkoutCount = weekWorkouts.length;
+  const manualCalories = weekWorkouts.reduce((sum, w) => sum + w.calories, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -123,8 +179,8 @@ const Exercise = () => {
                   <Flame className="w-6 h-6 text-orange-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">This Week</p>
-                  <p className="text-2xl font-bold">{weeklyStats.workouts} workouts</p>
+                  <p className="text-sm text-muted-foreground">AI Plan Progress</p>
+                  <p className="text-2xl font-bold">{completedCount}/{totalDays} days</p>
                 </div>
               </div>
             </Card>
@@ -134,8 +190,8 @@ const Exercise = () => {
                   <TrendingUp className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Calories</p>
-                  <p className="text-2xl font-bold">{weeklyStats.calories} kcal</p>
+                  <p className="text-sm text-muted-foreground">Manual Logs</p>
+                  <p className="text-2xl font-bold">{manualWorkoutCount} workouts</p>
                 </div>
               </div>
             </Card>
@@ -145,98 +201,223 @@ const Exercise = () => {
                   <Activity className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Active Days</p>
-                  <p className="text-2xl font-bold">{weeklyStats.activeDays} days</p>
+                  <p className="text-sm text-muted-foreground">Calories Burned</p>
+                  <p className="text-2xl font-bold">{manualCalories} kcal</p>
                 </div>
               </div>
             </Card>
           </div>
         </div>
 
-        {/* Weekly Training Plan from Coach */}
-        {loading ? (
-          <Card className="p-8 text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
-            <p className="text-muted-foreground">Loading your training plan...</p>
-          </Card>
-        ) : trainingPlan?.days && Object.keys(trainingPlan.days).length > 0 ? (
-          <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Dumbbell className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold">Weekly Training Plan</h2>
-                <p className="text-sm text-muted-foreground">Generated by MKRO Coach</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {DAYS.map((day, idx) => {
-                const key = trainingPlan.days[day] ? day : `Day ${idx + 1}`;
-                const dayPlan = trainingPlan.days[key];
-                if (!dayPlan) return null;
-                
-                return (
-                  <Card key={day} className="p-4 bg-card border-primary/10 hover:border-primary/30 transition-colors">
-                    <div className="space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-lg">{day}</h3>
-                          <p className="text-sm text-primary font-semibold">{dayPlan.focus}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-2">
-                            <Checkbox 
-                              id={`complete-${day}`}
-                              checked={!!completedDays[day]}
-                              onCheckedChange={() => handleToggleComplete(day)}
-                              aria-label={`Mark ${day} as complete`}
-                            />
-                            <label htmlFor={`complete-${day}`} className="text-xs text-muted-foreground cursor-pointer">
-                              Done
-                            </label>
+        {/* Tabs */}
+        <Tabs defaultValue="ai-plan" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="ai-plan">AI Plan</TabsTrigger>
+            <TabsTrigger value="manual-log">Manual Log</TabsTrigger>
+          </TabsList>
+
+          {/* AI Plan Tab */}
+          <TabsContent value="ai-plan" className="mt-6">
+            {loading ? (
+              <Card className="p-8 text-center">
+                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+                <p className="text-muted-foreground">Loading your training plan...</p>
+              </Card>
+            ) : trainingPlan?.days && Object.keys(trainingPlan.days).length > 0 ? (
+              <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Dumbbell className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold">Weekly Training Plan</h2>
+                    <p className="text-sm text-muted-foreground">Generated by MKRO Coach</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {DAYS.map((day) => {
+                    const dayPlan = trainingPlan.days[day];
+                    if (!dayPlan) return null;
+                    
+                    return (
+                      <Card key={day} className="p-4 bg-card border-primary/10 hover:border-primary/30 transition-colors">
+                        <div className="space-y-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h3 className="font-bold text-lg">{day}</h3>
+                              <p className="text-sm text-primary font-semibold">{dayPlan.focus}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2">
+                                <Checkbox 
+                                  id={`complete-${day}`}
+                                  checked={!!completedDays[day]}
+                                  onCheckedChange={() => handleToggleComplete(day)}
+                                  aria-label={`Mark ${day} as complete`}
+                                />
+                                <label htmlFor={`complete-${day}`} className="text-xs text-muted-foreground cursor-pointer">
+                                  Done
+                                </label>
+                              </div>
+                              <Button variant="ghost" size="icon" onClick={() => handleDeleteDay(day)} aria-label={`Delete ${day} workout`}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
-                          <Button variant="ghost" size="icon" onClick={() => handleDeleteDay(day)} aria-label={`Delete ${day} workout`}>
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          
+                          {dayPlan.exercises && dayPlan.exercises.length > 0 && (
+                            <div className="space-y-1.5">
+                                {dayPlan.exercises.map((ex: any, idx: number) => (
+                                  <div key={idx} className="text-sm p-2 bg-muted/50 rounded">
+                                    <div className="font-medium">{ex.name}</div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {ex.sets} sets × {ex.reps} reps
+                                      {ex.rest_sec && ` • ${ex.rest_sec}s rest`}
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+                          
+                          {dayPlan.warmup && (
+                            <div className="text-xs text-muted-foreground pt-2 border-t">
+                              <span className="font-semibold">Warmup:</span> {dayPlan.warmup}
+                            </div>
+                          )}
+                          
+                          {dayPlan.cooldown && (
+                            <div className="text-xs text-muted-foreground">
+                              <span className="font-semibold">Cooldown:</span> {dayPlan.cooldown}
+                            </div>
+                          )}
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </Card>
+            ) : (
+              <Card className="border-2 border-dashed border-primary/20">
+                <CardContent className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+                  <CalendarIcon className="h-16 w-16 text-muted-foreground" />
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold">No Training Plan Yet</h3>
+                    <p className="text-muted-foreground max-w-md">
+                      Visit MKRO Coach to get a personalized AI-generated training plan.
+                    </p>
+                  </div>
+                  <Button onClick={() => navigate('/coach')} variant="default" size="lg">
+                    <Dumbbell className="h-4 w-4 mr-2" />
+                    Go to MKRO Coach
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Manual Log Tab */}
+          <TabsContent value="manual-log" className="mt-6 space-y-6">
+            {/* Add Workout Form */}
+            <Card className="p-6">
+              <h3 className="text-lg font-bold mb-4">Log New Workout</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Workout Name</label>
+                  <Input 
+                    placeholder="e.g., Morning Run" 
+                    value={workoutName}
+                    onChange={(e) => setWorkoutName(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Type</label>
+                  <Select value={workoutType} onValueChange={setWorkoutType}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cardio">Cardio</SelectItem>
+                      <SelectItem value="strength">Strength</SelectItem>
+                      <SelectItem value="flexibility">Flexibility</SelectItem>
+                      <SelectItem value="sports">Sports</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Duration (minutes)</label>
+                  <Input 
+                    type="number" 
+                    placeholder="30" 
+                    value={workoutDuration}
+                    onChange={(e) => setWorkoutDuration(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Calories Burned</label>
+                  <Input 
+                    type="number" 
+                    placeholder="200" 
+                    value={workoutCalories}
+                    onChange={(e) => setWorkoutCalories(e.target.value)}
+                  />
+                </div>
+              </div>
+              <Button onClick={addManualWorkout} className="mt-4 w-full md:w-auto">
+                <Plus className="h-4 w-4 mr-2" />
+                Log Workout
+              </Button>
+            </Card>
+
+            {/* Today's Workouts */}
+            <Card className="p-6">
+              <h3 className="text-lg font-bold mb-4">Today's Workouts</h3>
+              {getTodayWorkouts().length === 0 ? (
+                <p className="text-muted-foreground text-center py-4">No workouts logged today</p>
+              ) : (
+                <div className="space-y-2">
+                  {getTodayWorkouts().map((workout) => (
+                    <div key={workout.id} className="flex items-center justify-between p-3 bg-muted/50 rounded">
+                      <div>
+                        <div className="font-medium">{workout.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {workout.type} • {workout.duration}min • {workout.calories}kcal
                         </div>
                       </div>
-                      
-                      {dayPlan.exercises && dayPlan.exercises.length > 0 && (
-                        <div className="space-y-1.5">
-                            {dayPlan.exercises.map((ex: any, idx: number) => (
-                              <div key={idx} className="text-sm p-2 bg-muted/50 rounded">
-                                <div className="font-medium">{ex.name}</div>
-                                <div className="text-xs text-muted-foreground">
-                                  {ex.sets} sets × {ex.reps} reps
-                                  {ex.rest_sec && ` • ${ex.rest_sec}s rest`}
-                                </div>
-                              </div>
-                            ))}
-                        </div>
-                      )}
-                      
-                      {dayPlan.warmup && (
-                        <div className="text-xs text-muted-foreground pt-2 border-t">
-                          <span className="font-semibold">Warmup:</span> {dayPlan.warmup}
-                        </div>
-                      )}
-                      
-                      {dayPlan.cooldown && (
-                        <div className="text-xs text-muted-foreground">
-                          <span className="font-semibold">Cooldown:</span> {dayPlan.cooldown}
-                        </div>
-                      )}
+                      <Button variant="ghost" size="icon" onClick={() => deleteManualWorkout(workout.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                  </Card>
-                );
-              })}
-            </div>
-          </Card>
-        ) : null}
+                  ))}
+                </div>
+              )}
+            </Card>
 
-        {/* Exercise Tracker Component */}
-        <ExerciseTracker />
+            {/* This Week's History */}
+            <Card className="p-6">
+              <h3 className="text-lg font-bold mb-4">This Week's History</h3>
+              {getThisWeekWorkouts().length === 0 ? (
+                <p className="text-muted-foreground text-center py-4">No workouts logged this week</p>
+              ) : (
+                <div className="space-y-2">
+                  {getThisWeekWorkouts().map((workout) => (
+                    <div key={workout.id} className="flex items-center justify-between p-3 bg-muted/50 rounded">
+                      <div>
+                        <div className="font-medium">{workout.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {workout.type} • {workout.duration}min • {workout.calories}kcal • {new Date(workout.date).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="icon" onClick={() => deleteManualWorkout(workout.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
