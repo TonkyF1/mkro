@@ -16,6 +16,7 @@ import Auth from "./pages/Auth";
 import Premium from "./pages/Premium";
 import Admin from "./pages/Admin";
 import Timer from "./pages/Timer";
+import WeeklyReports from "./pages/WeeklyReports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/premium" element={<Premium />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/reports" element={<WeeklyReports />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

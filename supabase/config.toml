@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.create-checkout]
 verify_jwt = true
+
+[functions.generate-weekly-report]
+verify_jwt = true

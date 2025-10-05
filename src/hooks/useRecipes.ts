@@ -4,7 +4,8 @@ import { recipes as staticRecipes, Recipe, getRecipesByCategory as getStaticReci
 // Re-export Recipe type for other components
 export type { Recipe };
 
-export const useRecipes = () => {
+// Hook to manage recipes with premium filtering
+export const useRecipes = (isPremium?: boolean) => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -13,9 +14,10 @@ export const useRecipes = () => {
     const loadRecipes = () => {
       try {
         setLoading(true);
-        // Use static recipes data
-        setRecipes(staticRecipes);
-        console.log('Loaded static recipes:', staticRecipes);
+        // Free users see limited recipes (first 12), premium users see all
+        const availableRecipes = isPremium ? staticRecipes : staticRecipes.slice(0, 12);
+        setRecipes(availableRecipes);
+        console.log('Loaded recipes:', availableRecipes.length, 'Premium:', isPremium);
       } catch (err) {
         console.error('Error loading recipes:', err);
         setError(err instanceof Error ? err.message : 'Failed to load recipes');
@@ -25,7 +27,7 @@ export const useRecipes = () => {
     };
 
     loadRecipes();
-  }, []);
+  }, [isPremium]);
 
   const refetchRecipes = () => {
     try {

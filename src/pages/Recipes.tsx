@@ -7,16 +7,20 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useToast } from '@/hooks/use-toast';
 import { testImageGeneration } from '@/utils/testImageGeneration';
 import { Input } from '@/components/ui/input';
-import { Search, ChefHat, Sparkles, TrendingUp, Filter } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Search, ChefHat, Sparkles, TrendingUp, Filter, Crown } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const Recipes = () => {
   const { profile } = useUserProfile();
   const { toast } = useToast();
-  const { recipes, loading: recipesLoading, error: recipesError } = useRecipes();
+  const navigate = useNavigate();
+  const isPremium = profile?.is_premium || profile?.subscription_status === 'premium';
+  const { recipes, loading: recipesLoading, error: recipesError } = useRecipes(isPremium);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -139,8 +143,13 @@ const Recipes = () => {
                   <Sparkles className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Total Recipes</p>
-                  <p className="text-3xl font-black">{recipes.length}</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                    {isPremium ? 'Total Recipes' : 'Available Recipes'}
+                  </p>
+                  <p className="text-3xl font-black">
+                    {recipes.length}
+                    {!isPremium && <span className="text-base text-muted-foreground ml-1">/ 12</span>}
+                  </p>
                 </div>
               </div>
             </div>
@@ -230,6 +239,25 @@ const Recipes = () => {
               />
             ))}
           </div>
+        )}
+
+        {/* Free User Recipe Limit Notice */}
+        {!isPremium && recipes.length >= 12 && (
+          <Card className="mt-6 bg-gradient-to-br from-amber-500/10 to-orange-600/10 border-amber-500/20">
+            <CardContent className="p-8 text-center">
+              <h3 className="text-xl font-bold mb-2">Want Access to More Recipes?</h3>
+              <p className="text-muted-foreground mb-4">
+                You're viewing 12 of our premium recipe collection. Upgrade to unlock unlimited recipes!
+              </p>
+              <Button 
+                onClick={() => navigate('/premium')}
+                className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
+              >
+                <Crown className="w-4 h-4 mr-2" />
+                View Premium
+              </Button>
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>

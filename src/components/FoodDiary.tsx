@@ -12,6 +12,8 @@ import { BarcodeScanner } from './BarcodeScanner';
 import { FoodSearch } from './FoodSearch';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useNavigate } from 'react-router-dom';
 
 interface FoodEntry {
   id: string;
@@ -38,6 +40,9 @@ interface MealHistory {
 const FoodDiary = () => {
   const { toast } = useToast();
   const { user } = useAuth();
+  const { profile } = useUserProfile();
+  const navigate = useNavigate();
+  const isPremium = profile?.is_premium || profile?.subscription_status === 'premium';
   const [foods, setFoods] = useState<FoodEntry[]>([]);
   const [mealHistory, setMealHistory] = useState<MealHistory[]>([]);
   const [showScanner, setShowScanner] = useState(false);
@@ -65,11 +70,24 @@ const FoodDiary = () => {
   const fetchMealHistory = async () => {
     if (!user) return;
 
-    const { data, error } = await supabase
+    // Free users: last 7 days only, Premium: unlimited
+    const limitDays = isPremium ? null : 7;
+    const cutoffDate = limitDays 
+      ? new Date(Date.now() - limitDays * 24 * 60 * 60 * 1000).toISOString()
+      : null;
+
+    let query = supabase
       .from('meal_history')
       .select('*')
-      .order('created_at', { ascending: false })
-      .limit(20);
+      .order('created_at', { ascending: false });
+
+    if (cutoffDate) {
+      query = query.gte('created_at', cutoffDate);
+    }
+
+    query = query.limit(isPremium ? 100 : 30);
+
+    const { data, error } = await query;
 
     if (error) {
       console.error('Error fetching meal history:', error);
@@ -301,7 +319,19 @@ const FoodDiary = () => {
         {/* Meal History Dropdown */}
         {showHistory && mealHistory.length > 0 && (
           <div className="mb-4 p-4 bg-muted rounded-lg max-h-64 overflow-y-auto">
-            <p className="text-sm font-medium mb-3">Recent Meals</p>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-medium">Recent Meals {!isPremium && '(Last 7 days)'}</p>
+              {!isPremium && (
+                <Button 
+                  variant="link" 
+                  size="sm" 
+                  onClick={() => navigate('/premium')}
+                  className="text-xs h-auto p-0"
+                >
+                  Unlock Full History
+                </Button>
+              )}
+            </div>
             <div className="space-y-2">
               {mealHistory.map((item) => (
                 <button

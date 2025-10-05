@@ -1,10 +1,13 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, User, Bot, Dumbbell, Utensils, ChefHat } from 'lucide-react';
+import { Home, User, Bot, Dumbbell, Utensils, ChefHat, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useUserProfile } from '@/hooks/useUserProfile';
 
 const PageNavigation: React.FC = () => {
   const location = useLocation();
+  const { profile } = useUserProfile();
+  const isPremium = profile?.is_premium || profile?.subscription_status === 'premium';
   
   const navItems = [
     { path: '/', label: 'Home', shortLabel: 'Home', icon: Home },
@@ -12,6 +15,7 @@ const PageNavigation: React.FC = () => {
     { path: '/nutrition', label: 'Nutrition', shortLabel: 'Diary', icon: Utensils },
     { path: '/exercise', label: 'Exercise', shortLabel: 'Gym', icon: Dumbbell },
     { path: '/coach', label: 'Coach', shortLabel: 'AI', icon: Bot },
+    { path: '/reports', label: 'Reports', shortLabel: 'Stats', icon: TrendingUp, premium: true },
     { path: '/profile', label: 'Profile', shortLabel: 'Me', icon: User },
   ];
 
@@ -19,25 +23,30 @@ const PageNavigation: React.FC = () => {
     <nav className="w-full bg-muted/50 border-b border-border">
       <div className="container mx-auto px-1 sm:px-4">
         <div className="flex items-center justify-around py-2 w-full">
-          {navItems.map(({ path, label, shortLabel, icon: Icon }) => {
+          {navItems.map(({ path, label, shortLabel, icon: Icon, premium }) => {
             const isActive = location.pathname === path;
             const isCoach = path === '/coach';
+            const isPremiumLocked = premium && !isPremium;
             return (
               <NavLink
                 key={path}
                 to={path}
                 className={cn(
-                  "flex flex-col items-center justify-center p-1 sm:p-2 flex-shrink-0 min-w-0 h-auto gap-0.5 text-xs rounded-md transition-colors",
+                  "flex flex-col items-center justify-center p-1 sm:p-2 flex-shrink-0 min-w-0 h-auto gap-0.5 text-xs rounded-md transition-colors relative",
                   isCoach
                     ? isActive
                       ? "bg-gradient-to-br from-yellow-500 to-yellow-600 text-black dark:text-white"
                       : "text-black dark:text-white hover:text-yellow-600 dark:hover:text-yellow-500"
                     : isActive 
                       ? "bg-primary text-primary-foreground" 
-                      : "hover:bg-accent hover:text-accent-foreground"
+                      : "hover:bg-accent hover:text-accent-foreground",
+                  isPremiumLocked && "opacity-60"
                 )}
               >
                 <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                {isPremiumLocked && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-amber-500 rounded-full border border-background" />
+                )}
                 <span className="hidden xs:inline sm:hidden text-[10px] leading-none">
                   {shortLabel}
                 </span>
