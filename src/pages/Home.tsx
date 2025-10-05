@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { DarkCard } from '@/components/DarkCard';
 import { 
   MessageSquare, 
   Sparkles,
@@ -31,39 +32,39 @@ const Home = () => {
 
   const mainFeatures = [
     {
-      icon: <Camera className="w-8 h-8" />,
+      icon: <Camera className="w-7 h-7 text-white" />,
       title: 'AI Food Scanner',
       description: 'Scan meals instantly to get calories & macros in seconds',
       action: () => navigate('/nutrition'),
-      gradient: 'from-violet-600 to-purple-600'
+      gradient: 'linear-gradient(135deg, rgb(139, 92, 246), rgb(99, 102, 241))'
     },
     {
-      icon: <Scan className="w-8 h-8" />,
+      icon: <Scan className="w-7 h-7 text-white" />,
       title: 'Barcode Scanner',
       description: 'Quick UK product lookup with comprehensive nutritional data',
       action: () => navigate('/nutrition'),
-      gradient: 'from-blue-500 to-cyan-600'
+      gradient: 'linear-gradient(135deg, rgb(59, 130, 246), rgb(14, 165, 233))'
     },
     {
-      icon: <BrainCircuit className="w-8 h-8" />,
+      icon: <BrainCircuit className="w-7 h-7 text-white" />,
       title: 'AI MKRO Coach',
       description: 'Personalised advice & plans tailored to your goals 24/7',
       action: () => navigate('/coach'),
-      gradient: 'from-orange-500 to-red-600'
+      gradient: 'linear-gradient(135deg, rgb(251, 146, 60), rgb(249, 115, 22))'
     },
     {
-      icon: <ChefHat className="w-8 h-8" />,
+      icon: <ChefHat className="w-7 h-7 text-white" />,
       title: 'AI Recipes',
       description: 'Recipes tailored to your diet, preferences & goals',
       action: () => navigate('/recipes'),
-      gradient: 'from-emerald-500 to-teal-600'
+      gradient: 'linear-gradient(135deg, rgb(34, 197, 94), rgb(22, 163, 74))'
     },
     {
-      icon: <Dumbbell className="w-8 h-8" />,
+      icon: <Dumbbell className="w-7 h-7 text-white" />,
       title: 'Training Generator',
       description: 'Goal-based fitness plans that adapt to your progress',
       action: () => navigate('/exercise'),
-      gradient: 'from-pink-500 to-rose-600'
+      gradient: 'linear-gradient(135deg, rgb(236, 72, 153), rgb(219, 39, 119))'
     }
   ];
 
@@ -193,20 +194,19 @@ const Home = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {mainFeatures.map((feature, index) => (
-            <div 
+            <DarkCard 
               key={index}
-              className="group relative p-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-transparent transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl cursor-pointer overflow-hidden"
+              gradient={feature.gradient}
               onClick={feature.action}
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
-              <div className="relative space-y-4">
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500`}>
-                  <div className="text-white">{feature.icon}</div>
+              <div className="space-y-4">
+                <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                  {feature.icon}
                 </div>
-                <h3 className="text-2xl font-bold">{feature.title}</h3>
-                <p className="text-slate-600 dark:text-slate-400">{feature.description}</p>
+                <h3 className="text-xl font-bold text-white">{feature.title}</h3>
+                <p className="text-white/70 text-sm leading-relaxed">{feature.description}</p>
               </div>
-            </div>
+            </DarkCard>
           ))}
         </div>
       </section>

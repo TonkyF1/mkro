@@ -10,6 +10,8 @@ import { useWeeklyPlans } from '@/hooks/useWeeklyPlans';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { DarkCard } from '@/components/DarkCard';
+import { CircularProgress } from '@/components/CircularProgress';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 

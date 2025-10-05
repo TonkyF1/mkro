@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import FoodDiary from '@/components/FoodDiary';
 import { HydrationTracker } from '@/components/HydrationTracker';
 import { MealPlanner } from '@/components/MealPlanner';
+import { DarkCard } from '@/components/DarkCard';
+import { CircularProgress } from '@/components/CircularProgress';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useRecipes } from '@/hooks/useRecipes';
 import { ParsedMealPlan } from '@/utils/coachResponseParser';
@@ -194,41 +196,80 @@ const NutritionHub = () => {
             </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="p-4 bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
-                  <Apple className="w-6 h-6 text-green-600" />
+          {/* Quick Stats with Premium Dark Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <DarkCard gradient="linear-gradient(135deg, rgb(139, 92, 246), rgb(99, 102, 241))">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white/70 text-sm font-medium">Today's Calories</p>
+                    <p className="text-3xl font-black text-white mt-1">{todaysCalories}</p>
+                    <p className="text-white/50 text-xs mt-1">
+                      of {profile?.target_protein ? (profile.target_protein * 4 + profile.target_carbs * 4 + profile.target_fats * 9) : 2000} kcal
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                    <Apple className="w-6 h-6 text-white" />
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Today's Calories</p>
-                  <p className="text-2xl font-bold">{todaysCalories} / {profile?.target_protein ? (profile.target_protein * 4 + profile.target_carbs * 4 + profile.target_fats * 9) : 2000}</p>
-                </div>
-              </div>
-            </Card>
-            <Card className="p-4 bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                  <Droplet className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Hydration</p>
-                  <p className="text-2xl font-bold">0 / {profile?.hydration_goal || 2000}ml</p>
-                </div>
-              </div>
-            </Card>
-            <Card className="p-4 bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-500/20">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Weekly Streak</p>
-                  <p className="text-2xl font-bold">{weeklyStreak} {weeklyStreak === 1 ? 'day' : 'days'}</p>
+                <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="h-full bg-white/90 rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${Math.min((todaysCalories / (profile?.target_protein ? (profile.target_protein * 4 + profile.target_carbs * 4 + profile.target_fats * 9) : 2000)) * 100, 100)}%` 
+                    }}
+                  />
                 </div>
               </div>
-            </Card>
+            </DarkCard>
+
+            <DarkCard gradient="linear-gradient(135deg, rgb(59, 130, 246), rgb(14, 165, 233))">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white/70 text-sm font-medium">Hydration</p>
+                    <p className="text-3xl font-black text-white mt-1">0ml</p>
+                    <p className="text-white/50 text-xs mt-1">
+                      of {profile?.hydration_goal || 2000}ml
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                    <Droplet className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="h-full bg-white/90 rounded-full transition-all duration-500"
+                    style={{ width: '0%' }}
+                  />
+                </div>
+              </div>
+            </DarkCard>
+
+            <DarkCard gradient="linear-gradient(135deg, rgb(251, 146, 60), rgb(249, 115, 22))">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white/70 text-sm font-medium">Weekly Streak</p>
+                    <p className="text-3xl font-black text-white mt-1">{weeklyStreak}</p>
+                    <p className="text-white/50 text-xs mt-1">
+                      {weeklyStreak === 1 ? 'day' : 'days'} tracked
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  {[...Array(7)].map((_, i) => (
+                    <div 
+                      key={i}
+                      className={`flex-1 h-2 rounded-full ${i < weeklyStreak ? 'bg-white/90' : 'bg-white/10'}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </DarkCard>
           </div>
         </div>
 
