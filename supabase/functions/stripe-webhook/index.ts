@@ -2,9 +2,8 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-const stripe = new Stripe(Deno.env.get("STRIPE_TEST") || "", {
-  apiVersion: "2023-10-16",
-});
+const stripeKey = Deno.env.get("STRIPE_TEST") || Deno.env.get("STRIPE TEST") || Deno.env.get("STRIPE_API") || Deno.env.get("STRIPE API") || "";
+const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
