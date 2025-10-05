@@ -22,7 +22,7 @@ import confetti from 'canvas-confetti';
 
 const Premium = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { profile } = useUserProfile();
   const { toast } = useToast();
   const [loading, setLoading] = useState<string | null>(null);
@@ -39,13 +39,19 @@ const Premium = () => {
   const YEARLY_PRICE_ID = 'price_1SEzPDE64grEUO7BYfGK8Wdp'; // £69.99/year
 
   const handleUpgrade = async (priceId: string, planType: 'monthly' | 'yearly') => {
+    if (authLoading) {
+      // Prevent action until auth state is known
+      toast({ title: 'Please wait', description: 'Checking your session…' });
+      return;
+    }
+
     if (!user) {
       toast({
         title: 'Sign in required',
         description: 'Please sign in to upgrade to Premium',
         variant: 'destructive',
       });
-      navigate('/profile');
+      navigate('/auth');
       return;
     }
 
@@ -60,6 +66,13 @@ const Premium = () => {
 
       if (data?.url) {
         window.location.href = data.url;
+      } else {
+        console.error('No checkout URL returned', data);
+        toast({
+          title: 'Checkout unavailable',
+          description: 'No checkout URL returned. Please try again in a moment.',
+          variant: 'destructive',
+        });
       }
     } catch (error: any) {
       console.error('Checkout error:', error);
@@ -206,7 +219,7 @@ const Premium = () => {
                     className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
                     size="lg"
                     onClick={() => handleUpgrade(MONTHLY_PRICE_ID, 'monthly')}
-                    disabled={loading === 'monthly'}
+                    disabled={authLoading || loading === 'monthly'}
                   >
                     {loading === 'monthly' ? (
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -220,7 +233,7 @@ const Premium = () => {
                     variant="outline"
                     size="lg"
                     onClick={() => handleUpgrade(YEARLY_PRICE_ID, 'yearly')}
-                    disabled={loading === 'yearly'}
+                    disabled={authLoading || loading === 'yearly'}
                   >
                     {loading === 'yearly' ? (
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
