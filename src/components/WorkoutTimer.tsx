@@ -185,7 +185,10 @@ export const WorkoutTimer = () => {
                 <Input
                   type="number"
                   value={countdownTime}
-                  onChange={(e) => setCountdownTime(parseInt(e.target.value) || 60)}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    setCountdownTime(isNaN(val) ? 0 : val);
+                  }}
                   className="bg-slate-800/50 border-slate-700 text-white"
                 />
               </div>
@@ -197,7 +200,10 @@ export const WorkoutTimer = () => {
                   <Input
                     type="number"
                     value={workTime}
-                    onChange={(e) => setWorkTime(parseInt(e.target.value) || 30)}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      setWorkTime(isNaN(val) ? 0 : val);
+                    }}
                     className="bg-slate-800/50 border-slate-700 text-white"
                   />
                 </div>
@@ -206,7 +212,10 @@ export const WorkoutTimer = () => {
                   <Input
                     type="number"
                     value={restTime}
-                    onChange={(e) => setRestTime(parseInt(e.target.value) || 10)}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      setRestTime(isNaN(val) ? 0 : val);
+                    }}
                     className="bg-slate-800/50 border-slate-700 text-white"
                   />
                 </div>
