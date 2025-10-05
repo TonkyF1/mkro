@@ -34,9 +34,9 @@ const Premium = () => {
   const trialPromptsRemaining = Math.max(0, 20 - trialPromptsUsed);
   const isInTrial = trialPromptsRemaining > 0 && !isPremium;
 
-  // Stripe Price IDs - Replace with your actual Stripe price IDs
-  const MONTHLY_PRICE_ID = 'price_monthly_test'; // Replace with your monthly price ID
-  const YEARLY_PRICE_ID = 'price_yearly_test'; // Replace with your yearly price ID
+  // Stripe Price IDs
+  const MONTHLY_PRICE_ID = 'price_1SEzLaE64grEUO7BtHwPEdmk'; // £9.99/month
+  const YEARLY_PRICE_ID = 'price_1SEzPDE64grEUO7BYfGK8Wdp'; // £69.99/year
 
   const handleUpgrade = async (priceId: string, planType: 'monthly' | 'yearly') => {
     if (!user) {
