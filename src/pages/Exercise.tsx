@@ -13,7 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import { WorkoutTimer } from '@/components/WorkoutTimer';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { Badge } from '@/components/ui/badge';
-import { Crown, PlayCircle, Lock } from 'lucide-react';
+import { Crown, PlayCircle, Lock, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -38,6 +39,46 @@ const Exercise = () => {
   const [workoutType, setWorkoutType] = useState('cardio');
   const [workoutDuration, setWorkoutDuration] = useState('30');
   const [workoutCalories, setWorkoutCalories] = useState('200');
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+
+  const premiumWorkouts = [
+    {
+      id: 'hiit',
+      title: 'HIIT Blast - 20 Min',
+      description: 'High-intensity fat burning workout',
+      videoUrl: 'https://www.youtube.com/embed/ml6cT4AZdqI',
+      gradient: 'from-purple-500/20 to-pink-600/20',
+      iconColor: 'text-purple-500',
+      badges: ['Cardio', 'Advanced']
+    },
+    {
+      id: 'strength',
+      title: 'Strength Builder - 30 Min',
+      description: 'Full body strength training',
+      videoUrl: 'https://www.youtube.com/embed/UBMk30rjy0o',
+      gradient: 'from-blue-500/20 to-cyan-600/20',
+      iconColor: 'text-blue-500',
+      badges: ['Strength', 'Intermediate']
+    },
+    {
+      id: 'yoga',
+      title: 'Yoga Flow - 25 Min',
+      description: 'Flexibility and mindfulness',
+      videoUrl: 'https://www.youtube.com/embed/v7AYKMP6rOE',
+      gradient: 'from-emerald-500/20 to-teal-600/20',
+      iconColor: 'text-emerald-500',
+      badges: ['Flexibility', 'All Levels']
+    },
+    {
+      id: 'core',
+      title: 'Core Crusher - 15 Min',
+      description: 'Targeted abs & core workout',
+      videoUrl: 'https://www.youtube.com/embed/DHD1-2P94DI',
+      gradient: 'from-amber-500/20 to-orange-600/20',
+      iconColor: 'text-amber-500',
+      badges: ['Core', 'Intermediate']
+    }
+  ];
 
   // Load completed days from localStorage
   useEffect(() => {
@@ -355,53 +396,24 @@ const Exercise = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
-                    <div className="aspect-video bg-gradient-to-br from-purple-500/20 to-pink-600/20 rounded-lg mb-3 flex items-center justify-center">
-                      <PlayCircle className="w-12 h-12 text-purple-500 group-hover:scale-110 transition-transform" />
+                  {premiumWorkouts.map((workout) => (
+                    <div 
+                      key={workout.id}
+                      className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer"
+                      onClick={() => setSelectedVideo(workout.videoUrl)}
+                    >
+                      <div className={`aspect-video bg-gradient-to-br ${workout.gradient} rounded-lg mb-3 flex items-center justify-center`}>
+                        <PlayCircle className={`w-12 h-12 ${workout.iconColor} group-hover:scale-110 transition-transform`} />
+                      </div>
+                      <h3 className="font-bold mb-1">{workout.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-2">{workout.description}</p>
+                      <div className="flex gap-2">
+                        {workout.badges.map((badge) => (
+                          <Badge key={badge} variant="secondary">{badge}</Badge>
+                        ))}
+                      </div>
                     </div>
-                    <h3 className="font-bold mb-1">HIIT Blast - 20 Min</h3>
-                    <p className="text-sm text-muted-foreground mb-2">High-intensity fat burning workout</p>
-                    <div className="flex gap-2">
-                      <Badge variant="secondary">Cardio</Badge>
-                      <Badge variant="secondary">Advanced</Badge>
-                    </div>
-                  </div>
-
-                  <div className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
-                    <div className="aspect-video bg-gradient-to-br from-blue-500/20 to-cyan-600/20 rounded-lg mb-3 flex items-center justify-center">
-                      <PlayCircle className="w-12 h-12 text-blue-500 group-hover:scale-110 transition-transform" />
-                    </div>
-                    <h3 className="font-bold mb-1">Strength Builder - 30 Min</h3>
-                    <p className="text-sm text-muted-foreground mb-2">Full body strength training</p>
-                    <div className="flex gap-2">
-                      <Badge variant="secondary">Strength</Badge>
-                      <Badge variant="secondary">Intermediate</Badge>
-                    </div>
-                  </div>
-
-                  <div className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
-                    <div className="aspect-video bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded-lg mb-3 flex items-center justify-center">
-                      <PlayCircle className="w-12 h-12 text-emerald-500 group-hover:scale-110 transition-transform" />
-                    </div>
-                    <h3 className="font-bold mb-1">Yoga Flow - 25 Min</h3>
-                    <p className="text-sm text-muted-foreground mb-2">Flexibility and mindfulness</p>
-                    <div className="flex gap-2">
-                      <Badge variant="secondary">Flexibility</Badge>
-                      <Badge variant="secondary">All Levels</Badge>
-                    </div>
-                  </div>
-
-                  <div className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
-                    <div className="aspect-video bg-gradient-to-br from-amber-500/20 to-orange-600/20 rounded-lg mb-3 flex items-center justify-center">
-                      <PlayCircle className="w-12 h-12 text-amber-500 group-hover:scale-110 transition-transform" />
-                    </div>
-                    <h3 className="font-bold mb-1">Core Crusher - 15 Min</h3>
-                    <p className="text-sm text-muted-foreground mb-2">Targeted abs & core workout</p>
-                    <div className="flex gap-2">
-                      <Badge variant="secondary">Core</Badge>
-                      <Badge variant="secondary">Intermediate</Badge>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -507,6 +519,25 @@ const Exercise = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Video Player Modal */}
+        <Dialog open={!!selectedVideo} onOpenChange={() => setSelectedVideo(null)}>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Premium Workout Video</DialogTitle>
+            </DialogHeader>
+            {selectedVideo && (
+              <div className="aspect-video w-full">
+                <iframe
+                  src={selectedVideo}
+                  className="w-full h-full rounded-lg"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
