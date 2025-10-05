@@ -13,9 +13,16 @@ const rawStripeKeys: Array<[string, string | undefined]> = [
 const resolvedStripe = rawStripeKeys.find(([_, v]) => !!(v && v.trim()));
 const stripeKeyRaw = resolvedStripe?.[1] || "";
 const stripeKey = stripeKeyRaw.trim().replace(/^['"]|['"]$/g, "");
-if (!stripeKey || !stripeKey.startsWith("sk_")) {
+console.log("🔑 Stripe key check:", {
+  resolvedEnvVar: resolvedStripe?.[0] || "none",
+  keyLength: stripeKey.length,
+  keyPrefix: stripeKey.substring(0, 8),
+  keySuffix: stripeKey.substring(stripeKey.length - 4),
+  isValid: stripeKey.startsWith("sk_test_") || stripeKey.startsWith("sk_live_")
+});
+if (!stripeKey || (!stripeKey.startsWith("sk_test_") && !stripeKey.startsWith("sk_live_"))) {
   console.error(
-    "Stripe secret key is missing or invalid. Checked env vars:",
+    "❌ Stripe secret key is missing or invalid. Checked env vars:",
     rawStripeKeys.map(([n, v]) => `${n}:${v ? "set" : "missing"}`).join(", ")
   );
 }
