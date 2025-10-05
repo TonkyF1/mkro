@@ -13,6 +13,8 @@ import Coach from "./pages/Coach";
 import Exercise from "./pages/Exercise";
 import NutritionHub from "./pages/NutritionHub";
 import Auth from "./pages/Auth";
+import Premium from "./pages/Premium";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +37,8 @@ const App = () => {
                 <Route path="/exercise" element={<Exercise />} />
                 <Route path="/coach" element={<Coach />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/premium" element={<Premium />} />
+                <Route path="/admin" element={<Admin />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

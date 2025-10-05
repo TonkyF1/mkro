@@ -41,6 +41,10 @@ export interface UserProfile {
   trial_start_date?: string;
   trial_prompts_used?: number;
   is_premium?: boolean;
+  subscription_status?: 'free' | 'premium' | 'expired';
+  subscription_expiry?: string;
+  stripe_customer_id?: string;
+  stripe_subscription_id?: string;
 }
 
 export const GOALS = [

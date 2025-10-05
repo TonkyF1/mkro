@@ -113,6 +113,10 @@ export type Database = {
           name: string | null
           sleep_hours: number | null
           stress_level: number | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_expiry: string | null
+          subscription_status: string | null
           supplement_usage: string[] | null
           target_carbs: number | null
           target_fats: number | null
@@ -147,6 +151,10 @@ export type Database = {
           name?: string | null
           sleep_hours?: number | null
           stress_level?: number | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_expiry?: string | null
+          subscription_status?: string | null
           supplement_usage?: string[] | null
           target_carbs?: number | null
           target_fats?: number | null
@@ -181,6 +189,10 @@ export type Database = {
           name?: string | null
           sleep_hours?: number | null
           stress_level?: number | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_expiry?: string | null
+          subscription_status?: string | null
           supplement_usage?: string[] | null
           target_carbs?: number | null
           target_fats?: number | null
