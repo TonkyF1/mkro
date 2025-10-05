@@ -342,93 +342,69 @@ const Exercise = () => {
           {/* Manual Log Tab */}
           <TabsContent value="manual-log" className="mt-6 space-y-6">
             {/* Premium Workout Library */}
-            {isPremium && (
-              <Card className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-500/20">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
-                      <Crown className="w-6 h-6 text-white" />
+            <Card className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-500/20">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                    <Crown className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold">Premium Workout Library</h2>
+                    <p className="text-sm text-muted-foreground">Expert-led video workouts</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
+                    <div className="aspect-video bg-gradient-to-br from-purple-500/20 to-pink-600/20 rounded-lg mb-3 flex items-center justify-center">
+                      <PlayCircle className="w-12 h-12 text-purple-500 group-hover:scale-110 transition-transform" />
                     </div>
-                    <div>
-                      <h2 className="text-2xl font-bold">Premium Workout Library</h2>
-                      <p className="text-sm text-muted-foreground">Expert-led video workouts</p>
+                    <h3 className="font-bold mb-1">HIIT Blast - 20 Min</h3>
+                    <p className="text-sm text-muted-foreground mb-2">High-intensity fat burning workout</p>
+                    <div className="flex gap-2">
+                      <Badge variant="secondary">Cardio</Badge>
+                      <Badge variant="secondary">Advanced</Badge>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
-                      <div className="aspect-video bg-gradient-to-br from-purple-500/20 to-pink-600/20 rounded-lg mb-3 flex items-center justify-center">
-                        <PlayCircle className="w-12 h-12 text-purple-500 group-hover:scale-110 transition-transform" />
-                      </div>
-                      <h3 className="font-bold mb-1">HIIT Blast - 20 Min</h3>
-                      <p className="text-sm text-muted-foreground mb-2">High-intensity fat burning workout</p>
-                      <div className="flex gap-2">
-                        <Badge variant="secondary">Cardio</Badge>
-                        <Badge variant="secondary">Advanced</Badge>
-                      </div>
+                  <div className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
+                    <div className="aspect-video bg-gradient-to-br from-blue-500/20 to-cyan-600/20 rounded-lg mb-3 flex items-center justify-center">
+                      <PlayCircle className="w-12 h-12 text-blue-500 group-hover:scale-110 transition-transform" />
                     </div>
-
-                    <div className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
-                      <div className="aspect-video bg-gradient-to-br from-blue-500/20 to-cyan-600/20 rounded-lg mb-3 flex items-center justify-center">
-                        <PlayCircle className="w-12 h-12 text-blue-500 group-hover:scale-110 transition-transform" />
-                      </div>
-                      <h3 className="font-bold mb-1">Strength Builder - 30 Min</h3>
-                      <p className="text-sm text-muted-foreground mb-2">Full body strength training</p>
-                      <div className="flex gap-2">
-                        <Badge variant="secondary">Strength</Badge>
-                        <Badge variant="secondary">Intermediate</Badge>
-                      </div>
-                    </div>
-
-                    <div className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
-                      <div className="aspect-video bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded-lg mb-3 flex items-center justify-center">
-                        <PlayCircle className="w-12 h-12 text-emerald-500 group-hover:scale-110 transition-transform" />
-                      </div>
-                      <h3 className="font-bold mb-1">Yoga Flow - 25 Min</h3>
-                      <p className="text-sm text-muted-foreground mb-2">Flexibility and mindfulness</p>
-                      <div className="flex gap-2">
-                        <Badge variant="secondary">Flexibility</Badge>
-                        <Badge variant="secondary">All Levels</Badge>
-                      </div>
-                    </div>
-
-                    <div className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
-                      <div className="aspect-video bg-gradient-to-br from-amber-500/20 to-orange-600/20 rounded-lg mb-3 flex items-center justify-center">
-                        <PlayCircle className="w-12 h-12 text-amber-500 group-hover:scale-110 transition-transform" />
-                      </div>
-                      <h3 className="font-bold mb-1">Core Crusher - 15 Min</h3>
-                      <p className="text-sm text-muted-foreground mb-2">Targeted abs & core workout</p>
-                      <div className="flex gap-2">
-                        <Badge variant="secondary">Core</Badge>
-                        <Badge variant="secondary">Intermediate</Badge>
-                      </div>
+                    <h3 className="font-bold mb-1">Strength Builder - 30 Min</h3>
+                    <p className="text-sm text-muted-foreground mb-2">Full body strength training</p>
+                    <div className="flex gap-2">
+                      <Badge variant="secondary">Strength</Badge>
+                      <Badge variant="secondary">Intermediate</Badge>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            )}
 
-            {/* Premium Workout Library - Locked for Free Users */}
-            {!isPremium && (
-              <Card className="bg-gradient-to-br from-slate-500/10 to-slate-600/10 border-slate-500/20">
-                <CardContent className="p-12 text-center">
-                  <div className="w-20 h-20 rounded-full bg-slate-500/20 mx-auto mb-4 flex items-center justify-center">
-                    <Lock className="w-10 h-10 text-slate-500" />
+                  <div className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
+                    <div className="aspect-video bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded-lg mb-3 flex items-center justify-center">
+                      <PlayCircle className="w-12 h-12 text-emerald-500 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <h3 className="font-bold mb-1">Yoga Flow - 25 Min</h3>
+                    <p className="text-sm text-muted-foreground mb-2">Flexibility and mindfulness</p>
+                    <div className="flex gap-2">
+                      <Badge variant="secondary">Flexibility</Badge>
+                      <Badge variant="secondary">All Levels</Badge>
+                    </div>
                   </div>
-                  <h3 className="text-2xl font-bold mb-2">Premium Workout Library</h3>
-                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                    Unlock access to expert-led video workouts covering HIIT, strength training, yoga, and more.
-                  </p>
-                  <Button 
-                    onClick={() => navigate('/premium')}
-                    className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"
-                  >
-                    <Crown className="w-4 h-4 mr-2" />
-                    Upgrade to Premium
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+
+                  <div className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
+                    <div className="aspect-video bg-gradient-to-br from-amber-500/20 to-orange-600/20 rounded-lg mb-3 flex items-center justify-center">
+                      <PlayCircle className="w-12 h-12 text-amber-500 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <h3 className="font-bold mb-1">Core Crusher - 15 Min</h3>
+                    <p className="text-sm text-muted-foreground mb-2">Targeted abs & core workout</p>
+                    <div className="flex gap-2">
+                      <Badge variant="secondary">Core</Badge>
+                      <Badge variant="secondary">Intermediate</Badge>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Add Workout Form */}
             <Card className="p-6">
