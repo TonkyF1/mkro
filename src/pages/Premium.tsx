@@ -58,6 +58,7 @@ const Premium = () => {
     setLoading(planType);
 
     try {
+      console.log('Starting checkout for', planType, priceId);
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { priceId, planType },
       });
@@ -66,14 +67,33 @@ const Premium = () => {
 
       if (data?.url) {
         window.location.href = data.url;
-      } else {
-        console.error('No checkout URL returned', data);
-        toast({
-          title: 'Checkout unavailable',
-          description: 'No checkout URL returned. Please try again in a moment.',
-          variant: 'destructive',
-        });
+        return;
       }
+
+      console.warn('No checkout URL from invoke, trying direct fetch fallback...', data);
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      const resp = await fetch('https://clemkvxneggnokmvgmbj.supabase.co/functions/v1/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': accessToken ? `Bearer ${accessToken}` : '',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsZW1rdnhuZWdnbm9rbXZnbWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwOTE3ODIsImV4cCI6MjA3NDY2Nzc4Mn0.wYsFizNIe8WhpLuip5Bcd3KpxYAn3X4Mmq9AEe3hKk4',
+        },
+        body: JSON.stringify({ priceId, planType }),
+      });
+      const json = await resp.json();
+      if (resp.ok && json?.url) {
+        window.location.href = json.url;
+        return;
+      }
+
+      console.error('Direct fetch failed or no URL', json);
+      toast({
+        title: 'Checkout unavailable',
+        description: 'Could not start checkout. Please try again shortly.',
+        variant: 'destructive',
+      });
     } catch (error: any) {
       console.error('Checkout error:', error);
       toast({
