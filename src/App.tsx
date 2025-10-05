@@ -8,7 +8,6 @@ import { ThemeProvider } from "next-themes";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
 import Recipes from "./pages/Recipes";
-import Shopping from "./pages/Shopping";
 import Profile from "./pages/Profile";
 import Coach from "./pages/Coach";
 import Exercise from "./pages/Exercise";
@@ -33,7 +32,6 @@ const App = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/recipes" element={<Recipes />} />
                 <Route path="/nutrition" element={<NutritionHub />} />
-                <Route path="/shopping" element={<Shopping />} />
                 <Route path="/exercise" element={<Exercise />} />
                 <Route path="/coach" element={<Coach />} />
                 <Route path="/profile" element={<Profile />} />

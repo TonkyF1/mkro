@@ -11,7 +11,6 @@ import {
   BrainCircuit,
   ChefHat,
   Dumbbell,
-  ShoppingCart,
   Star,
   CheckCircle2,
   Target,
@@ -65,13 +64,6 @@ const Home = () => {
       description: 'Goal-based fitness plans that adapt to your progress',
       action: () => navigate('/exercise'),
       gradient: 'from-pink-500 to-rose-600'
-    },
-    {
-      icon: <ShoppingCart className="w-8 h-8" />,
-      title: 'Auto Plans & Lists',
-      description: 'Automatic meal planning with smart grocery lists',
-      action: () => navigate('/planner'),
-      gradient: 'from-amber-500 to-orange-600'
     }
   ];
 
@@ -89,9 +81,9 @@ const Home = () => {
       gradient: 'from-blue-500 to-cyan-600'
     },
     {
-      icon: <ShoppingCart className="w-8 h-8" />,
-      title: 'Shop Smart',
-      description: 'Follow your auto-generated grocery list',
+      icon: <Calendar className="w-8 h-8" />,
+      title: 'Plan & Track',
+      description: 'Organize your meals and workouts',
       gradient: 'from-emerald-500 to-teal-600'
     },
     {

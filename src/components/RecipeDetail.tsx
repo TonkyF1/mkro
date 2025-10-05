@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Clock, Users, Zap, ArrowLeft, Lightbulb, ShoppingCart } from 'lucide-react';
+import { Clock, Users, Zap, ArrowLeft, Lightbulb } from 'lucide-react';
 import { Recipe } from '@/data/recipes';
 import { getRecipeImageUrl, generateSingleRecipeImage } from '@/utils/recipeImageUtils';
 import { useState, useEffect } from 'react';
@@ -10,11 +10,10 @@ import mealPlaceholder from '@/assets/meal-placeholder.png';
 interface RecipeDetailProps {
   recipe: Recipe;
   onBack: () => void;
-  onAddToShoppingList: (recipe: Recipe) => void;
   onAddToMealPlan?: (recipe: Recipe, day: string, mealType: string) => void;
 }
 
-export const RecipeDetail = ({ recipe, onBack, onAddToShoppingList }: RecipeDetailProps) => {
+export const RecipeDetail = ({ recipe, onBack }: RecipeDetailProps) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [imageChecked, setImageChecked] = useState(false);
@@ -82,15 +81,6 @@ export const RecipeDetail = ({ recipe, onBack, onAddToShoppingList }: RecipeDeta
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Recipes
-          </Button>
-          
-          <Button 
-            size="sm"
-            onClick={() => onAddToShoppingList(recipe)}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground"
-          >
-            <ShoppingCart className="h-3 w-3 mr-1" />
-            Add to Shopping List
           </Button>
         </div>
         

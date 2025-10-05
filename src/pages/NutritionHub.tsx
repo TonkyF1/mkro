@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import FoodDiary from '@/components/FoodDiary';
 import { HydrationTracker } from '@/components/HydrationTracker';
 import { MealPlanner } from '@/components/MealPlanner';
-import { ShoppingList } from '@/components/ShoppingList';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useRecipes } from '@/hooks/useRecipes';
 import { ParsedMealPlan } from '@/utils/coachResponseParser';
@@ -39,7 +38,6 @@ const NutritionHub = () => {
   const { toast } = useToast();
   const [mealPlan, setMealPlan] = useState(() => loadMealPlanFromStorage());
   const [aiMealPlan, setAiMealPlan] = useState<ParsedMealPlan[]>([]);
-  const [showShoppingList, setShowShoppingList] = useState(false);
   const { nutritionPlan, fetchPlans, activeWeekStart } = useWeeklyPlans();
   const { weeklyStreak, isMealCompleted, fetchCompletions } = useMealCompletions();
 
@@ -179,19 +177,6 @@ const NutritionHub = () => {
     saveMealPlanToStorage(updatedPlan);
   };
 
-  const handleGenerateShoppingList = () => {
-    setShowShoppingList(true);
-  };
-
-  if (showShoppingList) {
-    return (
-      <ShoppingList 
-        mealPlans={mealPlan}
-        onBack={() => setShowShoppingList(false)}
-      />
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="max-w-7xl mx-auto p-6 space-y-8">
@@ -300,7 +285,6 @@ const NutritionHub = () => {
                   initialMealPlan={mealPlan}
                   recipes={recipes}
                   onMealPlanChange={handleMealPlanUpdate}
-                  onGenerateShoppingList={handleGenerateShoppingList}
                 />
               </TabsContent>
 

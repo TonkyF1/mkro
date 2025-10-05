@@ -85,19 +85,6 @@ const Recipes = () => {
     });
   };
 
-  const handleAddToShoppingList = (recipe: Recipe) => {
-    const mealPlan = JSON.parse(localStorage.getItem('mealPlan') || '[]');
-    const today = new Date().toISOString().split('T')[0];
-    
-    const updatedPlan = [...mealPlan, { date: today, breakfast: recipe }];
-    localStorage.setItem('mealPlan', JSON.stringify(updatedPlan));
-    
-    toast({
-      title: "Recipe Added!",
-      description: `${recipe.name} has been added to your shopping list.`
-    });
-  };
-
   
   useEffect(() => {
     const handleStorageUpdate = () => {
@@ -115,7 +102,6 @@ const Recipes = () => {
         recipe={selectedRecipe}
         onBack={() => setSelectedRecipe(null)}
         onAddToMealPlan={addRecipeToMealPlan}
-        onAddToShoppingList={handleAddToShoppingList}
       />
     );
   }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, Plus, Trash2, ChefHat, ShoppingCart } from 'lucide-react';
+import { Calendar, Plus, Trash2, ChefHat } from 'lucide-react';
 import { Recipe } from '@/data/recipes';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useMealCompletions } from '@/hooks/useMealCompletions';
@@ -18,7 +18,6 @@ interface MealPlan {
 
 interface MealPlannerProps {
   recipes: Recipe[];
-  onGenerateShoppingList: (meals: MealPlan[]) => void;
   initialMealPlan?: MealPlan[];
   onMealPlanChange?: (mealPlan: MealPlan[]) => void;
 }
@@ -28,7 +27,6 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 
 export const MealPlanner: React.FC<MealPlannerProps> = ({ 
   recipes, 
-  onGenerateShoppingList, 
   initialMealPlan,
   onMealPlanChange 
 }) => {
@@ -173,14 +171,6 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
           <Calendar className="h-5 w-5 text-primary" />
           <h2 className="text-2xl font-bold">Weekly Meal Plan</h2>
         </div>
-        <Button 
-          onClick={() => onGenerateShoppingList(getCompletedMeals())}
-          variant="default"
-          size="icon"
-          className="h-10 w-10"
-        >
-          <ShoppingCart className="h-5 w-5" />
-        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">

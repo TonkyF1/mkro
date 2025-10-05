@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Calendar, ShoppingCart, User, Bot, Dumbbell, Utensils, ChefHat } from 'lucide-react';
+import { Home, User, Bot, Dumbbell, Utensils, ChefHat } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const PageNavigation: React.FC = () => {
@@ -10,7 +10,6 @@ const PageNavigation: React.FC = () => {
     { path: '/', label: 'Home', shortLabel: 'Home', icon: Home },
     { path: '/recipes', label: 'Recipes', shortLabel: 'Food', icon: ChefHat },
     { path: '/nutrition', label: 'Nutrition', shortLabel: 'Diary', icon: Utensils },
-    { path: '/shopping', label: 'Shopping', shortLabel: 'Shop', icon: ShoppingCart },
     { path: '/exercise', label: 'Exercise', shortLabel: 'Gym', icon: Dumbbell },
     { path: '/coach', label: 'Coach', shortLabel: 'AI', icon: Bot },
     { path: '/profile', label: 'Profile', shortLabel: 'Me', icon: User },

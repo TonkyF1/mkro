@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, Plus, Trash2, ShoppingCart, Calendar, ChefHat } from 'lucide-react';
+import { Loader2, Plus, Trash2, Calendar, ChefHat } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -106,40 +106,6 @@ const Planner = () => {
     return manualMeals.filter(m => new Date(m.date) >= startOfWeek);
   };
 
-  const generateShoppingListFromCompleted = () => {
-    const completedMeals: any[] = [];
-    
-    if (nutritionPlan?.days) {
-      DAYS.forEach((day) => {
-        const dayPlan = nutritionPlan.days[day];
-        if (dayPlan) {
-          MEAL_SLOTS.forEach((mealType) => {
-            const meals = dayPlan[mealType.charAt(0).toUpperCase() + mealType.slice(1)];
-            if (meals && meals.length > 0 && isMealCompleted(day, mealType)) {
-              completedMeals.push({
-                day,
-                mealType,
-                meal: meals[0]
-              });
-            }
-          });
-        }
-      });
-    }
-
-    if (completedMeals.length === 0) {
-      toast({ 
-        variant: 'destructive', 
-        title: 'No Completed Meals', 
-        description: 'Check off meals in your plan first.' 
-      });
-      return;
-    }
-
-    // Save to localStorage for shopping page
-    localStorage.setItem('shopping_list_meals', JSON.stringify(completedMeals));
-    navigate('/shopping');
-  };
 
   // Calculate stats from manual meals
   const weekMeals = getThisWeekMeals();
@@ -190,7 +156,7 @@ const Planner = () => {
             <Card className="p-4 bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
-                  <ShoppingCart className="w-6 h-6 text-green-600" />
+                  <Plus className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Protein</p>
@@ -217,12 +183,6 @@ const Planner = () => {
               </Card>
             ) : nutritionPlan?.days && Object.keys(nutritionPlan.days).length > 0 ? (
               <div className="space-y-4">
-                <div className="flex justify-end">
-                  <Button onClick={generateShoppingListFromCompleted} className="gap-2">
-                    <ShoppingCart className="h-4 w-4" />
-                    Generate Shopping List
-                  </Button>
-                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {DAYS.map((day) => {
                     const dayPlan = nutritionPlan.days[day];
