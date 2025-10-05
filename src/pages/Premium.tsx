@@ -39,13 +39,16 @@ const Premium = () => {
   const YEARLY_PRICE_ID = 'price_1SEzPDE64grEUO7BYfGK8Wdp'; // £69.99/year
 
   const handleUpgrade = async (priceId: string, planType: 'monthly' | 'yearly') => {
+    console.log('🔵 Button clicked!', { planType, priceId, authLoading, user: !!user });
+    
     if (authLoading) {
-      // Prevent action until auth state is known
+      console.log('🔴 Blocked: Auth loading');
       toast({ title: 'Please wait', description: 'Checking your session…' });
       return;
     }
 
     if (!user) {
+      console.log('🔴 Blocked: No user');
       toast({
         title: 'Sign in required',
         description: 'Please sign in to upgrade to Premium',
@@ -55,25 +58,18 @@ const Premium = () => {
       return;
     }
 
+    console.log('✅ Starting checkout process...');
     setLoading(planType);
 
     try {
-      console.log('Starting checkout for', planType, priceId);
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { priceId, planType },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.location.href = data.url;
-        return;
-      }
-
-      console.warn('No checkout URL from invoke, trying direct fetch fallback...', data);
+      console.log('📞 Calling create-checkout function...', { priceId, planType });
+      
       const { data: sessionData } = await supabase.auth.getSession();
       const accessToken = sessionData.session?.access_token;
-      const resp = await fetch('https://clemkvxneggnokmvgmbj.supabase.co/functions/v1/create-checkout', {
+      
+      console.log('🔑 Access token exists:', !!accessToken);
+      
+      const response = await fetch('https://clemkvxneggnokmvgmbj.supabase.co/functions/v1/create-checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,23 +78,28 @@ const Premium = () => {
         },
         body: JSON.stringify({ priceId, planType }),
       });
-      const json = await resp.json();
-      if (resp.ok && json?.url) {
+      
+      console.log('📡 Response status:', response.status);
+      const json = await response.json();
+      console.log('📦 Response data:', json);
+      
+      if (response.ok && json?.url) {
+        console.log('✅ Redirecting to Stripe:', json.url);
         window.location.href = json.url;
         return;
       }
 
-      console.error('Direct fetch failed or no URL', json);
+      console.error('❌ No checkout URL returned', json);
       toast({
-        title: 'Checkout unavailable',
-        description: 'Could not start checkout. Please try again shortly.',
+        title: 'Checkout Error',
+        description: json.error || 'Could not start checkout. Please try again.',
         variant: 'destructive',
       });
     } catch (error: any) {
-      console.error('Checkout error:', error);
+      console.error('❌ Checkout error:', error);
       toast({
         title: 'Error',
-        description: 'Failed to start checkout. Please try again.',
+        description: error.message || 'Failed to start checkout. Please try again.',
         variant: 'destructive',
       });
     } finally {
