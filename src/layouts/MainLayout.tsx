@@ -20,7 +20,7 @@ const MainLayout = () => {
         <img 
           src={mkroLogo} 
           alt="MKRO - Your AI Health Coach" 
-          className="w-32 h-32 object-contain animate-bounce-slow hover:scale-110 transition-transform"
+          className="w-64 h-64 object-contain animate-bounce-slow hover:scale-110 transition-transform"
         />
         <p className="text-xs text-muted-foreground mt-2">Your AI Health Coach</p>
       </div>
