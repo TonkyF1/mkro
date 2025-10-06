@@ -20,18 +20,10 @@ import {
   Award
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useUserProfile } from '@/hooks/useUserProfile';
-import Dashboard from './Dashboard';
 
 const Home = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { profile } = useUserProfile();
-
-  // If user is logged in, show dashboard instead of landing page
-  if (user && profile) {
-    return <Dashboard />;
-  }
 
   const features = [
     {
