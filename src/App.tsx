@@ -7,8 +7,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
-import Challenges from "./pages/Challenges";
 import Recipes from "./pages/Recipes";
 import Profile from "./pages/Profile";
 import Coach from "./pages/Coach";
@@ -39,8 +37,6 @@ const App = () => {
               <Route path="/questionnaire" element={<Questionnaire />} />
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/challenges" element={<Challenges />} />
                 <Route path="/recipes" element={<Recipes />} />
                 <Route path="/nutrition" element={<NutritionHub />} />
                 <Route path="/exercise" element={<Exercise />} />

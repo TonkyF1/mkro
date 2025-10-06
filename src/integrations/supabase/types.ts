@@ -14,60 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      challenges: {
-        Row: {
-          challenge_type: string
-          completed_at: string | null
-          created_at: string
-          current_progress: number
-          description: string
-          difficulty: string
-          end_date: string
-          id: string
-          start_date: string
-          status: string
-          target_value: number
-          title: string
-          updated_at: string
-          user_id: string
-          xp_reward: number
-        }
-        Insert: {
-          challenge_type: string
-          completed_at?: string | null
-          created_at?: string
-          current_progress?: number
-          description: string
-          difficulty?: string
-          end_date: string
-          id?: string
-          start_date?: string
-          status?: string
-          target_value: number
-          title: string
-          updated_at?: string
-          user_id: string
-          xp_reward?: number
-        }
-        Update: {
-          challenge_type?: string
-          completed_at?: string | null
-          created_at?: string
-          current_progress?: number
-          description?: string
-          difficulty?: string
-          end_date?: string
-          id?: string
-          start_date?: string
-          status?: string
-          target_value?: number
-          title?: string
-          updated_at?: string
-          user_id?: string
-          xp_reward?: number
-        }
-        Relationships: []
-      }
       meal_completions: {
         Row: {
           completed: boolean
@@ -372,45 +318,6 @@ export type Database = {
           product_name?: string
           store_availability?: Json | null
           store_name?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      user_stats: {
-        Row: {
-          challenges_completed: number
-          created_at: string
-          current_streak: number
-          id: string
-          last_activity_date: string | null
-          level: number
-          longest_streak: number
-          total_xp: number
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          challenges_completed?: number
-          created_at?: string
-          current_streak?: number
-          id?: string
-          last_activity_date?: string | null
-          level?: number
-          longest_streak?: number
-          total_xp?: number
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          challenges_completed?: number
-          created_at?: string
-          current_streak?: number
-          id?: string
-          last_activity_date?: string | null
-          level?: number
-          longest_streak?: number
-          total_xp?: number
           updated_at?: string
           user_id?: string
         }
