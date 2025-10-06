@@ -46,10 +46,10 @@ const Auth = () => {
         // Check if user has completed questionnaire
         const { data: profile } = await supabase
           .from('profiles')
-          .select('user_id')
+          .select('completed_at')
           .eq('user_id', user.id)
-          .single();
-        navigate(profile ? '/' : '/questionnaire');
+          .maybeSingle();
+        navigate(profile?.completed_at ? '/' : '/questionnaire');
       }
     };
     checkAuth();
@@ -60,11 +60,11 @@ const Auth = () => {
         // Check if questionnaire is completed
         supabase
           .from('profiles')
-          .select('user_id')
+          .select('completed_at')
           .eq('user_id', session.user.id)
-          .single()
+          .maybeSingle()
           .then(({ data }) => {
-            navigate(data ? '/' : '/questionnaire');
+            navigate(data?.completed_at ? '/' : '/questionnaire');
           });
       }
     });
