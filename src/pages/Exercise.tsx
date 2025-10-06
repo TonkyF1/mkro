@@ -212,59 +212,56 @@ const Exercise = () => {
 
       <div className="max-w-7xl mx-auto p-6 space-y-8 relative z-10">
         {/* Header */}
-        <div className="space-y-6">
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg">
-              <Dumbbell className="w-10 h-10 text-white" />
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg">
+              <Dumbbell className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-5xl font-black bg-gradient-to-r from-pink-500 to-rose-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-rose-600 bg-clip-text text-transparent">
                 Exercise Tracker
               </h1>
-              <p className="text-slate-600 dark:text-slate-400 text-lg">Track AI plans or log manual workouts</p>
+              <p className="text-slate-600 dark:text-slate-400 text-sm">Track AI plans or log manual workouts</p>
             </div>
           </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="group relative p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
-                  <Flame className="w-8 h-8 text-white" />
+          <div className="grid grid-cols-3 gap-3">
+            <Card className="p-3 bg-gradient-to-br from-orange-500/10 to-red-600/10 border-orange-500/20">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+                    <Flame className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">AI Plan</span>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">AI Plan Progress</p>
-                  <p className="text-3xl font-black">{completedCount}/{totalDays} days</p>
-                </div>
+                <p className="text-lg font-bold">{completedCount}<span className="text-xs text-muted-foreground">/{totalDays} days</span></p>
               </div>
-            </div>
-            <div className="group relative p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
-                  <TrendingUp className="w-8 h-8 text-white" />
+            </Card>
+            <Card className="p-3 bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border-blue-500/20">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">Manual</span>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Manual Logs</p>
-                  <p className="text-3xl font-black">{manualWorkoutCount} workouts</p>
-                </div>
+                <p className="text-lg font-bold">{manualWorkoutCount}<span className="text-xs text-muted-foreground"> logs</span></p>
               </div>
-            </div>
-            <div 
-              className="group relative p-6 rounded-3xl bg-gradient-to-br from-pink-500/10 to-rose-600/10 border-2 border-pink-500/30 dark:border-pink-500/30 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl cursor-pointer"
+            </Card>
+            <Card 
+              className="p-3 bg-gradient-to-br from-pink-500/10 to-rose-600/10 border-pink-500/30 cursor-pointer hover:shadow-lg transition-all"
               onClick={() => navigate('/timer')}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-rose-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
-                  <Timer className="w-8 h-8 text-white" />
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+                    <Timer className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">Timer</span>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Workout Timer</p>
-                  <p className="text-3xl font-black">Open Timer →</p>
-                </div>
+                <p className="text-lg font-bold">Open →</p>
               </div>
-            </div>
+            </Card>
           </div>
         </div>
 
