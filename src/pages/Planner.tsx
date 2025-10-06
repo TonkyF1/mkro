@@ -204,7 +204,7 @@ const Planner = () => {
                                   <Checkbox
                                     checked={isMealCompleted(day, mealType)}
                                     onCheckedChange={() => toggleMealCompletion(day, mealType)}
-                                    className="mt-1"
+                                    className="mt-1 min-w-[20px] min-h-[20px]"
                                   />
                                   <div className="flex-1">
                                     <div className="text-xs text-muted-foreground capitalize">{mealType}</div>
@@ -225,17 +225,19 @@ const Planner = () => {
               </div>
             ) : (
               <Card className="border-2 border-dashed border-primary/20">
-                <CardContent className="flex flex-col items-center justify-center py-12 text-center space-y-4">
-                  <Calendar className="h-16 w-16 text-muted-foreground" />
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold">No Meal Plan Yet</h3>
-                    <p className="text-muted-foreground max-w-md">
-                      Visit MKRO Coach to get a personalized AI-generated meal plan.
+                <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-6">
+                  <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Calendar className="h-10 w-10 text-primary" />
+                  </div>
+                  <div className="space-y-2 max-w-md">
+                    <h3 className="text-2xl font-semibold">No Meal Plan Yet</h3>
+                    <p className="text-muted-foreground text-lg">
+                      Visit MKRO Coach to get a personalized AI-generated weekly meal plan tailored to your goals.
                     </p>
                   </div>
-                  <Button onClick={() => navigate('/coach')} variant="default" size="lg">
+                  <Button onClick={() => navigate('/coach')} variant="default" size="lg" className="min-h-[48px]">
                     <ChefHat className="h-4 w-4 mr-2" />
-                    Go to MKRO Coach
+                    Create My First Plan
                   </Button>
                 </CardContent>
               </Card>
@@ -307,7 +309,7 @@ const Planner = () => {
                   />
                 </div>
               </div>
-              <Button onClick={addManualMeal} className="mt-4 w-full md:w-auto">
+              <Button onClick={addManualMeal} className="mt-4 w-full md:w-auto min-h-[48px]">
                 <Plus className="h-4 w-4 mr-2" />
                 Log Meal
               </Button>
@@ -317,18 +319,24 @@ const Planner = () => {
             <Card className="p-6">
               <h3 className="text-lg font-bold mb-4">Today's Meals</h3>
               {getTodayMeals().length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">No meals logged today</p>
+                <div className="text-center py-8 space-y-3">
+                  <div className="w-16 h-16 rounded-full bg-muted mx-auto flex items-center justify-center">
+                    <ChefHat className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <p className="text-muted-foreground">No meals logged today</p>
+                  <p className="text-sm text-muted-foreground">Use the form above to log your first meal</p>
+                </div>
               ) : (
                 <div className="space-y-2">
                   {getTodayMeals().map((meal) => (
-                    <div key={meal.id} className="flex items-center justify-between p-3 bg-muted/50 rounded">
-                      <div>
+                    <div key={meal.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
+                      <div className="flex-1">
                         <div className="font-medium">{meal.name}</div>
                         <div className="text-sm text-muted-foreground">
                           {meal.mealType} • {meal.calories}kcal • P:{meal.protein}g C:{meal.carbs}g F:{meal.fats}g
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => deleteManualMeal(meal.id)}>
+                      <Button variant="ghost" size="icon" onClick={() => deleteManualMeal(meal.id)} className="min-w-[40px] min-h-[40px]">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

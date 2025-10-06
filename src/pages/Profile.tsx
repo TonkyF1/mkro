@@ -331,11 +331,11 @@ const Profile = () => {
             <p className="text-muted-foreground mt-1">Manage your fitness journey</p>
           </div>
           <div className="flex gap-3">
-            <Button onClick={() => setEditingProfile(true)} size="lg" className="gap-2">
+            <Button onClick={() => setEditingProfile(true)} size="lg" className="gap-2 min-h-[48px]">
               <Edit className="w-4 h-4" />
               Edit Profile
             </Button>
-            <Button onClick={handleSignOut} variant="outline" size="lg" className="gap-2">
+            <Button onClick={handleSignOut} variant="outline" size="lg" className="gap-2 min-h-[48px]">
               <LogOut className="w-4 h-4" />
               Sign Out
             </Button>
