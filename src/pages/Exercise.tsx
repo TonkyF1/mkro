@@ -1,543 +1,281 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dumbbell, TrendingUp, Flame, Activity, Loader2, Trash2, Plus, Calendar as CalendarIcon, Timer } from 'lucide-react';
-import { useWeeklyPlans } from '@/hooks/useWeeklyPlans';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
-import { WorkoutTimer } from '@/components/WorkoutTimer';
+import { 
+  Dumbbell, TrendingUp, Calendar, Target, Play, 
+  Sparkles, BookOpen, BarChart3, Zap
+} from 'lucide-react';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { Badge } from '@/components/ui/badge';
-import { Crown, PlayCircle, Lock, X } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-interface ManualWorkout {
-  id: string;
-  name: string;
-  type: string;
-  duration: number;
-  calories: number;
-  date: string;
-}
+import { StatsCard } from '@/components/exercise/StatsCard';
+import { ActiveWorkout } from '@/components/exercise/ActiveWorkout';
+import { ExerciseLibrary } from '@/components/exercise/ExerciseLibrary';
+import { ProgressDashboard } from '@/components/exercise/ProgressDashboard';
+import { WorkoutPlanGenerator } from '@/components/exercise/WorkoutPlanGenerator';
+import { AnimatedBackground } from '@/components/AnimatedBackground';
 
 const Exercise = () => {
-  const { trainingPlan, loading, fetchPlans } = useWeeklyPlans();
   const { profile } = useUserProfile();
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const isPremium = profile?.is_premium || profile?.subscription_status === 'premium';
-  const [completedDays, setCompletedDays] = useState<Record<string, boolean>>({});
-  const [manualWorkouts, setManualWorkouts] = useState<ManualWorkout[]>([]);
-  const [workoutName, setWorkoutName] = useState('');
-  const [workoutType, setWorkoutType] = useState('cardio');
-  const [workoutDuration, setWorkoutDuration] = useState('30');
-  const [workoutCalories, setWorkoutCalories] = useState('200');
-  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [activeWorkout, setActiveWorkout] = useState<any>(null);
+  const [generatedPlan, setGeneratedPlan] = useState<any>(null);
+  const [greeting, setGreeting] = useState('');
+  const [streakCount, setStreakCount] = useState(7);
+  const [weeklyWorkouts, setWeeklyWorkouts] = useState(4);
+  const [totalWorkouts, setTotalWorkouts] = useState(24);
+  const [personalRecords, setPersonalRecords] = useState(3);
 
-  const premiumWorkouts = [
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting('Good morning');
+    else if (hour < 18) setGreeting('Good afternoon');
+    else setGreeting('Good evening');
+  }, []);
+
+  const quickWorkouts = [
     {
-      id: 'hiit',
-      title: 'HIIT Blast - 20 Min',
-      description: 'High-intensity fat burning workout',
-      videoUrl: 'https://www.youtube.com/embed/ml6cT4AZdqI',
+      id: 'push',
+      name: 'Push Day',
+      duration: '45 min',
+      exercises: [
+        { name: 'Barbell Bench Press', sets: 4, reps: '8-10', rest: 120, targetMuscles: ['Chest', 'Triceps', 'Shoulders'], notes: 'Keep shoulder blades retracted throughout' },
+        { name: 'Incline Dumbbell Press', sets: 3, reps: '10-12', rest: 90, targetMuscles: ['Upper Chest', 'Shoulders'], notes: 'Focus on upper chest contraction' },
+        { name: 'Overhead Press', sets: 3, reps: '8-10', rest: 120, targetMuscles: ['Shoulders', 'Triceps'], notes: 'Avoid arching lower back' },
+        { name: 'Tricep Dips', sets: 3, reps: '10-15', rest: 60, targetMuscles: ['Triceps', 'Chest'], notes: 'Lean forward slightly for chest emphasis' },
+        { name: 'Lateral Raises', sets: 3, reps: '12-15', rest: 60, targetMuscles: ['Shoulders'], notes: 'Control the weight, don\'t swing' }
+      ],
       gradient: 'from-purple-500/20 to-pink-600/20',
-      iconColor: 'text-purple-500',
-      badges: ['Cardio', 'Advanced']
+      icon: Dumbbell
     },
     {
-      id: 'strength',
-      title: 'Strength Builder - 30 Min',
-      description: 'Full body strength training',
-      videoUrl: 'https://www.youtube.com/embed/UBMk30rjy0o',
+      id: 'pull',
+      name: 'Pull Day',
+      duration: '45 min',
+      exercises: [
+        { name: 'Deadlifts', sets: 4, reps: '6-8', rest: 180, targetMuscles: ['Back', 'Hamstrings', 'Glutes'], notes: 'Keep bar close to body throughout lift' },
+        { name: 'Pull-ups', sets: 4, reps: '8-12', rest: 120, targetMuscles: ['Back', 'Biceps'], notes: 'Full range of motion' },
+        { name: 'Barbell Rows', sets: 3, reps: '8-10', rest: 90, targetMuscles: ['Back', 'Biceps'], notes: 'Pull to lower chest' },
+        { name: 'Face Pulls', sets: 3, reps: '15-20', rest: 60, targetMuscles: ['Rear Delts', 'Upper Back'], notes: 'Pull to face level' },
+        { name: 'Barbell Curls', sets: 3, reps: '10-12', rest: 60, targetMuscles: ['Biceps'], notes: 'No swinging or momentum' }
+      ],
       gradient: 'from-blue-500/20 to-cyan-600/20',
-      iconColor: 'text-blue-500',
-      badges: ['Strength', 'Intermediate']
+      icon: TrendingUp
     },
     {
-      id: 'yoga',
-      title: 'Yoga Flow - 25 Min',
-      description: 'Flexibility and mindfulness',
-      videoUrl: 'https://www.youtube.com/embed/v7AYKMP6rOE',
+      id: 'legs',
+      name: 'Leg Day',
+      duration: '50 min',
+      exercises: [
+        { name: 'Barbell Back Squat', sets: 4, reps: '8-10', rest: 180, targetMuscles: ['Quads', 'Glutes'], notes: 'Descend until thighs parallel to ground' },
+        { name: 'Romanian Deadlift', sets: 3, reps: '10-12', rest: 120, targetMuscles: ['Hamstrings', 'Glutes'], notes: 'Feel the hamstring stretch' },
+        { name: 'Bulgarian Split Squats', sets: 3, reps: '10-12', rest: 90, targetMuscles: ['Quads', 'Glutes'], notes: 'per leg' },
+        { name: 'Leg Press', sets: 3, reps: '12-15', rest: 90, targetMuscles: ['Quads', 'Glutes'], notes: 'Full range of motion' },
+        { name: 'Leg Curls', sets: 3, reps: '12-15', rest: 60, targetMuscles: ['Hamstrings'], notes: 'Squeeze at the top' },
+        { name: 'Calf Raises', sets: 4, reps: '15-20', rest: 60, targetMuscles: ['Calves'], notes: 'Full stretch and contraction' }
+      ],
       gradient: 'from-emerald-500/20 to-teal-600/20',
-      iconColor: 'text-emerald-500',
-      badges: ['Flexibility', 'All Levels']
-    },
-    {
-      id: 'core',
-      title: 'Core Crusher - 15 Min',
-      description: 'Targeted abs & core workout',
-      videoUrl: 'https://www.youtube.com/embed/DHD1-2P94DI',
-      gradient: 'from-amber-500/20 to-orange-600/20',
-      iconColor: 'text-amber-500',
-      badges: ['Core', 'Intermediate']
+      icon: Zap
     }
   ];
 
-  // Load completed days from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem('completed_workout_days');
-    if (stored) {
-      try {
-        setCompletedDays(JSON.parse(stored));
-      } catch (e) {
-        console.error('Error loading completed days:', e);
-      }
-    }
-  }, []);
-
-  // Load manual workouts from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem('manual_workouts');
-    if (stored) {
-      try {
-        setManualWorkouts(JSON.parse(stored));
-      } catch (e) {
-        console.error('Error loading manual workouts:', e);
-      }
-    }
-  }, []);
-
-  const handleToggleComplete = (day: string) => {
-    const newCompleted = { ...completedDays };
-    if (newCompleted[day]) {
-      delete newCompleted[day];
-      toast({ title: 'Unmarked', description: `${day} marked as incomplete.` });
-    } else {
-      newCompleted[day] = true;
-      toast({ title: 'Completed!', description: `${day} workout marked as complete.` });
-    }
-    
-    setCompletedDays(newCompleted);
-    localStorage.setItem('completed_workout_days', JSON.stringify(newCompleted));
-  };
-
-  const handleDeleteDay = async (day: string) => {
-    if (!trainingPlan?.id) return;
-    try {
-      const updatedDays = { ...(trainingPlan.days || {}) } as any;
-      delete updatedDays[day];
-      const { error } = await supabase
-        .from('weekly_training_plans')
-        .update({ days: updatedDays })
-        .eq('id', trainingPlan.id);
-      if (error) throw error;
-      
-      // Also remove from completed days
-      const newCompleted = { ...completedDays };
-      delete newCompleted[day];
-      setCompletedDays(newCompleted);
-      localStorage.setItem('completed_workout_days', JSON.stringify(newCompleted));
-      
-      toast({ title: 'Deleted', description: `Removed ${day} workout.` });
-      fetchPlans();
-    } catch (e: any) {
-      console.error(e);
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete workout day.' });
-    }
-  };
-
-  const addManualWorkout = () => {
-    if (!workoutName.trim()) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Please enter a workout name.' });
-      return;
-    }
-
-    const newWorkout: ManualWorkout = {
-      id: crypto.randomUUID(),
-      name: workoutName,
-      type: workoutType,
-      duration: parseInt(workoutDuration),
-      calories: parseInt(workoutCalories),
-      date: new Date().toISOString(),
-    };
-
-    const updated = [...manualWorkouts, newWorkout];
-    setManualWorkouts(updated);
-    localStorage.setItem('manual_workouts', JSON.stringify(updated));
-
-    // Reset form
-    setWorkoutName('');
-    setWorkoutType('cardio');
-    setWorkoutDuration('30');
-    setWorkoutCalories('200');
-
-    toast({ title: 'Logged!', description: 'Workout added to manual log.' });
-  };
-
-  const deleteManualWorkout = (id: string) => {
-    const updated = manualWorkouts.filter(w => w.id !== id);
-    setManualWorkouts(updated);
-    localStorage.setItem('manual_workouts', JSON.stringify(updated));
-    toast({ title: 'Deleted', description: 'Workout removed from log.' });
-  };
-
-  const getTodayWorkouts = () => {
-    const today = new Date().toDateString();
-    return manualWorkouts.filter(w => new Date(w.date).toDateString() === today);
-  };
-
-  const getThisWeekWorkouts = () => {
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Monday
-    startOfWeek.setHours(0, 0, 0, 0);
-    
-    return manualWorkouts.filter(w => new Date(w.date) >= startOfWeek);
-  };
-
-  // Calculate weekly stats from completed AI plan days
-  const completedCount = Object.values(completedDays).filter(Boolean).length;
-  const totalDays = trainingPlan?.days ? Object.keys(trainingPlan.days).length : 0;
-
-  // Calculate manual workout stats
-  const weekWorkouts = getThisWeekWorkouts();
-  const manualWorkoutCount = weekWorkouts.length;
-  const manualCalories = weekWorkouts.reduce((sum, w) => sum + w.calories, 0);
+  if (activeWorkout) {
+    return (
+      <div className="min-h-screen relative">
+        <AnimatedBackground />
+        <div className="relative z-10 max-w-4xl mx-auto py-8">
+          <ActiveWorkout
+            workout={activeWorkout}
+            onComplete={() => {
+              setActiveWorkout(null);
+              setTotalWorkouts(prev => prev + 1);
+              setWeeklyWorkouts(prev => prev + 1);
+            }}
+            onExit={() => setActiveWorkout(null)}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-gradient-to-br from-violet-500/20 to-purple-600/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-gradient-to-br from-blue-500/20 to-cyan-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-gradient-to-br from-pink-500/20 to-rose-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-      </div>
+    <div className="min-h-screen relative">
+      <AnimatedBackground />
+      
+      <div className="relative z-10 space-y-8 pb-12">
+        {/* Hero Section */}
+        <Card className="border-0 bg-gradient-to-br from-primary/10 via-accent/10 to-purple-500/10 overflow-hidden">
+          <CardContent className="p-8 md:p-12">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="space-y-4 flex-1">
+                <div>
+                  <h1 className="text-4xl md:text-5xl font-black mb-2">
+                    <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent bg-300% animate-gradient-shift">
+                      {greeting}, {profile?.name || 'Athlete'}!
+                    </span>
+                  </h1>
+                  <p className="text-lg text-muted-foreground">
+                    Ready to crush your workout today? 💪
+                  </p>
+                </div>
+                
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <div className="text-3xl">🔥</div>
+                    <div>
+                      <p className="text-2xl font-black">{streakCount}</p>
+                      <p className="text-xs text-muted-foreground">Day Streak</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-3xl">⭐</div>
+                    <div>
+                      <p className="text-2xl font-black">{personalRecords}</p>
+                      <p className="text-xs text-muted-foreground">New PRs</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-      <div className="max-w-7xl mx-auto p-6 space-y-8 relative z-10">
-        {/* Header */}
-        <div className="space-y-6">
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg">
-              <Dumbbell className="w-10 h-10 text-white" />
+              <div className="grid grid-cols-2 gap-4">
+                <Button 
+                  size="lg"
+                  className="h-24 flex flex-col gap-1 bg-gradient-to-r from-primary to-accent hover:shadow-[var(--shadow-glow-primary)] group"
+                  onClick={() => {
+                    if (generatedPlan) {
+                      setActiveWorkout(generatedPlan);
+                    }
+                  }}
+                >
+                  <Play className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                  <span className="font-bold">Start AI Plan</span>
+                </Button>
+                <Button 
+                  size="lg"
+                  variant="outline"
+                  className="h-24 flex flex-col gap-1 hover:bg-accent/10 group"
+                >
+                  <Calendar className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                  <span className="font-bold">Quick Log</span>
+                </Button>
+              </div>
             </div>
-            <div>
-              <h1 className="text-5xl font-black bg-gradient-to-r from-pink-500 to-rose-600 bg-clip-text text-transparent">
-                Exercise Tracker
-              </h1>
-              <p className="text-slate-600 dark:text-slate-400 text-lg">Track AI plans or log manual workouts</p>
-            </div>
-          </div>
+          </CardContent>
+        </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="group relative p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
-                  <Flame className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">AI Plan Progress</p>
-                  <p className="text-3xl font-black">{completedCount}/{totalDays} days</p>
-                </div>
-              </div>
-            </div>
-            <div className="group relative p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
-                  <TrendingUp className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Manual Logs</p>
-                  <p className="text-3xl font-black">{manualWorkoutCount} workouts</p>
-                </div>
-              </div>
-            </div>
-            <div 
-              className="group relative p-6 rounded-3xl bg-gradient-to-br from-pink-500/10 to-rose-600/10 border-2 border-pink-500/30 dark:border-pink-500/30 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl cursor-pointer"
-              onClick={() => navigate('/timer')}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-rose-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
-                  <Timer className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Workout Timer</p>
-                  <p className="text-3xl font-black">Open Timer →</p>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Stats Overview */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatsCard
+            title="This Week"
+            value={weeklyWorkouts}
+            subtitle="Workouts completed"
+            icon={Calendar}
+            gradient="from-blue-500/10 to-cyan-600/10"
+            trend={{ value: 25, isPositive: true }}
+          />
+          <StatsCard
+            title="This Month"
+            value={totalWorkouts}
+            subtitle="Total workouts"
+            icon={Dumbbell}
+            gradient="from-purple-500/10 to-pink-600/10"
+            trend={{ value: 12, isPositive: true }}
+          />
+          <StatsCard
+            title="Volume"
+            value="285K"
+            subtitle="lbs lifted"
+            icon={TrendingUp}
+            gradient="from-emerald-500/10 to-teal-600/10"
+            trend={{ value: 18, isPositive: true }}
+          />
+          <StatsCard
+            title="PRs Broken"
+            value={personalRecords}
+            subtitle="This month"
+            icon={Target}
+            gradient="from-orange-500/10 to-red-600/10"
+          />
         </div>
 
-        {/* Tabs */}
-        <Tabs defaultValue="ai-plan" className="w-full">
-          <TabsList className="w-full max-w-2xl mx-auto grid grid-cols-2">
-            <TabsTrigger value="ai-plan">
-              <CalendarIcon className="w-4 h-4 mr-2" />
-              AI Plan
+        {/* Main Content Tabs */}
+        <Tabs defaultValue="workouts" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 h-auto p-1">
+            <TabsTrigger value="workouts" className="flex flex-col sm:flex-row gap-2 py-3">
+              <Dumbbell className="w-4 h-4" />
+              <span className="text-xs sm:text-sm">Workouts</span>
             </TabsTrigger>
-            <TabsTrigger value="manual-log">
-              <Plus className="w-4 h-4 mr-2" />
-              Manual Log
+            <TabsTrigger value="library" className="flex flex-col sm:flex-row gap-2 py-3">
+              <BookOpen className="w-4 h-4" />
+              <span className="text-xs sm:text-sm">Library</span>
+            </TabsTrigger>
+            <TabsTrigger value="progress" className="flex flex-col sm:flex-row gap-2 py-3">
+              <BarChart3 className="w-4 h-4" />
+              <span className="text-xs sm:text-sm">Progress</span>
+            </TabsTrigger>
+            <TabsTrigger value="ai-plan" className="flex flex-col sm:flex-row gap-2 py-3">
+              <Sparkles className="w-4 h-4" />
+              <span className="text-xs sm:text-sm">AI Plan</span>
             </TabsTrigger>
           </TabsList>
 
-          {/* AI Plan Tab */}
-          <TabsContent value="ai-plan" className="mt-6">
-            {loading ? (
-              <Card className="p-8 text-center">
-                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
-                <p className="text-muted-foreground">Loading your training plan...</p>
-              </Card>
-            ) : trainingPlan?.days && Object.keys(trainingPlan.days).length > 0 ? (
-              <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Dumbbell className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold">Weekly Training Plan</h2>
-                    <p className="text-sm text-muted-foreground">Generated by MKRO Coach</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {DAYS.map((day) => {
-                    const dayPlan = trainingPlan.days[day];
-                    if (!dayPlan) return null;
-                    
-                    return (
-                      <Card key={day} className="p-4 bg-card border-primary/10 hover:border-primary/30 transition-colors">
-                        <div className="space-y-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h3 className="font-bold text-lg">{day}</h3>
-                              <p className="text-sm text-primary font-semibold">{dayPlan.focus}</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="flex items-center gap-2">
-                                <Checkbox 
-                                  id={`complete-${day}`}
-                                  checked={!!completedDays[day]}
-                                  onCheckedChange={() => handleToggleComplete(day)}
-                                  aria-label={`Mark ${day} as complete`}
-                                />
-                                <label htmlFor={`complete-${day}`} className="text-xs text-muted-foreground cursor-pointer">
-                                  Done
-                                </label>
-                              </div>
-                              <Button variant="ghost" size="icon" onClick={() => handleDeleteDay(day)} aria-label={`Delete ${day} workout`}>
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                          
-                          {dayPlan.exercises && dayPlan.exercises.length > 0 && (
-                            <div className="space-y-1.5">
-                                {dayPlan.exercises.map((ex: any, idx: number) => (
-                                  <div key={idx} className="text-sm p-2 bg-muted/50 rounded">
-                                    <div className="font-medium">{ex.name}</div>
-                                    <div className="text-xs text-muted-foreground">
-                                      {ex.sets} sets × {ex.reps} reps
-                                      {ex.rest_sec && ` • ${ex.rest_sec}s rest`}
-                                    </div>
-                                  </div>
-                                ))}
-                            </div>
-                          )}
-                          
-                          {dayPlan.warmup && (
-                            <div className="text-xs text-muted-foreground pt-2 border-t">
-                              <span className="font-semibold">Warmup:</span> {dayPlan.warmup}
-                            </div>
-                          )}
-                          
-                          {dayPlan.cooldown && (
-                            <div className="text-xs text-muted-foreground">
-                              <span className="font-semibold">Cooldown:</span> {dayPlan.cooldown}
-                            </div>
-                          )}
-                        </div>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </Card>
-            ) : (
-              <Card className="border-2 border-dashed border-primary/20">
-                <CardContent className="flex flex-col items-center justify-center py-12 text-center space-y-4">
-                  <CalendarIcon className="h-16 w-16 text-muted-foreground" />
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold">No Training Plan Yet</h3>
-                    <p className="text-muted-foreground max-w-md">
-                      Visit MKRO Coach to get a personalized AI-generated training plan.
-                    </p>
-                  </div>
-                  <Button onClick={() => navigate('/coach')} variant="default" size="lg">
-                    <Dumbbell className="h-4 w-4 mr-2" />
-                    Go to MKRO Coach
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-
-          {/* Manual Log Tab */}
-          <TabsContent value="manual-log" className="mt-6 space-y-6">
-            {/* Premium Workout Library */}
-            <Card className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-500/20">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
-                    <Crown className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold">Premium Workout Library</h2>
-                    <p className="text-sm text-muted-foreground">Expert-led video workouts</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {premiumWorkouts.map((workout) => (
-                    <div 
+          {/* Quick Workouts */}
+          <TabsContent value="workouts" className="space-y-6">
+            <Card className="border-0">
+              <CardHeader>
+                <CardTitle className="text-2xl">Quick Start Workouts</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Jump right into a proven workout routine
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-3 gap-4">
+                  {quickWorkouts.map(workout => (
+                    <Card
                       key={workout.id}
-                      className="group relative p-4 bg-background rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer"
-                      onClick={() => setSelectedVideo(workout.videoUrl)}
+                      className={`group cursor-pointer hover:-translate-y-2 transition-all duration-300 border-0 bg-gradient-to-br ${workout.gradient} hover:shadow-xl`}
+                      onClick={() => setActiveWorkout(workout)}
                     >
-                      <div className={`aspect-video bg-gradient-to-br ${workout.gradient} rounded-lg mb-3 flex items-center justify-center`}>
-                        <PlayCircle className={`w-12 h-12 ${workout.iconColor} group-hover:scale-110 transition-transform`} />
-                      </div>
-                      <h3 className="font-bold mb-1">{workout.title}</h3>
-                      <p className="text-sm text-muted-foreground mb-2">{workout.description}</p>
-                      <div className="flex gap-2">
-                        {workout.badges.map((badge) => (
-                          <Badge key={badge} variant="secondary">{badge}</Badge>
-                        ))}
-                      </div>
-                    </div>
+                      <CardContent className="p-6">
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                          <workout.icon className="w-7 h-7 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                          {workout.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          {workout.exercises.length} exercises • {workout.duration}
+                        </p>
+                        <Button 
+                          className="w-full bg-gradient-to-r from-primary to-accent hover:shadow-[var(--shadow-glow-primary)] group-hover:scale-105 transition-transform"
+                        >
+                          <Play className="w-4 h-4 mr-2" />
+                          Start Workout
+                        </Button>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
 
-            {/* Add Workout Form */}
-            <Card className="p-6">
-              <h3 className="text-lg font-bold mb-4">Log New Workout</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Workout Name</label>
-                  <Input 
-                    placeholder="e.g., Morning Run" 
-                    value={workoutName}
-                    onChange={(e) => setWorkoutName(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Type</label>
-                  <Select value={workoutType} onValueChange={setWorkoutType}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cardio">Cardio</SelectItem>
-                      <SelectItem value="strength">Strength</SelectItem>
-                      <SelectItem value="flexibility">Flexibility</SelectItem>
-                      <SelectItem value="sports">Sports</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Duration (minutes)</label>
-                  <Input 
-                    type="number" 
-                    placeholder="30" 
-                    value={workoutDuration}
-                    onChange={(e) => setWorkoutDuration(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Calories Burned</label>
-                  <Input 
-                    type="number" 
-                    placeholder="200" 
-                    value={workoutCalories}
-                    onChange={(e) => setWorkoutCalories(e.target.value)}
-                  />
-                </div>
-              </div>
-              <Button onClick={addManualWorkout} className="mt-4 w-full md:w-auto">
-                <Plus className="h-4 w-4 mr-2" />
-                Log Workout
-              </Button>
-            </Card>
+          {/* Exercise Library */}
+          <TabsContent value="library">
+            <ExerciseLibrary />
+          </TabsContent>
 
-            {/* Today's Workouts */}
-            <Card className="p-6">
-              <h3 className="text-lg font-bold mb-4">Today's Workouts</h3>
-              {getTodayWorkouts().length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">No workouts logged today</p>
-              ) : (
-                <div className="space-y-2">
-                  {getTodayWorkouts().map((workout) => (
-                    <div key={workout.id} className="flex items-center justify-between p-3 bg-muted/50 rounded">
-                      <div>
-                        <div className="font-medium">{workout.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {workout.type} • {workout.duration}min • {workout.calories}kcal
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="icon" onClick={() => deleteManualWorkout(workout.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card>
+          {/* Progress Dashboard */}
+          <TabsContent value="progress">
+            <ProgressDashboard />
+          </TabsContent>
 
-            {/* This Week's History */}
-            <Card className="p-6">
-              <h3 className="text-lg font-bold mb-4">This Week's History</h3>
-              {getThisWeekWorkouts().length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">No workouts logged this week</p>
-              ) : (
-                <div className="space-y-2">
-                  {getThisWeekWorkouts().map((workout) => (
-                    <div key={workout.id} className="flex items-center justify-between p-3 bg-muted/50 rounded">
-                      <div>
-                        <div className="font-medium">{workout.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {workout.type} • {workout.duration}min • {workout.calories}kcal • {new Date(workout.date).toLocaleDateString()}
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="icon" onClick={() => deleteManualWorkout(workout.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card>
+          {/* AI Plan Generator */}
+          <TabsContent value="ai-plan">
+            <WorkoutPlanGenerator onPlanGenerated={(plan) => {
+              setGeneratedPlan(plan);
+              setActiveWorkout(plan);
+            }} />
           </TabsContent>
         </Tabs>
-
-        {/* Video Player Modal */}
-        <Dialog open={!!selectedVideo} onOpenChange={() => setSelectedVideo(null)}>
-          <DialogContent className="max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>Premium Workout Video</DialogTitle>
-            </DialogHeader>
-            {selectedVideo && (
-              <div className="aspect-video w-full">
-                <iframe
-                  src={selectedVideo}
-                  className="w-full h-full rounded-lg"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );
