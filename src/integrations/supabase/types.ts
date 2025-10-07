@@ -68,66 +68,6 @@ export type Database = {
         }
         Relationships: []
       }
-      coach_state: {
-        Row: {
-          adherence_score: number | null
-          created_at: string
-          current_phase: Database["public"]["Enums"]["training_phase"] | null
-          last_checkin_at: string | null
-          next_checkin_at: string | null
-          notes: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          adherence_score?: number | null
-          created_at?: string
-          current_phase?: Database["public"]["Enums"]["training_phase"] | null
-          last_checkin_at?: string | null
-          next_checkin_at?: string | null
-          notes?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          adherence_score?: number | null
-          created_at?: string
-          current_phase?: Database["public"]["Enums"]["training_phase"] | null
-          last_checkin_at?: string | null
-          next_checkin_at?: string | null
-          notes?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      events: {
-        Row: {
-          created_at: string
-          id: string
-          kind: Database["public"]["Enums"]["event_kind"]
-          payload: Json | null
-          summary: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          kind: Database["public"]["Enums"]["event_kind"]
-          payload?: Json | null
-          summary: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          kind?: Database["public"]["Enums"]["event_kind"]
-          payload?: Json | null
-          summary?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       meal_completions: {
         Row: {
           completed: boolean
@@ -203,176 +143,28 @@ export type Database = {
         }
         Relationships: []
       }
-      meals: {
-        Row: {
-          carbs_g: number | null
-          created_at: string
-          day_index: number
-          fat_g: number | null
-          id: string
-          ingredients: Json
-          instructions: string | null
-          kcal: number | null
-          meal_time: string
-          plan_id: string | null
-          protein_g: number | null
-          recipe_title: string
-          tags: string[] | null
-          user_id: string
-        }
-        Insert: {
-          carbs_g?: number | null
-          created_at?: string
-          day_index: number
-          fat_g?: number | null
-          id?: string
-          ingredients?: Json
-          instructions?: string | null
-          kcal?: number | null
-          meal_time: string
-          plan_id?: string | null
-          protein_g?: number | null
-          recipe_title: string
-          tags?: string[] | null
-          user_id: string
-        }
-        Update: {
-          carbs_g?: number | null
-          created_at?: string
-          day_index?: number
-          fat_g?: number | null
-          id?: string
-          ingredients?: Json
-          instructions?: string | null
-          kcal?: number | null
-          meal_time?: string
-          plan_id?: string | null
-          protein_g?: number | null
-          recipe_title?: string
-          tags?: string[] | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "meals_plan_id_fkey"
-            columns: ["plan_id"]
-            isOneToOne: false
-            referencedRelation: "plans"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      metrics: {
-        Row: {
-          bf_pct: number | null
-          calories_avg: number | null
-          created_at: string
-          date: string
-          id: string
-          notes: string | null
-          protein_avg: number | null
-          steps: number | null
-          user_id: string
-          waist_cm: number | null
-          weight_kg: number | null
-          workouts_done: number | null
-        }
-        Insert: {
-          bf_pct?: number | null
-          calories_avg?: number | null
-          created_at?: string
-          date: string
-          id?: string
-          notes?: string | null
-          protein_avg?: number | null
-          steps?: number | null
-          user_id: string
-          waist_cm?: number | null
-          weight_kg?: number | null
-          workouts_done?: number | null
-        }
-        Update: {
-          bf_pct?: number | null
-          calories_avg?: number | null
-          created_at?: string
-          date?: string
-          id?: string
-          notes?: string | null
-          protein_avg?: number | null
-          steps?: number | null
-          user_id?: string
-          waist_cm?: number | null
-          weight_kg?: number | null
-          workouts_done?: number | null
-        }
-        Relationships: []
-      }
-      plans: {
-        Row: {
-          created_at: string
-          end_date: string
-          id: string
-          payload: Json
-          plan_type: Database["public"]["Enums"]["plan_type"]
-          start_date: string
-          user_id: string
-          version: number | null
-        }
-        Insert: {
-          created_at?: string
-          end_date: string
-          id?: string
-          payload?: Json
-          plan_type: Database["public"]["Enums"]["plan_type"]
-          start_date: string
-          user_id: string
-          version?: number | null
-        }
-        Update: {
-          created_at?: string
-          end_date?: string
-          id?: string
-          payload?: Json
-          plan_type?: Database["public"]["Enums"]["plan_type"]
-          start_date?: string
-          user_id?: string
-          version?: number | null
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           activity_level: string | null
           age: number | null
           allergies: string[] | null
-          bodyfat_pct: number | null
-          budget_level: string | null
           budget_preference: string | null
           completed_at: string | null
           cooking_time_preference: string | null
           created_at: string
-          days_available: Json | null
-          diet_prefs: Json | null
           dietary_preferences: string[] | null
           eating_out_frequency: string | null
-          equipment: Json | null
-          experience_level: string | null
           goal: string | null
-          goals: Json | null
           health_conditions: string[] | null
           height: number | null
-          height_cm: number | null
           height_unit: string | null
           hydration_goal: number | null
           id: string
-          injuries: Json | null
           is_premium: boolean | null
           kitchen_equipment: string[] | null
           meal_frequency: number | null
-          meals_per_day: number | null
           motivation_factors: string[] | null
           name: string | null
-          sex: string | null
           sleep_hours: number | null
           stress_level: number | null
           stripe_customer_id: string | null
@@ -388,41 +180,29 @@ export type Database = {
           updated_at: string
           user_id: string
           weight: number | null
-          weight_kg: number | null
           weight_unit: string | null
         }
         Insert: {
           activity_level?: string | null
           age?: number | null
           allergies?: string[] | null
-          bodyfat_pct?: number | null
-          budget_level?: string | null
           budget_preference?: string | null
           completed_at?: string | null
           cooking_time_preference?: string | null
           created_at?: string
-          days_available?: Json | null
-          diet_prefs?: Json | null
           dietary_preferences?: string[] | null
           eating_out_frequency?: string | null
-          equipment?: Json | null
-          experience_level?: string | null
           goal?: string | null
-          goals?: Json | null
           health_conditions?: string[] | null
           height?: number | null
-          height_cm?: number | null
           height_unit?: string | null
           hydration_goal?: number | null
           id?: string
-          injuries?: Json | null
           is_premium?: boolean | null
           kitchen_equipment?: string[] | null
           meal_frequency?: number | null
-          meals_per_day?: number | null
           motivation_factors?: string[] | null
           name?: string | null
-          sex?: string | null
           sleep_hours?: number | null
           stress_level?: number | null
           stripe_customer_id?: string | null
@@ -438,41 +218,29 @@ export type Database = {
           updated_at?: string
           user_id: string
           weight?: number | null
-          weight_kg?: number | null
           weight_unit?: string | null
         }
         Update: {
           activity_level?: string | null
           age?: number | null
           allergies?: string[] | null
-          bodyfat_pct?: number | null
-          budget_level?: string | null
           budget_preference?: string | null
           completed_at?: string | null
           cooking_time_preference?: string | null
           created_at?: string
-          days_available?: Json | null
-          diet_prefs?: Json | null
           dietary_preferences?: string[] | null
           eating_out_frequency?: string | null
-          equipment?: Json | null
-          experience_level?: string | null
           goal?: string | null
-          goals?: Json | null
           health_conditions?: string[] | null
           height?: number | null
-          height_cm?: number | null
           height_unit?: string | null
           hydration_goal?: number | null
           id?: string
-          injuries?: Json | null
           is_premium?: boolean | null
           kitchen_equipment?: string[] | null
           meal_frequency?: number | null
-          meals_per_day?: number | null
           motivation_factors?: string[] | null
           name?: string | null
-          sex?: string | null
           sleep_hours?: number | null
           stress_level?: number | null
           stripe_customer_id?: string | null
@@ -488,7 +256,6 @@ export type Database = {
           updated_at?: string
           user_id?: string
           weight?: number | null
-          weight_kg?: number | null
           weight_unit?: string | null
         }
         Relationships: []
@@ -703,56 +470,6 @@ export type Database = {
         }
         Relationships: []
       }
-      workouts: {
-        Row: {
-          created_at: string
-          day_index: number
-          exercises: Json
-          focus: string | null
-          id: string
-          instructions: string | null
-          plan_id: string | null
-          rpe_goal: number | null
-          session_name: string
-          time_min: number | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          day_index: number
-          exercises?: Json
-          focus?: string | null
-          id?: string
-          instructions?: string | null
-          plan_id?: string | null
-          rpe_goal?: number | null
-          session_name: string
-          time_min?: number | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          day_index?: number
-          exercises?: Json
-          focus?: string | null
-          id?: string
-          instructions?: string | null
-          plan_id?: string | null
-          rpe_goal?: number | null
-          session_name?: string
-          time_min?: number | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "workouts_plan_id_fkey"
-            columns: ["plan_id"]
-            isOneToOne: false
-            referencedRelation: "plans"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       [_ in never]: never
@@ -761,9 +478,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      event_kind: "checkin" | "plan_update" | "deload" | "injury_adjust"
-      plan_type: "training" | "nutrition" | "hybrid"
-      training_phase: "base" | "build" | "peak" | "deload"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -890,10 +605,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      event_kind: ["checkin", "plan_update", "deload", "injury_adjust"],
-      plan_type: ["training", "nutrition", "hybrid"],
-      training_phase: ["base", "build", "peak", "deload"],
-    },
+    Enums: {},
   },
 } as const

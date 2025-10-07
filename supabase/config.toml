@@ -35,12 +35,3 @@ verify_jwt = true
 
 [functions.generate-weekly-report]
 verify_jwt = true
-
-[functions.coach-generate-plan]
-verify_jwt = true
-
-[functions.coach-today]
-verify_jwt = true
-
-[functions.coach-checkin]
-verify_jwt = true
