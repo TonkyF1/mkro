@@ -948,7 +948,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      fn_day_totals: {
+        Args: { d: string }
+        Returns: {
+          carbs_g: number
+          fat_g: number
+          kcal: number
+          protein_g: number
+        }[]
+      }
+      fn_toggle_meal_complete: {
+        Args: { p_meal: string }
+        Returns: {
+          carbs_g: number
+          fat_g: number
+          kcal: number
+          protein_g: number
+        }[]
+      }
     }
     Enums: {
       event_kind: "checkin" | "plan_update" | "deload" | "injury_adjust"

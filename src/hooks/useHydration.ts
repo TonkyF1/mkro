@@ -24,9 +24,12 @@ export const useHydration = (date: string) => {
 
   const addLogMutation = useMutation({
     mutationFn: async (ml: number) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
       const { data, error } = await supabase
         .from('hydration_logs')
-        .insert([{ date, ml }])
+        .insert([{ date, ml, user_id: user.id }])
         .select()
         .single();
 

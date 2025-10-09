@@ -47,9 +47,12 @@ export const useDiary = (date: string) => {
       recipe_id?: string;
       custom_entry?: any;
     }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
       const { data, error } = await supabase
         .from('diary_meals')
-        .insert([meal])
+        .insert([{ ...meal, user_id: user.id }])
         .select()
         .single();
 
