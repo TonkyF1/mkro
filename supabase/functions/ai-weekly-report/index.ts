@@ -1,12 +1,13 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-Deno.serve(async (req) => {
+serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -63,7 +64,7 @@ Deno.serve(async (req) => {
     // Calculate stats
     const completedMeals = meals?.filter(m => m.is_completed) || [];
     const totalMeals = meals?.length || 0;
-    const adherenceRate = totalMeals > 0 ? (completedMeals.length / totalMeals * 100).toFixed(0) : 0;
+    const adherenceRate = totalMeals > 0 ? (completedMeals.length / totalMeals * 100).toFixed(0) : '0';
 
     const daysWithHydration = new Set(hydration?.map(h => h.date) || []).size;
     const hydrationRate = (daysWithHydration / 7 * 100).toFixed(0);
@@ -141,7 +142,7 @@ Be specific, actionable, and encouraging.`;
   } catch (error) {
     console.error('Error in ai-weekly-report:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
