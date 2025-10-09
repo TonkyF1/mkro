@@ -117,32 +117,24 @@ Be specific, actionable, and encouraging.`;
     const aiResult = await openaiResponse.json();
     const aiSummary = aiResult.choices[0].message.content;
 
-    // Save report
-    const { data: report, error: reportError } = await supabaseClient
-      .from('weekly_reports')
-      .insert({
-        user_id: user.id,
-        week_start: weekStartDate,
-        week_end: weekEndDate,
-        summary: aiSummary,
-        badges,
-        suggestions: `Adherence: ${adherenceRate}%, Hydration: ${hydrationRate}%, Workouts: ${workoutCount}`,
-        ai_raw: { adherenceRate, hydrationRate, workoutCount },
-      })
-      .select()
-      .single();
-
-    if (reportError) throw reportError;
+    const reportData = {
+      week_start: weekStartDate,
+      week_end: weekEndDate,
+      summary: aiSummary,
+      badges,
+      stats: { adherenceRate, hydrationRate, workoutCount },
+    };
 
     // Log event
     await supabaseClient.from('events').insert({
       user_id: user.id,
-      name: 'weekly_report_generated',
-      meta: { week_start: weekStartDate, report_id: report.id },
+      kind: 'weekly_report_generated',
+      summary: `Generated weekly report for ${weekStartDate}`,
+      payload: reportData,
     });
 
     return new Response(
-      JSON.stringify({ report }),
+      JSON.stringify({ report: reportData }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

@@ -199,8 +199,9 @@ Return ONLY valid JSON matching this structure:
     // Log event
     await supabaseClient.from('events').insert({
       user_id: user.id,
-      name: 'plan_generated',
-      meta: { plan_type, days, plan_id: savedPlan.id },
+      kind: 'plan_generated',
+      summary: `Generated ${days}-day ${plan_type} plan`,
+      payload: { plan_type, days, plan_id: savedPlan.id },
     });
 
     return new Response(

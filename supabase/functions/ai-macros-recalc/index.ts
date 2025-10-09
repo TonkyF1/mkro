@@ -115,8 +115,9 @@ Deno.serve(async (req) => {
     // Log event
     await supabaseClient.from('events').insert({
       user_id: user.id,
-      name: 'macros_recalculated',
-      meta: { targetCalories, macroTarget },
+      kind: 'macros_recalculated',
+      summary: `Recalculated macros: ${targetCalories} kcal`,
+      payload: { targetCalories, macroTarget },
     });
 
     return new Response(
