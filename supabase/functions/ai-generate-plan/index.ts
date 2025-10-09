@@ -7,29 +7,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface PlanDay {
-  date: string;
-  kcal: number;
-  meals: Array<{
-    type: 'breakfast' | 'lunch' | 'dinner' | 'snack';
-    recipe_id?: string;
-    custom?: {
-      title: string;
-      calories: number;
-      protein: number;
-      carbs: number;
-      fats: number;
-      cost_gbp?: number;
-    };
-  }>;
-  training?: Array<{
-    name: string;
-    duration_min: number;
-    focus: string;
-    notes?: string;
-  }>;
-}
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -45,22 +22,18 @@ serve(async (req) => {
     const token = authHeader.replace('Bearer ', '');
     const { data: { user } } = await supabaseClient.auth.getUser(token);
 
-    if (!user) {
-      throw new Error('Unauthorized');
-    }
+    if (!user) throw new Error('Unauthorized');
 
     const { days = 7, plan_type = 'both' } = await req.json();
 
-    // Fetch user profile
+    // Fetch profile
     const { data: profile } = await supabaseClient
       .from('profiles')
       .select('*')
       .eq('user_id', user.id)
       .single();
 
-    if (!profile) {
-      throw new Error('Profile not found');
-    }
+    if (!profile) throw new Error('Profile not found');
 
     // Fetch available recipes
     const { data: recipes } = await supabaseClient
@@ -68,20 +41,16 @@ serve(async (req) => {
       .select('*')
       .limit(50);
 
-    // Build AI prompt
-    const systemPrompt = `You are MKRO Coach, a UK-based fitness and nutrition AI coach.
-Generate a ${days}-day plan for a user with these details:
-- Goal: ${profile.goal || 'general_health'}
-- Activity: ${profile.activity_level || 'moderate'}
-- Daily calorie target: ${profile.daily_calorie_target || 2000} kcal
-- Macro targets: ${JSON.stringify(profile.macro_target || { protein: 150, carbs: 200, fats: 65 })}
-- Dietary preferences: ${JSON.stringify(profile.dietary_prefs || {})}
-- Allergies: ${JSON.stringify(profile.allergies || [])}
+    const systemPrompt = `You are MKRO Coach. Generate a ${days}-day plan.
+User: Goal=${profile.goal || 'general_health'}, Activity=${profile.activity_level || 'moderate'}
+Target: ${profile.daily_calorie_target || 2000} kcal/day
+Macros: ${JSON.stringify(profile.macro_target || { protein_g: 150, carbs_g: 200, fat_g: 65 })}
+Diet: ${JSON.stringify(profile.dietary_prefs || {})}
 
 Available recipes (match by ID when possible):
 ${JSON.stringify(recipes?.slice(0, 20) || [])}
 
-Return ONLY valid JSON matching this structure:
+Return ONLY valid JSON:
 {
   "days": [
     {
@@ -90,23 +59,23 @@ Return ONLY valid JSON matching this structure:
       "meals": [
         {
           "type": "breakfast",
-          "recipe_id": "uuid-if-matched",
+          "recipe_id": "uuid-if-exists",
           "custom": {
             "title": "High Protein Oats",
             "calories": 450,
-            "protein": 35,
-            "carbs": 55,
-            "fats": 12,
+            "protein_g": 35,
+            "carbs_g": 55,
+            "fat_g": 12,
             "cost_gbp": 2.50
           }
         }
       ],
       "training": [
         {
-          "name": "Upper Body Strength",
+          "name": "Upper Body",
           "duration_min": 45,
           "focus": "strength",
-          "notes": "Focus on progressive overload"
+          "notes": "Progressive overload"
         }
       ]
     }
@@ -114,9 +83,7 @@ Return ONLY valid JSON matching this structure:
 }`;
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openaiApiKey) {
-      throw new Error('OpenAI API key not configured');
-    }
+    if (!openaiApiKey) throw new Error('OpenAI API key not configured');
 
     console.log('Calling OpenAI for plan generation...');
 
@@ -130,7 +97,7 @@ Return ONLY valid JSON matching this structure:
         model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Generate a ${days}-day ${plan_type} plan starting from today.` }
+          { role: 'user', content: `Generate ${days}-day ${plan_type} plan starting today.` }
         ],
         temperature: 0.7,
         max_tokens: 3000,
@@ -146,7 +113,7 @@ Return ONLY valid JSON matching this structure:
     const aiResult = await openaiResponse.json();
     const content = aiResult.choices[0].message.content;
     
-    console.log('AI response received:', content.substring(0, 200));
+    console.log('AI response received');
 
     let planPayload;
     try {
@@ -174,7 +141,7 @@ Return ONLY valid JSON matching this structure:
 
     if (planError) throw planError;
 
-    // Populate diary_meals from plan
+    // Populate diary_meals
     const mealInserts = [];
     for (const day of planPayload.days) {
       for (const meal of day.meals) {
@@ -209,7 +176,7 @@ Return ONLY valid JSON matching this structure:
       JSON.stringify({ 
         plan_id: savedPlan.id, 
         payload: planPayload,
-        message: 'Plan generated and diary populated successfully'
+        message: 'Plan generated successfully'
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

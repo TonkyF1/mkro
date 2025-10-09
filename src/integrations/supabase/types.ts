@@ -28,7 +28,7 @@ export type Database = {
           created_at?: string | null
           end_date: string
           id?: string
-          payload?: Json
+          payload: Json
           plan_type?: string | null
           start_date: string
           user_id: string
@@ -252,9 +252,7 @@ export type Database = {
       exercises_library: {
         Row: {
           cooldown: string | null
-          goal_focus: string | null
           id: string
-          level: string | null
           muscle_groups: string[] | null
           tips: string | null
           title: string
@@ -263,9 +261,7 @@ export type Database = {
         }
         Insert: {
           cooldown?: string | null
-          goal_focus?: string | null
           id?: string
-          level?: string | null
           muscle_groups?: string[] | null
           tips?: string | null
           title: string
@@ -274,9 +270,7 @@ export type Database = {
         }
         Update: {
           cooldown?: string | null
-          goal_focus?: string | null
           id?: string
-          level?: string | null
           muscle_groups?: string[] | null
           tips?: string | null
           title?: string
@@ -536,9 +530,12 @@ export type Database = {
           days_available: Json | null
           diet_prefs: Json | null
           dietary_preferences: string[] | null
+          dietary_prefs: Json | null
+          dob: string | null
           eating_out_frequency: string | null
           equipment: Json | null
           experience_level: string | null
+          gender: string | null
           goal: string | null
           goals: Json | null
           health_conditions: string[] | null
@@ -546,6 +543,7 @@ export type Database = {
           height_cm: number | null
           height_unit: string | null
           hydration_goal: number | null
+          hydration_target_ml: number | null
           id: string
           injuries: Json | null
           is_premium: boolean | null
@@ -567,6 +565,8 @@ export type Database = {
           target_carbs: number | null
           target_fats: number | null
           target_protein: number | null
+          time_available_minutes: number | null
+          training_days_per_week: number | null
           trial_prompts_used: number | null
           trial_start_date: string | null
           updated_at: string
@@ -589,9 +589,12 @@ export type Database = {
           days_available?: Json | null
           diet_prefs?: Json | null
           dietary_preferences?: string[] | null
+          dietary_prefs?: Json | null
+          dob?: string | null
           eating_out_frequency?: string | null
           equipment?: Json | null
           experience_level?: string | null
+          gender?: string | null
           goal?: string | null
           goals?: Json | null
           health_conditions?: string[] | null
@@ -599,6 +602,7 @@ export type Database = {
           height_cm?: number | null
           height_unit?: string | null
           hydration_goal?: number | null
+          hydration_target_ml?: number | null
           id?: string
           injuries?: Json | null
           is_premium?: boolean | null
@@ -620,6 +624,8 @@ export type Database = {
           target_carbs?: number | null
           target_fats?: number | null
           target_protein?: number | null
+          time_available_minutes?: number | null
+          training_days_per_week?: number | null
           trial_prompts_used?: number | null
           trial_start_date?: string | null
           updated_at?: string
@@ -642,9 +648,12 @@ export type Database = {
           days_available?: Json | null
           diet_prefs?: Json | null
           dietary_preferences?: string[] | null
+          dietary_prefs?: Json | null
+          dob?: string | null
           eating_out_frequency?: string | null
           equipment?: Json | null
           experience_level?: string | null
+          gender?: string | null
           goal?: string | null
           goals?: Json | null
           health_conditions?: string[] | null
@@ -652,6 +661,7 @@ export type Database = {
           height_cm?: number | null
           height_unit?: string | null
           hydration_goal?: number | null
+          hydration_target_ml?: number | null
           id?: string
           injuries?: Json | null
           is_premium?: boolean | null
@@ -673,6 +683,8 @@ export type Database = {
           target_carbs?: number | null
           target_fats?: number | null
           target_protein?: number | null
+          time_available_minutes?: number | null
+          training_days_per_week?: number | null
           trial_prompts_used?: number | null
           trial_start_date?: string | null
           updated_at?: string
@@ -718,46 +730,61 @@ export type Database = {
       }
       recipes: {
         Row: {
-          calories: number
-          carbs: number
+          calories: number | null
+          carbs_g: number | null
+          cost_gbp: number | null
           created_at: string | null
+          created_by: string | null
           dietary_tags: string[]
-          fats: number
+          fat_g: number | null
           id: string
+          image_url: string | null
           ingredients: string[]
           instructions: string
-          name: string
           prep_time: number
-          protein: number
+          protein_g: number | null
           servings: number
+          source: string | null
+          steps: string | null
+          title: string
         }
         Insert: {
-          calories: number
-          carbs: number
+          calories?: number | null
+          carbs_g?: number | null
+          cost_gbp?: number | null
           created_at?: string | null
+          created_by?: string | null
           dietary_tags: string[]
-          fats: number
+          fat_g?: number | null
           id?: string
+          image_url?: string | null
           ingredients: string[]
           instructions: string
-          name: string
           prep_time: number
-          protein: number
+          protein_g?: number | null
           servings: number
+          source?: string | null
+          steps?: string | null
+          title: string
         }
         Update: {
-          calories?: number
-          carbs?: number
+          calories?: number | null
+          carbs_g?: number | null
+          cost_gbp?: number | null
           created_at?: string | null
+          created_by?: string | null
           dietary_tags?: string[]
-          fats?: number
+          fat_g?: number | null
           id?: string
+          image_url?: string | null
           ingredients?: string[]
           instructions?: string
-          name?: string
           prep_time?: number
-          protein?: number
+          protein_g?: number | null
           servings?: number
+          source?: string | null
+          steps?: string | null
+          title?: string
         }
         Relationships: []
       }
@@ -866,6 +893,42 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_reports: {
+        Row: {
+          ai_raw: Json | null
+          badges: string[] | null
+          created_at: string | null
+          id: string
+          suggestions: string | null
+          summary: string | null
+          user_id: string
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          ai_raw?: Json | null
+          badges?: string[] | null
+          created_at?: string | null
+          id?: string
+          suggestions?: string | null
+          summary?: string | null
+          user_id: string
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          ai_raw?: Json | null
+          badges?: string[] | null
+          created_at?: string | null
+          id?: string
+          suggestions?: string | null
+          summary?: string | null
+          user_id?: string
+          week_end?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
       weekly_training_plans: {
         Row: {
           created_at: string
@@ -890,6 +953,30 @@ export type Database = {
           updated_at?: string
           user_id?: string
           week_start?: string
+        }
+        Relationships: []
+      }
+      weight_logs: {
+        Row: {
+          created_at: string | null
+          date: string
+          id: string
+          user_id: string
+          weight_kg: number
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          id?: string
+          user_id: string
+          weight_kg: number
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          user_id?: string
+          weight_kg?: number
         }
         Relationships: []
       }
@@ -945,7 +1032,17 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_day_totals: {
+        Row: {
+          carbs_g: number | null
+          date: string | null
+          fat_g: number | null
+          kcal: number | null
+          protein_g: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       fn_day_totals: {

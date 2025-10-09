@@ -20,6 +20,7 @@ import WeeklyReports from "./pages/WeeklyReports";
 import NotFound from "./pages/NotFound";
 import HowItWorks from "./pages/HowItWorks";
 import Questionnaire from "./pages/Questionnaire";
+import Onboarding from "./pages/Onboarding";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/questionnaire" element={<Questionnaire />} />
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
