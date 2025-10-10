@@ -11,6 +11,8 @@ import Recipes from "./pages/Recipes";
 import Profile from "./pages/Profile";
 import Coach from "./pages/Coach";
 import Exercise from "./pages/Exercise";
+import ExerciseLibrary from "./pages/ExerciseLibrary";
+import WeeklyReportPage from "./pages/WeeklyReportPage";
 import NutritionHub from "./pages/NutritionHub";
 import Auth from "./pages/Auth";
 import Premium from "./pages/Premium";
@@ -41,7 +43,9 @@ const App = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/recipes" element={<Recipes />} />
                 <Route path="/nutrition" element={<NutritionHub />} />
-                <Route path="/exercise" element={<Exercise />} />
+          <Route path="/exercise" element={<Exercise />} />
+          <Route path="/exercise/library" element={<ExerciseLibrary />} />
+          <Route path="/weekly-report" element={<WeeklyReportPage />} />
                 <Route path="/timer" element={<Timer />} />
                 <Route path="/coach" element={<Coach />} />
                 <Route path="/profile" element={<Profile />} />
