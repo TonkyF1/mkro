@@ -35,10 +35,10 @@ serve(async (req) => {
     console.log('Authenticated user:', user.id);
 
     const { messages, profile } = await req.json();
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
-    if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY not configured');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY not configured');
     }
 
     // Fetch user profile if not provided
@@ -62,34 +62,34 @@ serve(async (req) => {
     const systemPrompt = buildSystemPrompt(userProfile);
     console.log('Processing request for user:', user.id, 'with', messages.length, 'messages');
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-2025-08-07',
+        model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages
         ],
-        max_completion_tokens: 2000
+        stream: false
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenAI API error:', response.status, errorText);
-      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
+      console.error('AI gateway error:', response.status, errorText);
+      throw new Error(`AI gateway error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('OpenAI API response:', JSON.stringify(data));
+    console.log('AI gateway response:', JSON.stringify(data));
     
-    const aiResponse = data.choices?.[0]?.message?.content;
+    const aiResponse = data.choices?.[0]?.message?.content || data.choices?.[0]?.delta?.content || '';
     
-    if (!aiResponse) {
+    if (!aiResponse || aiResponse.trim().length === 0) {
       console.error('Empty or invalid AI response:', data);
       throw new Error('AI returned empty response');
     }
