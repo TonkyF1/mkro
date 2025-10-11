@@ -186,7 +186,7 @@ A) PLAN_PROPOSAL (REQUIRED for every plan request):
 <!--MKRO_OUTPUT-->
 {
   "type": "PLAN_PROPOSAL",
-  "week_start_iso": "2025-10-06",
+  "week_start_iso": "CURRENT_WEEK_MONDAY_ISO",
   "nutrition_week_partial": {
     "Monday": {
       "Breakfast": [{"title": "Greek Yogurt Bowl", "kcal": 420, "protein_g": 35, "carbs_g": 45, "fat_g": 12}],

@@ -72,6 +72,23 @@ const formatInlineText = (text: string): string => {
   return text;
 };
 
+// Get Monday of current week (ISO YYYY-MM-DD)
+const getCurrentWeekMondayISO = (): string => {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diff);
+  return monday.toISOString().split('T')[0];
+};
+
+// Prefer provided ISO if valid; otherwise use current Monday
+const normalizeWeekStart = (iso?: string): string => {
+  if (!iso) return getCurrentWeekMondayISO();
+  const d = new Date(iso);
+  return isNaN(d.getTime()) ? getCurrentWeekMondayISO() : iso;
+};
+
 const MKROCoach = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -280,8 +297,9 @@ const MKROCoach = () => {
             console.log('[MKROCoach] Nutrition partial:', machineOutput.data.nutrition_week_partial);
             console.log('[MKROCoach] Training partial:', machineOutput.data.training_week_partial);
             
+            const weekStart = normalizeWeekStart(machineOutput.data.week_start_iso);
             const pendingSaveData = {
-              week_start_iso: machineOutput.data.week_start_iso,
+              week_start_iso: weekStart,
               write: {
                 nutrition: {
                   days: Object.keys(machineOutput.data.nutrition_week_partial || {}),
