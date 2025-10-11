@@ -28,13 +28,24 @@ export function parseCoachOutput(response: string): {
     ).trim();
     
     try {
-      const parsed = JSON.parse(machineBlock);
+      // Try to clean up the JSON if it has code fences or extra formatting
+      let cleanedBlock = machineBlock.trim();
+      
+      // Remove code fences if present
+      if (cleanedBlock.startsWith('```json')) {
+        cleanedBlock = cleanedBlock.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      } else if (cleanedBlock.startsWith('```')) {
+        cleanedBlock = cleanedBlock.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      }
+      
+      const parsed = JSON.parse(cleanedBlock);
       machineOutput = {
         type: parsed.type,
         data: parsed
       };
     } catch (error) {
       console.error('Failed to parse machine output:', error);
+      console.error('Machine block content:', machineBlock);
     }
   }
   
