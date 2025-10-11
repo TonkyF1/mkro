@@ -69,13 +69,12 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-5-2025-08-07',
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages
         ],
-        temperature: 0.8,
-        max_tokens: 2000
+        max_completion_tokens: 2000
       }),
     });
 
