@@ -81,13 +81,20 @@ serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('OpenAI API error:', response.status, errorText);
-      throw new Error(`OpenAI API error: ${response.status}`);
+      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
+    console.log('OpenAI API response:', JSON.stringify(data));
     
-    console.log('AI response generated successfully, length:', aiResponse?.length);
+    const aiResponse = data.choices?.[0]?.message?.content;
+    
+    if (!aiResponse) {
+      console.error('Empty or invalid AI response:', data);
+      throw new Error('AI returned empty response');
+    }
+    
+    console.log('AI response generated successfully, length:', aiResponse.length);
 
     return new Response(
       JSON.stringify({ response: aiResponse }),
