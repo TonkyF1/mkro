@@ -165,28 +165,18 @@ For training:
 - Include brief warmup and cooldown notes
 - Match to user's equipment and schedule
 
-CRITICAL WORKFLOW - ALWAYS FOLLOW THIS ORDER:
-
-STEP 1: When user requests a plan, ALWAYS output PLAN_PROPOSAL
-- Present the plan in human-readable format
-- Tell the user "I've prepared your plan! Save buttons will appear below."
-- Include the PLAN_PROPOSAL machine output
-
-STEP 2: The app will automatically show save buttons to the user
-- DO NOT ask them if they want to save
-- DO NOT output SAVE_DIRECTIVES
-- The buttons handle the saving
-
-IMPORTANT: NEVER skip PLAN_PROPOSAL and jump to SAVE_DIRECTIVES!
-The app needs PLAN_PROPOSAL to show the save buttons.
+SAVE WORKFLOW:
+1. After proposing a plan, ask: "Would you like to save this plan?"
+2. Provide options: Save Food Only, Save Training Only, Save Both, Don't Save
+3. When user chooses, output SAVE_DIRECTIVES
 
 OUTPUT FORMATS:
 
-A) PLAN_PROPOSAL (REQUIRED for every plan request):
+A) PLAN_PROPOSAL (after MAKE_PLAN request):
 <!--MKRO_OUTPUT-->
 {
   "type": "PLAN_PROPOSAL",
-  "week_start_iso": "CURRENT_WEEK_MONDAY_ISO",
+  "week_start_iso": "2025-10-06",
   "nutrition_week_partial": {
     "Monday": {
       "Breakfast": [{"title": "Greek Yogurt Bowl", "kcal": 420, "protein_g": 35, "carbs_g": 45, "fat_g": 12}],
@@ -211,9 +201,29 @@ A) PLAN_PROPOSAL (REQUIRED for every plan request):
 }
 <!--/MKRO_OUTPUT-->
 
-B) SAVE_DIRECTIVES - DO NOT USE THIS
-The app handles saving automatically via buttons.
-You should NEVER output SAVE_DIRECTIVES.
+B) SAVE_DIRECTIVES (when user chooses to save):
+<!--MKRO_OUTPUT-->
+{
+  "type": "SAVE_DIRECTIVES",
+  "week_start_iso": "2025-10-06",
+  "write": {
+    "nutrition": {
+      "days": ["Monday", "Tuesday"],
+      "data": {
+        "Monday": {"Breakfast": [...], "Lunch": [...], "Dinner": [...], "Snacks": [...]},
+        "Tuesday": {...}
+      }
+    },
+    "training": {
+      "days": ["Monday", "Tuesday"],
+      "data": {
+        "Monday": {"focus": "Chest", "exercises": [...]},
+        "Tuesday": {...}
+      }
+    }
+  }
+}
+<!--/MKRO_OUTPUT-->
 
 C) PROFILE_UPDATE (when user mentions profile changes):
 <!--MKRO_OUTPUT-->
@@ -240,18 +250,11 @@ D) STATUS_SUMMARY (when user asks for status):
 <!--/MKRO_OUTPUT-->
 
 Remember:
-- ALWAYS use PLAN_PROPOSAL for any plan (nutrition, training, or both)
-- The app shows save buttons automatically - NEVER ask if user wants to save
 - Be concise and supportive
 - Always output exactly one machine block
 - No code fences inside machine blocks
-- UK context always
-
-EXAMPLES:
-- "create me a 3-day meal plan" → PLAN_PROPOSAL with nutrition_week_partial only
-- "give me a workout" → PLAN_PROPOSAL with training_week_partial only  
-- "meal and training plans" → PLAN_PROPOSAL with both
-- "I'm now 90kg" → PROFILE_UPDATE`;
+- Ask clarifying questions when needed
+- UK context always`;
 }
 
 function formatGoal(goal?: string): string {

@@ -67,19 +67,16 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
     try {
       setLoading(true);
 
-      // Determine which week to fetch: prefer activeWeekStart if set, otherwise default
-      const weekToFetch = activeWeekStart || targetWeekStart;
-
       // Fetch nutrition plan for requested week
       let { data: nutritionData } = await supabase
         .from('weekly_nutrition_plans')
         .select('*')
         .eq('user_id', user.id)
-        .eq('week_start', weekToFetch)
+        .eq('week_start', targetWeekStart)
         .maybeSingle();
 
       if (!nutritionData) {
-        nutritionData = await fetchNearest('weekly_nutrition_plans', weekToFetch);
+        nutritionData = await fetchNearest('weekly_nutrition_plans', targetWeekStart);
       }
       setNutritionPlan(nutritionData);
 
@@ -88,11 +85,11 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
         .from('weekly_training_plans')
         .select('*')
         .eq('user_id', user.id)
-        .eq('week_start', weekToFetch)
+        .eq('week_start', targetWeekStart)
         .maybeSingle();
 
       if (!trainingData) {
-        trainingData = await fetchNearest('weekly_training_plans', weekToFetch);
+        trainingData = await fetchNearest('weekly_training_plans', targetWeekStart);
       }
       setTrainingPlan(trainingData);
 
@@ -100,7 +97,7 @@ export const useWeeklyPlans = (weekStartISO?: string) => {
       setActiveWeekStart(
         (nutritionData && nutritionData.week_start) ||
         (trainingData && trainingData.week_start) ||
-        weekToFetch
+        targetWeekStart
       );
 
     } catch (error) {
