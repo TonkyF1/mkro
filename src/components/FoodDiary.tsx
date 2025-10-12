@@ -1,192 +1,503 @@
-import React, { useState } from 'react';
-import { useDiary } from '@/hooks/useDiary';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, useEffect } from 'react';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Trash2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Plus, Trash2, Utensils, Scan, Clock, ChevronDown, ChevronUp, ScanBarcode, Search } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { FoodScanner } from './FoodScanner';
+import { BarcodeScanner } from './BarcodeScanner';
+import { FoodSearch } from './FoodSearch';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useNavigate } from 'react-router-dom';
 
-export const FoodDiary = () => {
-  const today = new Date().toISOString().split('T')[0];
-  const { meals, totals, isLoading, addMeal, toggleComplete, deleteMeal } = useDiary(today);
+interface FoodEntry {
+  id: string;
+  name: string;
+  meal: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  date: string;
+}
+
+interface MealHistory {
+  id: string;
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+  meal_type: string | null;
+  created_at: string;
+}
+
+const FoodDiary = () => {
+  const { toast } = useToast();
+  const { user } = useAuth();
   const { profile } = useUserProfile();
-
-  const [newMeal, setNewMeal] = useState({
-    meal_slot: 'breakfast' as 'breakfast' | 'lunch' | 'dinner' | 'snack',
-    title: '',
-    calories: '',
-    protein_g: '',
-    carbs_g: '',
-    fat_g: '',
+  const navigate = useNavigate();
+  const isPremium = profile?.is_premium || profile?.subscription_status === 'premium';
+  const [foods, setFoods] = useState<FoodEntry[]>([]);
+  const [mealHistory, setMealHistory] = useState<MealHistory[]>([]);
+  const [showScanner, setShowScanner] = useState(false);
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [newFood, setNewFood] = useState({
+    name: '',
+    meal: 'breakfast',
+    calories: 0,
+    protein: 0,
+    carbs: 0,
+    fats: 0,
   });
 
-  const handleAddMeal = () => {
-    if (!newMeal.title || !newMeal.calories) return;
+  const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack'];
 
-    addMeal({
-      date: today,
-      meal_slot: newMeal.meal_slot,
-      custom_entry: {
-        title: newMeal.title,
-        calories: parseInt(newMeal.calories),
-        protein_g: parseFloat(newMeal.protein_g) || 0,
-        carbs_g: parseFloat(newMeal.carbs_g) || 0,
-        fat_g: parseFloat(newMeal.fat_g) || 0,
-      },
-    });
+  // Fetch meal history on mount
+  useEffect(() => {
+    if (user) {
+      fetchMealHistory();
+    }
+  }, [user]);
 
-    setNewMeal({
-      meal_slot: 'breakfast',
-      title: '',
-      calories: '',
-      protein_g: '',
-      carbs_g: '',
-      fat_g: '',
+  const fetchMealHistory = async () => {
+    if (!user) return;
+
+    // Free users: last 7 days only, Premium: unlimited
+    const limitDays = isPremium ? null : 7;
+    const cutoffDate = limitDays 
+      ? new Date(Date.now() - limitDays * 24 * 60 * 60 * 1000).toISOString()
+      : null;
+
+    let query = supabase
+      .from('meal_history')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (cutoffDate) {
+      query = query.gte('created_at', cutoffDate);
+    }
+
+    query = query.limit(isPremium ? 100 : 30);
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching meal history:', error);
+      return;
+    }
+
+    if (data) {
+      setMealHistory(data);
+    }
+  };
+
+  const addFood = async () => {
+    if (!newFood.name || newFood.calories <= 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Please fill in food name and calories.',
+      });
+      return;
+    }
+
+    if (!user) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'You must be logged in to add food.',
+      });
+      return;
+    }
+
+    const food: FoodEntry = {
+      id: Date.now().toString(),
+      ...newFood,
+      date: new Date().toISOString().split('T')[0],
+    };
+
+    // Save to database - round all numeric values to integers
+    const { error } = await supabase
+      .from('meal_history')
+      .insert({
+        user_id: user.id,
+        name: newFood.name,
+        calories: Math.round(newFood.calories),
+        protein: Math.round(newFood.protein),
+        carbs: Math.round(newFood.carbs),
+        fats: Math.round(newFood.fats),
+        meal_type: newFood.meal,
+      });
+
+    if (error) {
+      console.error('Error saving food:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to save food to history.',
+      });
+      return;
+    }
+
+    setFoods([...foods, food]);
+    setNewFood({ name: '', meal: 'breakfast', calories: 0, protein: 0, carbs: 0, fats: 0 });
+    
+    // Refresh meal history
+    fetchMealHistory();
+    
+    toast({
+      title: 'Food Added',
+      description: `${food.name} has been logged successfully!`,
     });
   };
 
-  const getMealsBySlot = (slot: string) => {
-    return meals?.filter((m) => m.meal_slot === slot) || [];
+  const removeFood = (id: string) => {
+    setFoods(foods.filter(food => food.id !== id));
+    toast({
+      title: 'Food Removed',
+      description: 'Food has been removed from your diary.',
+    });
   };
 
-  const target = profile?.daily_calorie_target || 2000;
-  const proteinTarget = profile?.macro_target?.protein_g || 150;
-  const carbsTarget = profile?.macro_target?.carbs_g || 200;
-  const fatTarget = profile?.macro_target?.fat_g || 60;
+  const handleScannedFood = (foodData: {
+    name: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+  }) => {
+    setNewFood({
+      ...foodData,
+      meal: 'breakfast'
+    });
+    toast({
+      title: 'Food identified!',
+      description: 'Review and adjust the nutritional values, then click Add Food.',
+    });
+  };
 
-  if (isLoading) {
-    return <div>Loading diary...</div>;
-  }
+  const selectFromHistory = (historyItem: MealHistory) => {
+    setNewFood({
+      name: historyItem.name,
+      calories: historyItem.calories,
+      protein: historyItem.protein,
+      carbs: historyItem.carbs,
+      fats: historyItem.fats,
+      meal: historyItem.meal_type || 'breakfast',
+    });
+    setShowHistory(false);
+    toast({
+      title: 'Meal selected',
+      description: 'Adjust values if needed, then click Add Food.',
+    });
+  };
+
+  const deleteFromHistory = async (historyId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent selecting the item when clicking delete
+    
+    const { error } = await supabase
+      .from('meal_history')
+      .delete()
+      .eq('id', historyId);
+
+    if (error) {
+      console.error('Error deleting from history:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to delete from history.',
+      });
+      return;
+    }
+
+    toast({
+      title: 'Deleted',
+      description: 'Meal removed from history.',
+    });
+
+    fetchMealHistory();
+  };
+
+  const getTodayFoods = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return foods.filter(food => food.date === today);
+  };
+
+  const getTodayTotals = () => {
+    const todayFoods = getTodayFoods();
+    return todayFoods.reduce(
+      (totals, food) => ({
+        calories: totals.calories + food.calories,
+        protein: totals.protein + food.protein,
+        carbs: totals.carbs + food.carbs,
+        fats: totals.fats + food.fats,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fats: 0 }
+    );
+  };
+
+  const getFoodsByMeal = (meal: string) => {
+    return getTodayFoods().filter(food => food.meal === meal);
+  };
+
+  const todayTotals = getTodayTotals();
 
   return (
     <div className="space-y-6">
-      {/* Daily Totals */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Today's Nutrition</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span>Calories</span>
-            <span className="font-bold">{totals?.kcal || 0} / {target}</span>
+      {/* Daily Nutrition Summary */}
+      <Card className="p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Utensils className="h-5 w-5" />
+          <h3 className="text-xl font-semibold">Today's Nutrition</h3>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center">
+            <p className="text-2xl font-bold text-primary">{todayTotals.calories}</p>
+            <p className="text-sm text-muted-foreground">Calories</p>
           </div>
-          <div className="flex justify-between items-center">
-            <span>Protein</span>
-            <span className="font-bold">{totals?.protein_g?.toFixed(1) || 0}g / {proteinTarget}g</span>
+          <div className="text-center">
+            <p className="text-2xl font-bold text-primary">{todayTotals.protein}g</p>
+            <p className="text-sm text-muted-foreground">Protein</p>
           </div>
-          <div className="flex justify-between items-center">
-            <span>Carbs</span>
-            <span className="font-bold">{totals?.carbs_g?.toFixed(1) || 0}g / {carbsTarget}g</span>
+          <div className="text-center">
+            <p className="text-2xl font-bold text-primary">{todayTotals.carbs}g</p>
+            <p className="text-sm text-muted-foreground">Carbs</p>
           </div>
-          <div className="flex justify-between items-center">
-            <span>Fat</span>
-            <span className="font-bold">{totals?.fat_g?.toFixed(1) || 0}g / {fatTarget}g</span>
+          <div className="text-center">
+            <p className="text-2xl font-bold text-primary">{todayTotals.fats}g</p>
+            <p className="text-sm text-muted-foreground">Fats</p>
           </div>
-        </CardContent>
+        </div>
       </Card>
 
-      {/* Meals by Slot */}
-      {(['breakfast', 'lunch', 'dinner', 'snack'] as const).map((slot) => (
-        <Card key={slot}>
-          <CardHeader>
-            <CardTitle className="capitalize">{slot}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {getMealsBySlot(slot).length === 0 ? (
-              <p className="text-muted-foreground text-sm">No meals logged</p>
-            ) : (
-              getMealsBySlot(slot).map((meal) => {
-                const entry = meal.custom_entry || meal.recipes;
-                const title = entry?.title || 'Unknown';
-                const kcal = entry?.calories || 0;
-                const protein = entry?.protein_g || 0;
+      {/* Add New Food */}
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-4 gap-2">
+          <h3 className="text-lg font-semibold">Log Food</h3>
+          <div className="flex flex-wrap gap-2 justify-end">
+            <Button onClick={() => setShowSearch(!showSearch)} variant="outline" size="sm" className="text-xs">
+              <Search className="h-3 w-3 mr-1" />
+              Search {showSearch ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />}
+            </Button>
+            <Button onClick={() => setShowHistory(!showHistory)} variant="outline" size="sm" className="text-xs">
+              <Clock className="h-3 w-3 mr-1" />
+              History {showHistory ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />}
+            </Button>
+            <Button onClick={() => setShowScanner(true)} variant="outline" size="sm" className="text-xs">
+              <Scan className="h-3 w-3 mr-1" />
+              AI Scan
+            </Button>
+            <Button onClick={() => setShowBarcodeScanner(true)} variant="outline" size="sm" className="text-xs">
+              <ScanBarcode className="h-3 w-3 mr-1" />
+              Barcode
+            </Button>
+          </div>
+        </div>
 
-                return (
-                  <div key={meal.id} className="flex items-center justify-between gap-2 p-2 border rounded">
-                    <Checkbox
-                      checked={meal.is_completed}
-                      onCheckedChange={() => toggleComplete(meal.id)}
-                    />
+        {/* Food Search Dropdown */}
+        {showSearch && (
+          <div className="mb-4 p-4 bg-muted rounded-lg">
+            <p className="text-sm font-medium mb-3">Search UK Foods</p>
+            <FoodSearch onAddFood={(food) => {
+              setNewFood({
+                ...food,
+                meal: newFood.meal || 'breakfast'
+              });
+              setShowSearch(false);
+            }} />
+          </div>
+        )}
+
+        {/* Meal History Dropdown */}
+        {showHistory && mealHistory.length > 0 && (
+          <div className="mb-4 p-4 bg-muted rounded-lg max-h-64 overflow-y-auto">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-medium">Recent Meals {!isPremium && '(Last 7 days)'}</p>
+              {!isPremium && (
+                <Button 
+                  variant="link" 
+                  size="sm" 
+                  onClick={() => navigate('/premium')}
+                  className="text-xs h-auto p-0"
+                >
+                  Unlock Full History
+                </Button>
+              )}
+            </div>
+            <div className="space-y-2">
+              {mealHistory.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => selectFromHistory(item)}
+                  className="w-full text-left p-3 bg-background rounded-lg hover:bg-accent transition-colors"
+                >
+                  <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <p className="font-medium">{title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {kcal} kcal • {protein}g protein
-                      </p>
+                      <p className="font-medium">{item.name}</p>
+                      <div className="flex gap-2 mt-1">
+                        <Badge variant="outline" className="text-xs">{item.calories} cal</Badge>
+                        <Badge variant="outline" className="text-xs">{item.protein}g protein</Badge>
+                        <Badge variant="outline" className="text-xs">{item.carbs}g carbs</Badge>
+                        <Badge variant="outline" className="text-xs">{item.fats}g fats</Badge>
+                      </div>
                     </div>
                     <Button
-                      size="sm"
                       variant="ghost"
-                      onClick={() => deleteMeal(meal.id)}
+                      size="sm"
+                      onClick={(e) => deleteFromHistory(item.id, e)}
+                      className="ml-2"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                );
-              })
-            )}
-          </CardContent>
-        </Card>
-      ))}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
-      {/* Add Meal Form */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Add Food</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Select value={newMeal.meal_slot} onValueChange={(v: any) => setNewMeal({ ...newMeal, meal_slot: v })}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="breakfast">Breakfast</SelectItem>
-              <SelectItem value="lunch">Lunch</SelectItem>
-              <SelectItem value="dinner">Dinner</SelectItem>
-              <SelectItem value="snack">Snack</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Input
-            placeholder="Food name"
-            value={newMeal.title}
-            onChange={(e) => setNewMeal({ ...newMeal, title: e.target.value })}
-          />
-
-          <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+          <div>
+            <Label htmlFor="food-name">Food Name</Label>
             <Input
-              type="number"
-              placeholder="Calories"
-              value={newMeal.calories}
-              onChange={(e) => setNewMeal({ ...newMeal, calories: e.target.value })}
-            />
-            <Input
-              type="number"
-              placeholder="Protein (g)"
-              value={newMeal.protein_g}
-              onChange={(e) => setNewMeal({ ...newMeal, protein_g: e.target.value })}
-            />
-            <Input
-              type="number"
-              placeholder="Carbs (g)"
-              value={newMeal.carbs_g}
-              onChange={(e) => setNewMeal({ ...newMeal, carbs_g: e.target.value })}
-            />
-            <Input
-              type="number"
-              placeholder="Fat (g)"
-              value={newMeal.fat_g}
-              onChange={(e) => setNewMeal({ ...newMeal, fat_g: e.target.value })}
+              id="food-name"
+              placeholder="e.g., Grilled Chicken"
+              value={newFood.name}
+              onChange={(e) => setNewFood({ ...newFood, name: e.target.value })}
             />
           </div>
-
-          <Button onClick={handleAddMeal} className="w-full" disabled={!newMeal.title || !newMeal.calories}>
-            <Plus className="w-4 h-4 mr-2" />
-            Add to Diary
-          </Button>
-        </CardContent>
+          <div>
+            <Label htmlFor="meal-type">Meal</Label>
+            <Select 
+              value={newFood.meal} 
+              onValueChange={(value) => setNewFood({ ...newFood, meal: value })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {mealTypes.map((meal) => (
+                  <SelectItem key={meal} value={meal}>
+                    {meal.charAt(0).toUpperCase() + meal.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="calories">Calories</Label>
+            <Input
+              id="calories"
+              type="number"
+              placeholder="200"
+              value={newFood.calories || ''}
+              onChange={(e) => setNewFood({ ...newFood, calories: parseInt(e.target.value) || 0 })}
+            />
+          </div>
+          <div>
+            <Label htmlFor="protein">Protein (g)</Label>
+            <Input
+              id="protein"
+              type="number"
+              placeholder="25"
+              value={newFood.protein || ''}
+              onChange={(e) => setNewFood({ ...newFood, protein: parseInt(e.target.value) || 0 })}
+            />
+          </div>
+          <div>
+            <Label htmlFor="carbs">Carbs (g)</Label>
+            <Input
+              id="carbs"
+              type="number"
+              placeholder="30"
+              value={newFood.carbs || ''}
+              onChange={(e) => setNewFood({ ...newFood, carbs: parseInt(e.target.value) || 0 })}
+            />
+          </div>
+          <div>
+            <Label htmlFor="fats">Fats (g)</Label>
+            <Input
+              id="fats"
+              type="number"
+              placeholder="10"
+              value={newFood.fats || ''}
+              onChange={(e) => setNewFood({ ...newFood, fats: parseInt(e.target.value) || 0 })}
+            />
+          </div>
+        </div>
+        <Button onClick={addFood}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Food
+        </Button>
       </Card>
+
+      {/* Food Scanner Modal */}
+      {showScanner && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <FoodScanner 
+              onFoodScanned={handleScannedFood} 
+              onClose={() => setShowScanner(false)} 
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Barcode Scanner Modal */}
+      {showBarcodeScanner && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <BarcodeScanner 
+              onFoodScanned={handleScannedFood} 
+              onClose={() => setShowBarcodeScanner(false)} 
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Meals by Type */}
+      {mealTypes.map((mealType) => {
+        const mealFoods = getFoodsByMeal(mealType);
+        return (
+          <Card key={mealType} className="p-6">
+            <h3 className="text-lg font-semibold mb-4 capitalize">{mealType}</h3>
+            {mealFoods.length > 0 ? (
+              <div className="space-y-3">
+                {mealFoods.map((food) => (
+                  <div key={food.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                    <div>
+                      <p className="font-medium">{food.name}</p>
+                      <div className="flex gap-2 mt-1">
+                        <Badge variant="outline">{food.calories} cal</Badge>
+                        <Badge variant="outline">{food.protein}g protein</Badge>
+                        <Badge variant="outline">{food.carbs}g carbs</Badge>
+                        <Badge variant="outline">{food.fats}g fats</Badge>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFood(food.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-center py-4">No {mealType} logged today</p>
+            )}
+          </Card>
+        );
+      })}
     </div>
   );
 };

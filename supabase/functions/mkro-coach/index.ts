@@ -35,10 +35,10 @@ serve(async (req) => {
     console.log('Authenticated user:', user.id);
 
     const { messages, profile } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
+    if (!OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY not configured');
     }
 
     // Fetch user profile if not provided
@@ -62,39 +62,33 @@ serve(async (req) => {
     const systemPrompt = buildSystemPrompt(userProfile);
     console.log('Processing request for user:', user.id, 'with', messages.length, 'messages');
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages
         ],
-        stream: false
+        temperature: 0.8,
+        max_tokens: 2000
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
-      throw new Error(`AI gateway error: ${response.status} - ${errorText}`);
+      console.error('OpenAI API error:', response.status, errorText);
+      throw new Error(`OpenAI API error: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('AI gateway response:', JSON.stringify(data));
+    const aiResponse = data.choices[0].message.content;
     
-    const aiResponse = data.choices?.[0]?.message?.content || data.choices?.[0]?.delta?.content || '';
-    
-    if (!aiResponse || aiResponse.trim().length === 0) {
-      console.error('Empty or invalid AI response:', data);
-      throw new Error('AI returned empty response');
-    }
-    
-    console.log('AI response generated successfully, length:', aiResponse.length);
+    console.log('AI response generated successfully, length:', aiResponse?.length);
 
     return new Response(
       JSON.stringify({ response: aiResponse }),

@@ -7,12 +7,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
 import Recipes from "./pages/Recipes";
 import Profile from "./pages/Profile";
 import Coach from "./pages/Coach";
 import Exercise from "./pages/Exercise";
-import ExerciseLibrary from "./pages/ExerciseLibrary";
-import WeeklyReportPage from "./pages/WeeklyReportPage";
 import NutritionHub from "./pages/NutritionHub";
 import Auth from "./pages/Auth";
 import Premium from "./pages/Premium";
@@ -22,7 +21,6 @@ import WeeklyReports from "./pages/WeeklyReports";
 import NotFound from "./pages/NotFound";
 import HowItWorks from "./pages/HowItWorks";
 import Questionnaire from "./pages/Questionnaire";
-import Onboarding from "./pages/Onboarding";
 
 const queryClient = new QueryClient();
 
@@ -37,15 +35,13 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
-              <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/questionnaire" element={<Questionnaire />} />
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/recipes" element={<Recipes />} />
                 <Route path="/nutrition" element={<NutritionHub />} />
-          <Route path="/exercise" element={<Exercise />} />
-          <Route path="/exercise/library" element={<ExerciseLibrary />} />
-          <Route path="/weekly-report" element={<WeeklyReportPage />} />
+                <Route path="/exercise" element={<Exercise />} />
                 <Route path="/timer" element={<Timer />} />
                 <Route path="/coach" element={<Coach />} />
                 <Route path="/profile" element={<Profile />} />
