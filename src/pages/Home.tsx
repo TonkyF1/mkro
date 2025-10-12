@@ -108,7 +108,7 @@ const Home = () => {
                 <Button 
                   size="lg" 
                   className="gap-2 text-lg px-8 py-7 bg-gradient-to-r from-primary to-accent hover:shadow-[var(--shadow-glow-primary)] transition-all duration-300 group min-h-[56px] min-w-[200px]"
-                  onClick={() => navigate(user ? '/dashboard' : '/auth')}
+                  onClick={() => navigate(user ? '/nutrition' : '/auth')}
                 >
                   <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                   {user ? 'Open Dashboard' : 'Start Free Trial'}
@@ -260,7 +260,7 @@ const Home = () => {
             <Button 
               size="lg"
               className="gap-2 text-lg px-12 py-6 bg-gradient-to-r from-primary to-accent hover:shadow-[var(--shadow-glow-primary)] transition-all duration-300 group"
-              onClick={() => navigate(user ? '/dashboard' : '/profile')}
+              onClick={() => navigate(user ? '/nutrition' : '/profile')}
             >
               <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
               {user ? 'Go to Dashboard' : 'Get Started Now'}
