@@ -43,28 +43,27 @@ const Auth = () => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        // Check if user has completed questionnaire
+        // Check if user has profile with goal set (indicates onboarding complete)
         const { data: profile } = await supabase
           .from('profiles')
-          .select('completed_at')
+          .select('goal')
           .eq('user_id', user.id)
           .maybeSingle();
-        navigate(profile?.completed_at ? '/' : '/questionnaire');
+        navigate(profile?.goal ? '/' : '/onboarding');
       }
     };
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state change:', event, session);
       if (event === 'SIGNED_IN' && session) {
-        // Check if questionnaire is completed
+        // Check if onboarding is completed
         supabase
           .from('profiles')
-          .select('completed_at')
+          .select('goal')
           .eq('user_id', session.user.id)
           .maybeSingle()
           .then(({ data }) => {
-            navigate(data?.completed_at ? '/' : '/questionnaire');
+            navigate(data?.goal ? '/' : '/onboarding');
           });
       }
     });
@@ -75,7 +74,7 @@ const Auth = () => {
   const onSignUp = async (data) => {
     setIsLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/questionnaire`;
+      const redirectUrl = `${window.location.origin}/onboarding`;
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
