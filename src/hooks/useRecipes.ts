@@ -1,62 +1,42 @@
-import { useState, useEffect } from 'react';
-import { recipes as staticRecipes, Recipe, getRecipesByCategory as getStaticRecipesByCategory, getRecipeById as getStaticRecipeById, getAllDietaryTags as getStaticAllDietaryTags } from '@/data/recipes';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
-// Re-export Recipe type for other components
-export type { Recipe };
+export interface Recipe {
+  id: string;
+  name: string;
+  description: string | null;
+  image_url: string | null;
+  calories: number | null;
+  protein: number | null;
+  carbs: number | null;
+  fats: number | null;
+  cook_time: number | null;
+  servings: number | null;
+  meal_type: string | null;
+  category: string | null;
+  tags: string[] | null;
+  is_premium: boolean | null;
+  instructions: string | null;
+  ingredients: any;
+}
 
-// Hook to manage recipes with premium filtering
-export const useRecipes = (isPremium?: boolean) => {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export const useRecipes = (filter?: string) => {
+  return useQuery({
+    queryKey: ['recipes', filter],
+    queryFn: async () => {
+      let query = supabase
+        .from('recipes')
+        .select('*')
+        .order('name');
 
-  useEffect(() => {
-    const loadRecipes = () => {
-      try {
-        setLoading(true);
-        // Free users see limited recipes (first 12), premium users see all
-        const availableRecipes = isPremium ? staticRecipes : staticRecipes.slice(0, 12);
-        setRecipes(availableRecipes);
-        console.log('Loaded recipes:', availableRecipes.length, 'Premium:', isPremium);
-      } catch (err) {
-        console.error('Error loading recipes:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load recipes');
-      } finally {
-        setLoading(false);
+      if (filter && filter !== 'All') {
+        const lowerFilter = filter.toLowerCase().replace(/ /g, '_');
+        query = query.or(`meal_type.eq.${lowerFilter},category.eq.${lowerFilter},tags.cs.{${filter.toLowerCase()}}`);
       }
-    };
 
-    loadRecipes();
-  }, [isPremium]);
-
-  const refetchRecipes = () => {
-    try {
-      setLoading(true);
-      setRecipes(staticRecipes);
-    } catch (err) {
-      console.error('Error loading recipes:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load recipes');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { recipes, loading, error, refetch: refetchRecipes };
-};
-
-export const getRecipesByCategory = (recipes: Recipe[], category: string) => {
-  if (category === 'all') return recipes;
-  return recipes.filter(recipe => recipe.category === category);
-};
-
-export const getRecipeById = (recipes: Recipe[], id: string) => {
-  return recipes.find(recipe => recipe.id === id);
-};
-
-export const getAllDietaryTags = (recipes: Recipe[]) => {
-  const tags = new Set<string>();
-  recipes.forEach(recipe => {
-    recipe.dietaryTags.forEach(tag => tags.add(tag));
+      const { data, error } = await query;
+      if (error) throw error;
+      return data as Recipe[];
+    },
   });
-  return Array.from(tags).sort();
 };
