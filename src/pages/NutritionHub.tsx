@@ -36,7 +36,7 @@ const saveMealPlanToStorage = (mealPlan: any) => {
 const NutritionHub = () => {
   const navigate = useNavigate();
   const { profile } = useUserProfile();
-  const { recipes } = useRecipes();
+  const { data: recipes = [] } = useRecipes();
   const { toast } = useToast();
   const [mealPlan, setMealPlan] = useState(() => loadMealPlanFromStorage());
   const [aiMealPlan, setAiMealPlan] = useState<ParsedMealPlan[]>([]);

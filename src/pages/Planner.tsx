@@ -28,7 +28,7 @@ interface ManualMeal {
 
 const Planner = () => {
   const navigate = useNavigate();
-  const { recipes } = useRecipes();
+  const { data: recipes = [] } = useRecipes();
   const { nutritionPlan, loading } = useWeeklyPlans();
   const { toggleMealCompletion, isMealCompleted } = useMealCompletions();
   const { toast } = useToast();

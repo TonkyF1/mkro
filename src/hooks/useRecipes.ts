@@ -40,3 +40,13 @@ export const useRecipes = (filter?: string) => {
     },
   });
 };
+
+export const getAllDietaryTags = (recipes: Recipe[]): string[] => {
+  const tags = new Set<string>();
+  recipes.forEach(recipe => {
+    if (recipe.tags) {
+      recipe.tags.forEach(tag => tags.add(tag));
+    }
+  });
+  return Array.from(tags).sort();
+};

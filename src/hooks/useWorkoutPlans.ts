@@ -38,8 +38,8 @@ export const useWorkoutPlans = (goalType?: string) => {
       if (error) throw error;
       return (data || []).map(item => ({
         ...item,
-        exercises: item.exercises as Exercise[]
-      }));
+        exercises: (item.exercises as unknown) as Exercise[]
+      })) as WorkoutPlan[];
     },
   });
 };

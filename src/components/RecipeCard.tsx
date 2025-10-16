@@ -139,11 +139,11 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
-            <span>{recipe.prepTime}</span>
+            <span>{recipe.cook_time || 30} min</span>
           </div>
           <div className="flex items-center gap-1">
             <Users className="h-3 w-3" />
-            <span>{recipe.servingSize}</span>
+            <span>{recipe.servings || 1} servings</span>
           </div>
           <div className="flex items-center gap-1">
             <Zap className="h-3 w-3" />
@@ -163,7 +163,7 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
         
         {/* Dietary Tags */}
         <div className="flex flex-wrap gap-1">
-          {recipe.dietaryTags.slice(0, 3).map((tag) => (
+          {recipe.tags && recipe.tags.slice(0, 3).map((tag) => (
             <Badge 
               key={tag} 
               variant="outline" 
@@ -172,9 +172,9 @@ export const RecipeCard = ({ recipe, onClick, onAddToMealPlan }: RecipeCardProps
               {tag}
             </Badge>
           ))}
-          {recipe.dietaryTags.length > 3 && (
+          {recipe.tags && recipe.tags.length > 3 && (
             <Badge variant="outline" className="text-xs">
-              +{recipe.dietaryTags.length - 3}
+              +{recipe.tags.length - 3}
             </Badge>
           )}
         </div>

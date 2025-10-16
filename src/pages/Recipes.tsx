@@ -20,7 +20,7 @@ const Recipes = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const isPremium = profile?.is_premium || profile?.subscription_status === 'premium';
-  const { recipes, loading: recipesLoading, error: recipesError } = useRecipes(isPremium);
+  const { data: recipes = [], isLoading: recipesLoading, error: recipesError } = useRecipes();
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -38,10 +38,10 @@ const Recipes = () => {
   const filteredRecipes = recipes.filter(recipe => {
     const categoryMatch = selectedCategory === 'all' || recipe.category === selectedCategory;
     const tagMatch = selectedTags.length === 0 || 
-      selectedTags.some(tag => recipe.dietaryTags.includes(tag));
+      (recipe.tags && selectedTags.some(tag => recipe.tags?.includes(tag)));
     const searchMatch = searchQuery === '' || 
       recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      recipe.description.toLowerCase().includes(searchQuery.toLowerCase());
+      (recipe.description && recipe.description.toLowerCase().includes(searchQuery.toLowerCase()));
     return categoryMatch && tagMatch && searchMatch;
   });
 
