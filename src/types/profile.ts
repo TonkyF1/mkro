@@ -67,6 +67,9 @@ export interface UserProfile {
   equipment?: any[];
   days_available?: any[];
   experience_level?: string;
+  points?: number;
+  streak?: number;
+  level?: string;
 }
 
 export const GOALS = [
