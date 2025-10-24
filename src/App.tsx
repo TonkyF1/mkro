@@ -8,7 +8,7 @@ import { LoadingScreen } from '@/components/LoadingScreen';
 import Auth from '@/pages/Auth';
 import Onboarding from '@/pages/Onboarding';
 import Home from '@/pages/Home';
-import Food from '@/pages/Food';
+import Recipes from '@/pages/Recipes';
 import Diary from '@/pages/Diary';
 import Gym from '@/pages/Gym';
 import AICoach from '@/pages/AICoach';
@@ -32,7 +32,7 @@ function AppRoutes() {
       
       <Route element={user ? <MainLayout /> : <Navigate to="/auth" />}>
         <Route path="/" element={<Home />} />
-        <Route path="/food" element={<Food />} />
+        <Route path="/food" element={<Recipes />} />
         <Route path="/diary" element={<Diary />} />
         <Route path="/gym" element={<Gym />} />
         <Route path="/coach" element={<AICoach />} />
