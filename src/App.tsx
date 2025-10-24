@@ -13,6 +13,8 @@ import FoodDiaryPage from '@/pages/FoodDiaryPage';
 import Exercise from '@/pages/Exercise';
 import AICoach from '@/pages/AICoach';
 import Stats from '@/pages/Stats';
+import WeeklyReports from '@/pages/WeeklyReports';
+import Timer from '@/pages/Timer';
 import Profile from '@/pages/Profile';
 import MainLayout from '@/layouts/MainLayout';
 
@@ -32,11 +34,20 @@ function AppRoutes() {
       
       <Route element={user ? <MainLayout /> : <Navigate to="/auth" />}>
         <Route path="/" element={<Home />} />
+        {/* Food/Recipes aliases */}
         <Route path="/food" element={<Recipes />} />
+        <Route path="/recipes" element={<Recipes />} />
+        {/* Diary/Nutrition aliases */}
         <Route path="/diary" element={<FoodDiaryPage />} />
+        <Route path="/nutrition" element={<FoodDiaryPage />} />
+        {/* Gym/Exercise aliases */}
         <Route path="/gym" element={<Exercise />} />
-        <Route path="/coach" element={<AICoach />} />
+        <Route path="/exercise" element={<Exercise />} />
+        {/* Reports/Stats */}
         <Route path="/stats" element={<Stats />} />
+        <Route path="/reports" element={<WeeklyReports />} />
+        <Route path="/coach" element={<AICoach />} />
+        <Route path="/timer" element={<Timer />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
     </Routes>
