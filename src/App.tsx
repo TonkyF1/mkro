@@ -9,8 +9,8 @@ import Auth from '@/pages/Auth';
 import Onboarding from '@/pages/Onboarding';
 import Home from '@/pages/Home';
 import Recipes from '@/pages/Recipes';
-import Diary from '@/pages/Diary';
-import Gym from '@/pages/Gym';
+import FoodDiaryPage from '@/pages/FoodDiaryPage';
+import Exercise from '@/pages/Exercise';
 import AICoach from '@/pages/AICoach';
 import Stats from '@/pages/Stats';
 import Profile from '@/pages/Profile';
@@ -33,8 +33,8 @@ function AppRoutes() {
       <Route element={user ? <MainLayout /> : <Navigate to="/auth" />}>
         <Route path="/" element={<Home />} />
         <Route path="/food" element={<Recipes />} />
-        <Route path="/diary" element={<Diary />} />
-        <Route path="/gym" element={<Gym />} />
+        <Route path="/diary" element={<FoodDiaryPage />} />
+        <Route path="/gym" element={<Exercise />} />
         <Route path="/coach" element={<AICoach />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/profile" element={<Profile />} />
