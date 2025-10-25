@@ -23,6 +23,7 @@ import {
   Activity, 
   Droplet,
   Moon,
+  Sun,
   Flame,
   Target,
   ChefHat,
@@ -36,6 +37,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from 'next-themes';
 import { GOALS, ACTIVITY_LEVELS, BUDGET_OPTIONS, COOKING_TIME_OPTIONS } from '@/types/profile';
 
 const signUpSchema = z.object({
@@ -54,6 +56,7 @@ const Profile = () => {
   const { user, signOut } = useAuth();
   const { isTrialExpired, isDevelopmentMode } = useTrial();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const [editingProfile, setEditingProfile] = useState(false);
   const [editingMacros, setEditingMacros] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
@@ -331,11 +334,20 @@ const Profile = () => {
             <p className="text-muted-foreground mt-1">Manage your fitness journey</p>
           </div>
           <div className="flex gap-3">
-            <Button onClick={() => setEditingProfile(true)} size="lg" className="gap-2">
+            <Button 
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
+              variant="outline" 
+              size="lg" 
+              className="gap-2 min-h-[48px]"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {theme === 'dark' ? 'Light' : 'Dark'}
+            </Button>
+            <Button onClick={() => setEditingProfile(true)} size="lg" className="gap-2 min-h-[48px]">
               <Edit className="w-4 h-4" />
               Edit Profile
             </Button>
-            <Button onClick={handleSignOut} variant="outline" size="lg" className="gap-2">
+            <Button onClick={handleSignOut} variant="outline" size="lg" className="gap-2 min-h-[48px]">
               <LogOut className="w-4 h-4" />
               Sign Out
             </Button>

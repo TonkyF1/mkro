@@ -185,39 +185,54 @@ const NutritionHub = () => {
       
       <div className="relative z-10 max-w-7xl mx-auto p-6 space-y-8">
         {/* Header */}
-        <div className="space-y-6 animate-fade-in">
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
-              <Apple className="w-10 h-10 text-white" />
+        <div className="space-y-4 animate-fade-in">
+          <div className="flex items-center gap-3">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
+              <Apple className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-5xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 Nutrition Hub
               </h1>
-              <p className="text-muted-foreground text-lg">Track your meals and reach your goals</p>
+              <p className="text-muted-foreground text-sm">Track your meals and reach your goals</p>
             </div>
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <PremiumStatCard
-              title="Today's Calories"
-              value={`${todaysCalories} / ${profile?.target_protein ? (profile.target_protein * 4 + profile.target_carbs * 4 + profile.target_fats * 9) : 2000}`}
-              icon={Apple}
-              gradient="bg-gradient-to-br from-emerald-500/10 to-teal-600/10"
-            />
-            <PremiumStatCard
-              title="Hydration"
-              value={`0 / ${profile?.hydration_goal || 2000}ml`}
-              icon={Droplet}
-              gradient="bg-gradient-to-br from-hydration/10 to-blue-600/10"
-            />
-            <PremiumStatCard
-              title="Weekly Streak"
-              value={`${weeklyStreak} ${weeklyStreak === 1 ? 'day' : 'days'}`}
-              icon={TrendingUp}
-              gradient="bg-gradient-to-br from-primary/10 to-accent/10"
-            />
+          <div className="grid grid-cols-3 gap-3">
+            <Card className="p-3 bg-gradient-to-br from-emerald-500/10 to-teal-600/10 border-primary/20">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                    <Apple className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-muted-foreground font-medium">Calories</span>
+                </div>
+                <p className="text-lg font-bold">{todaysCalories}<span className="text-xs text-muted-foreground">/{profile?.target_protein ? (profile.target_protein * 4 + profile.target_carbs * 4 + profile.target_fats * 9) : 2000}</span></p>
+              </div>
+            </Card>
+            <Card className="p-3 bg-gradient-to-br from-hydration/10 to-blue-600/10 border-primary/20">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-hydration to-blue-600 flex items-center justify-center">
+                    <Droplet className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-muted-foreground font-medium">Hydration</span>
+                </div>
+                <p className="text-lg font-bold">0<span className="text-xs text-muted-foreground">/{profile?.hydration_goal || 2000}ml</span></p>
+              </div>
+            </Card>
+            <Card className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-muted-foreground font-medium">Streak</span>
+                </div>
+                <p className="text-lg font-bold">{weeklyStreak}<span className="text-xs text-muted-foreground"> days</span></p>
+              </div>
+            </Card>
           </div>
         </div>
 

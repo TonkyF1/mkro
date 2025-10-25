@@ -121,74 +121,71 @@ const Recipes = () => {
 
       <div className="max-w-7xl mx-auto p-6 space-y-8 relative z-10">
         {/* Header */}
-        <div className="space-y-6">
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
-              <ChefHat className="w-10 h-10 text-white" />
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
+              <ChefHat className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-5xl font-black bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
                 Recipe Library
               </h1>
-              <p className="text-slate-600 dark:text-slate-400 text-lg">Discover delicious and nutritious recipes</p>
+              <p className="text-slate-600 dark:text-slate-400 text-sm">Discover delicious and nutritious recipes</p>
             </div>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="group relative p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
-                  <Sparkles className="w-8 h-8 text-white" />
+          <div className="grid grid-cols-3 gap-3">
+            <Card className="p-3 bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border-blue-500/20">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                    {isPremium ? 'Recipes' : 'Available'}
+                  </span>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
-                    {isPremium ? 'Total Recipes' : 'Available Recipes'}
-                  </p>
-                  <p className="text-3xl font-black">
-                    {recipes.length}
-                    {!isPremium && <span className="text-base text-muted-foreground ml-1">/ 12</span>}
-                  </p>
-                </div>
+                <p className="text-lg font-bold">
+                  {recipes.length}
+                  {!isPremium && <span className="text-xs text-muted-foreground">/12</span>}
+                </p>
               </div>
-            </div>
-            <div className="group relative p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-teal-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
-                  <TrendingUp className="w-8 h-8 text-white" />
+            </Card>
+            <Card className="p-3 bg-gradient-to-br from-emerald-500/10 to-teal-600/10 border-emerald-500/20">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">Filtered</span>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Filtered Results</p>
-                  <p className="text-3xl font-black">{filteredRecipes.length}</p>
-                </div>
+                <p className="text-lg font-bold">{filteredRecipes.length}</p>
               </div>
-            </div>
-            <div className="group relative p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-orange-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
-                  <Filter className="w-8 h-8 text-white" />
+            </Card>
+            <Card className="p-3 bg-gradient-to-br from-amber-500/10 to-orange-600/10 border-amber-500/20">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                    <Filter className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">Active</span>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">Active Filters</p>
-                  <p className="text-3xl font-black">{selectedTags.length + (selectedCategory !== 'all' ? 1 : 0)}</p>
-                </div>
+                <p className="text-lg font-bold">{selectedTags.length + (selectedCategory !== 'all' ? 1 : 0)}</p>
               </div>
-            </div>
+            </Card>
           </div>
 
           {/* Search Bar */}
-          <Card className="p-4">
+          <Card className="p-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Search recipes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12 text-base"
+                className="pl-9 h-10 text-sm"
               />
             </div>
           </Card>

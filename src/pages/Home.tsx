@@ -17,8 +17,10 @@ import {
   Zap,
   Check,
   Star,
-  Award
+  Award,
+  Shield
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 
 const Home = () => {
@@ -80,17 +82,24 @@ const Home = () => {
             <div className="text-center space-y-8 animate-fade-in">
               {/* Headline */}
               <div className="space-y-4">
+                <Badge variant="secondary" className="mb-2 text-sm px-4 py-1">
+                  Your Personal AI Health Coach
+                </Badge>
                 <h1 className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tight">
                   <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent bg-300% animate-gradient-shift">
-                    Your AI Health
+                    Track Food.
                   </span>
                   <br />
                   <span className="bg-gradient-to-r from-accent via-hydration to-accent bg-clip-text text-transparent bg-300% animate-gradient-shift">
-                    Coach
+                    Build Muscle.
+                  </span>
+                  <br />
+                  <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent bg-300% animate-gradient-shift">
+                    Reach Goals.
                   </span>
                 </h1>
-                <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium">
-                  Transform your lifestyle with personalized nutrition plans, smart workouts, and AI-powered guidance
+                <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium leading-relaxed">
+                  MKRO uses AI to create personalized meal plans, track nutrition, and guide your training—all in one beautiful app
                 </p>
               </div>
 
@@ -98,22 +107,28 @@ const Home = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
                 <Button 
                   size="lg" 
-                  className="gap-2 text-lg px-8 py-6 bg-gradient-to-r from-primary to-accent hover:shadow-[var(--shadow-glow-primary)] transition-all duration-300 group"
-                  onClick={() => navigate(user ? '/nutrition' : '/profile')}
+                  className="gap-2 text-lg px-8 py-7 bg-gradient-to-r from-primary to-accent hover:shadow-[var(--shadow-glow-primary)] transition-all duration-300 group min-h-[56px] min-w-[200px]"
+                  onClick={() => navigate(user ? '/nutrition' : '/auth')}
                 >
                   <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                  {user ? 'Go to Dashboard' : 'Get Started Free'}
+                  {user ? 'Open Dashboard' : 'Start Free Trial'}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button 
                   size="lg" 
                   variant="outline"
-                  className="gap-2 text-lg px-8 py-6 border-2 hover:bg-primary/5"
-                  onClick={() => navigate('/recipes')}
+                  className="gap-2 text-lg px-8 py-7 border-2 hover:bg-primary/5 min-h-[56px] min-w-[200px]"
+                  onClick={() => navigate('/how-it-works')}
                 >
-                  <ChefHat className="w-5 h-5" />
-                  Explore Recipes
+                  <Brain className="w-5 h-5" />
+                  How It Works
                 </Button>
+              </div>
+              
+              {/* Trust indicator */}
+              <div className="pt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <Shield className="w-4 h-4" />
+                <span>Your data stays private • No credit card required</span>
               </div>
 
               {/* Stats */}

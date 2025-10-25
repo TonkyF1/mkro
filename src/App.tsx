@@ -18,6 +18,8 @@ import Admin from "./pages/Admin";
 import Timer from "./pages/Timer";
 import WeeklyReports from "./pages/WeeklyReports";
 import NotFound from "./pages/NotFound";
+import HowItWorks from "./pages/HowItWorks";
+import Questionnaire from "./pages/Questionnaire";
 
 const queryClient = new QueryClient();
 
@@ -25,13 +27,14 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} forcedTheme="light">
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/questionnaire" element={<Questionnaire />} />
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/recipes" element={<Recipes />} />
@@ -43,6 +46,7 @@ const App = () => {
                 <Route path="/premium" element={<Premium />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/reports" element={<WeeklyReports />} />
+                <Route path="/how-it-works" element={<HowItWorks />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

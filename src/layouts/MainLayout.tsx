@@ -20,14 +20,14 @@ const MainLayout = () => {
     <div className="min-h-screen bg-background">
       <TrialBanner />
       
-      {/* Small bouncing MKRO logo */}
-      <div className="flex flex-col items-center pt-6 pb-4">
+      {/* MKRO logo - smaller on mobile */}
+      <div className="flex flex-col items-center pt-4 pb-3 md:pt-6 md:pb-4">
         <img 
           src={mkroLogo} 
           alt="MKRO - Your AI Health Coach" 
-          className="w-64 h-64 object-contain animate-bounce-slow hover:scale-110 transition-transform"
+          className="w-48 h-48 md:w-64 md:h-64 object-contain animate-bounce-slow hover:scale-110 transition-transform"
         />
-        <p className="text-xs text-muted-foreground mt-2">Your AI Health Coach</p>
+        <p className="text-xs text-muted-foreground mt-1 md:mt-2">Your AI Health Coach</p>
         {isPremium && location.pathname === '/reports' && (
           <Badge variant="outline" className="mt-2 border-primary/30">
             <TrendingUp className="w-3 h-3 mr-1" />
@@ -38,7 +38,8 @@ const MainLayout = () => {
       
       <PageNavigation />
       
-      <div className="container mx-auto px-4 py-6">
+      {/* Add bottom padding to prevent content being hidden behind fixed nav on mobile */}
+      <div className="container mx-auto px-4 py-6 pb-24 md:pb-6">
         <div key={location.pathname} className="animate-fade-in">
           <Outlet />
         </div>
