@@ -38,19 +38,27 @@ const Home = () => {
     },
     {
       icon: Apple,
-      title: 'Nutrition Tracking',
-      description: 'Track your daily intake with visual progress bars, charts, and macro breakdowns',
+      title: 'Personalized Nutrition Plan',
+      description: 'AI-powered meal plans and nutrition tracking with daily progress monitoring',
       gradient: 'from-blue-500/10 to-cyan-600/10',
       iconGradient: 'from-blue-500 to-cyan-600',
-      action: () => navigate('/nutrition')
+      action: () => navigate('/planner')
     },
     {
       icon: Dumbbell,
-      title: 'Workout Plans',
+      title: 'Customized Training Plan',
       description: 'Follow personalized exercise routines with progress tracking and video guides',
       gradient: 'from-rose-500/10 to-pink-600/10',
       iconGradient: 'from-rose-500 to-pink-600',
       action: () => navigate('/exercise')
+    },
+    {
+      icon: TrendingUp,
+      title: 'Progress Tracker',
+      description: 'Monitor your fitness journey with detailed stats, charts, and weekly reports',
+      gradient: 'from-amber-500/10 to-yellow-600/10',
+      iconGradient: 'from-amber-500 to-yellow-600',
+      action: () => navigate('/stats')
     },
     {
       icon: Brain,
@@ -59,16 +67,26 @@ const Home = () => {
       gradient: 'from-purple-500/10 to-violet-600/10',
       iconGradient: 'from-purple-500 to-violet-600',
       action: () => navigate('/coach')
+    },
+    {
+      icon: Activity,
+      title: 'Community Group',
+      description: 'Connect with others, share your progress, and stay motivated together',
+      gradient: 'from-pink-500/10 to-rose-600/10',
+      iconGradient: 'from-pink-500 to-rose-600',
+      action: () => navigate('/community')
     }
   ];
 
   const benefits = [
-    'Personalized meal plans based on your goals',
-    'Detailed nutrition tracking and insights',
-    'Custom workout programs',
-    'AI-powered recommendations',
-    'Recipe scanning and generation',
-    'Progress tracking and analytics'
+    'Customized training plan for your fitness level',
+    'Personalized nutrition plan with AI guidance',
+    'Progress tracker with detailed analytics',
+    'Range of diet options (vegan, keto, paleo, etc.)',
+    'Workout video library with exercises',
+    'Dine in/dine out meal tracking',
+    'Community group for support & motivation',
+    'Home or gym workout options'
   ];
 
   return (
@@ -164,7 +182,7 @@ const Home = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {features.map((feature, index) => (
                 <Card 
                   key={index}

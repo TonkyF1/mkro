@@ -10,13 +10,12 @@ const PageNavigation: React.FC = () => {
   const isPremium = profile?.is_premium || profile?.subscription_status === 'premium';
   
   const navItems = [
-    { path: '/', label: 'Home', shortLabel: 'Home', icon: Home },
-    { path: '/recipes', label: 'Recipes', shortLabel: 'Food', icon: ChefHat },
-    { path: '/nutrition', label: 'Nutrition', shortLabel: 'Diary', icon: Utensils },
-    { path: '/exercise', label: 'Exercise', shortLabel: 'Gym', icon: Dumbbell },
-    { path: '/coach', label: 'Coach', shortLabel: 'AI', icon: Bot },
-    { path: '/reports', label: 'Reports', shortLabel: 'Stats', icon: TrendingUp, premium: true },
-    { path: '/profile', label: 'Profile', shortLabel: 'Me', icon: User },
+    { path: '/', label: 'Home', shortLabel: 'Home', icon: Home, premium: false },
+    { path: '/planner', label: 'Planner', shortLabel: 'Plan', icon: ChefHat, premium: false },
+    { path: '/nutrition', label: 'Nutrition', shortLabel: 'Diary', icon: Utensils, premium: false },
+    { path: '/exercise', label: 'Exercise', shortLabel: 'Gym', icon: Dumbbell, premium: false },
+    { path: '/coach', label: 'Coach', shortLabel: 'AI', icon: Bot, premium: false },
+    { path: '/profile', label: 'Profile', shortLabel: 'Me', icon: User, premium: false },
   ];
 
   return (

@@ -16,6 +16,8 @@ import Stats from '@/pages/Stats';
 import WeeklyReports from '@/pages/WeeklyReports';
 import Timer from '@/pages/Timer';
 import Profile from '@/pages/Profile';
+import Planner from '@/pages/Planner';
+import Community from '@/pages/Community';
 import MainLayout from '@/layouts/MainLayout';
 
 const queryClient = new QueryClient();
@@ -48,6 +50,8 @@ function AppRoutes() {
         <Route path="/reports" element={<WeeklyReports />} />
         <Route path="/coach" element={<AICoach />} />
         <Route path="/timer" element={<Timer />} />
+        <Route path="/planner" element={<Planner />} />
+        <Route path="/community" element={<Community />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
     </Routes>
