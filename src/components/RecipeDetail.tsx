@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Clock, Users, Zap, ArrowLeft, Lightbulb } from 'lucide-react';
-import { Recipe } from '@/hooks/useRecipes';
+import { Recipe } from '@/data/recipes';
 import { getRecipeImageUrl, generateSingleRecipeImage } from '@/utils/recipeImageUtils';
 import { useState, useEffect } from 'react';
 import mealPlaceholder from '@/assets/meal-placeholder.png';
@@ -135,13 +135,13 @@ export const RecipeDetail = ({ recipe, onBack }: RecipeDetailProps) => {
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="text-center p-3 bg-secondary rounded-lg">
                 <Clock className="h-5 w-5 text-primary mx-auto mb-1" />
-                <div className="text-sm font-medium">{recipe.cook_time || 30} min</div>
-                <div className="text-xs text-muted-foreground">Cook Time</div>
+                <div className="text-sm font-medium">{recipe.prepTime}</div>
+                <div className="text-xs text-muted-foreground">Prep Time</div>
               </div>
               <div className="text-center p-3 bg-secondary rounded-lg">
                 <Users className="h-5 w-5 text-primary mx-auto mb-1" />
-                <div className="text-sm font-medium">{recipe.servings || 1}</div>
-                <div className="text-xs text-muted-foreground">Servings</div>
+                <div className="text-sm font-medium">{recipe.servingSize}</div>
+                <div className="text-xs text-muted-foreground">Serves</div>
               </div>
               <div className="text-center p-3 bg-secondary rounded-lg">
                 <Zap className="h-5 w-5 text-primary mx-auto mb-1" />
@@ -152,7 +152,7 @@ export const RecipeDetail = ({ recipe, onBack }: RecipeDetailProps) => {
             
             {/* Dietary Tags */}
             <div className="flex flex-wrap gap-2">
-              {recipe.tags && recipe.tags.map((tag) => (
+              {recipe.dietaryTags.map((tag) => (
                 <Badge 
                   key={tag} 
                   variant="outline" 
@@ -174,14 +174,12 @@ export const RecipeDetail = ({ recipe, onBack }: RecipeDetailProps) => {
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
-              {recipe.ingredients && Array.isArray(recipe.ingredients) ? recipe.ingredients.map((ingredient: any, index) => (
+              {recipe.ingredients.map((ingredient, index) => (
                 <li key={index} className="flex items-start gap-2">
                   <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-foreground">{typeof ingredient === 'string' ? ingredient : ingredient.name || ''}</span>
+                  <span className="text-foreground">{ingredient}</span>
                 </li>
-              )) : (
-                <li className="text-muted-foreground">No ingredients listed</li>
-              )}
+              ))}
             </ul>
           </CardContent>
         </Card>
@@ -193,14 +191,12 @@ export const RecipeDetail = ({ recipe, onBack }: RecipeDetailProps) => {
           </CardHeader>
           <CardContent>
             <ul className="space-y-3">
-              {recipe.instructions ? recipe.instructions.split('\n').map((instruction, index) => (
+              {recipe.instructions.split('\n').map((instruction, index) => (
                 <li key={index} className="flex items-start gap-2">
-                  <span className="text-primary font-bold mt-0.5 flex-shrink-0">{index + 1}.</span>
-                  <span className="text-foreground leading-relaxed">{instruction.trim()}</span>
+                  <span className="text-primary font-bold mt-0.5 flex-shrink-0">{instruction.trim().charAt(0)}</span>
+                  <span className="text-foreground leading-relaxed">{instruction.trim().substring(1).trim()}</span>
                 </li>
-              )) : (
-                <li className="text-muted-foreground">No instructions available</li>
-              )}
+              ))}
             </ul>
           </CardContent>
         </Card>
@@ -234,19 +230,16 @@ export const RecipeDetail = ({ recipe, onBack }: RecipeDetailProps) => {
           </CardContent>
         </Card>
         
-        {/* Additional Info */}
+        {/* Substitution Tip */}
         <Card className="border-accent/30">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
               <Lightbulb className="h-5 w-5 text-accent" />
-              Recipe Info
+              Substitution Tip
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-foreground">
-              {recipe.meal_type && <span className="block capitalize mb-1"><strong>Meal Type:</strong> {recipe.meal_type}</span>}
-              {recipe.category && <span className="block capitalize"><strong>Category:</strong> {recipe.category}</span>}
-            </p>
+            <p className="text-foreground">{recipe.substitution}</p>
           </CardContent>
         </Card>
       </div>

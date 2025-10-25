@@ -17,10 +17,8 @@ import {
   Zap,
   Check,
   Star,
-  Award,
-  Shield
+  Award
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 
 const Home = () => {
@@ -38,27 +36,19 @@ const Home = () => {
     },
     {
       icon: Apple,
-      title: 'Personalized Nutrition Plan',
-      description: 'AI-powered meal plans and nutrition tracking with daily progress monitoring',
+      title: 'Nutrition Tracking',
+      description: 'Track your daily intake with visual progress bars, charts, and macro breakdowns',
       gradient: 'from-blue-500/10 to-cyan-600/10',
       iconGradient: 'from-blue-500 to-cyan-600',
-      action: () => navigate('/planner')
+      action: () => navigate('/nutrition')
     },
     {
       icon: Dumbbell,
-      title: 'Customized Training Plan',
+      title: 'Workout Plans',
       description: 'Follow personalized exercise routines with progress tracking and video guides',
       gradient: 'from-rose-500/10 to-pink-600/10',
       iconGradient: 'from-rose-500 to-pink-600',
       action: () => navigate('/exercise')
-    },
-    {
-      icon: TrendingUp,
-      title: 'Progress Tracker',
-      description: 'Monitor your fitness journey with detailed stats, charts, and weekly reports',
-      gradient: 'from-amber-500/10 to-yellow-600/10',
-      iconGradient: 'from-amber-500 to-yellow-600',
-      action: () => navigate('/stats')
     },
     {
       icon: Brain,
@@ -67,26 +57,16 @@ const Home = () => {
       gradient: 'from-purple-500/10 to-violet-600/10',
       iconGradient: 'from-purple-500 to-violet-600',
       action: () => navigate('/coach')
-    },
-    {
-      icon: Activity,
-      title: 'Community Group',
-      description: 'Connect with others, share your progress, and stay motivated together',
-      gradient: 'from-pink-500/10 to-rose-600/10',
-      iconGradient: 'from-pink-500 to-rose-600',
-      action: () => navigate('/community')
     }
   ];
 
   const benefits = [
-    'Customized training plan for your fitness level',
-    'Personalized nutrition plan with AI guidance',
-    'Progress tracker with detailed analytics',
-    'Range of diet options (vegan, keto, paleo, etc.)',
-    'Workout video library with exercises',
-    'Dine in/dine out meal tracking',
-    'Community group for support & motivation',
-    'Home or gym workout options'
+    'Personalized meal plans based on your goals',
+    'Detailed nutrition tracking and insights',
+    'Custom workout programs',
+    'AI-powered recommendations',
+    'Recipe scanning and generation',
+    'Progress tracking and analytics'
   ];
 
   return (
@@ -100,24 +80,17 @@ const Home = () => {
             <div className="text-center space-y-8 animate-fade-in">
               {/* Headline */}
               <div className="space-y-4">
-                <Badge variant="secondary" className="mb-2 text-sm px-4 py-1">
-                  Your Personal AI Health Coach
-                </Badge>
                 <h1 className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tight">
                   <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent bg-300% animate-gradient-shift">
-                    Track Food.
+                    Your AI Health
                   </span>
                   <br />
                   <span className="bg-gradient-to-r from-accent via-hydration to-accent bg-clip-text text-transparent bg-300% animate-gradient-shift">
-                    Build Muscle.
-                  </span>
-                  <br />
-                  <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent bg-300% animate-gradient-shift">
-                    Reach Goals.
+                    Coach
                   </span>
                 </h1>
-                <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium leading-relaxed">
-                  MKRO uses AI to create personalized meal plans, track nutrition, and guide your training—all in one beautiful app
+                <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium">
+                  Transform your lifestyle with personalized nutrition plans, smart workouts, and AI-powered guidance
                 </p>
               </div>
 
@@ -125,28 +98,22 @@ const Home = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
                 <Button 
                   size="lg" 
-                  className="gap-2 text-lg px-8 py-7 bg-gradient-to-r from-primary to-accent hover:shadow-[var(--shadow-glow-primary)] transition-all duration-300 group min-h-[56px] min-w-[200px]"
-                  onClick={() => navigate(user ? '/nutrition' : '/auth')}
+                  className="gap-2 text-lg px-8 py-6 bg-gradient-to-r from-primary to-accent hover:shadow-[var(--shadow-glow-primary)] transition-all duration-300 group"
+                  onClick={() => navigate(user ? '/nutrition' : '/profile')}
                 >
                   <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                  {user ? 'Open Dashboard' : 'Start Free Trial'}
+                  {user ? 'Go to Dashboard' : 'Get Started Free'}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button 
                   size="lg" 
                   variant="outline"
-                  className="gap-2 text-lg px-8 py-7 border-2 hover:bg-primary/5 min-h-[56px] min-w-[200px]"
-                  onClick={() => navigate('/how-it-works')}
+                  className="gap-2 text-lg px-8 py-6 border-2 hover:bg-primary/5"
+                  onClick={() => navigate('/recipes')}
                 >
-                  <Brain className="w-5 h-5" />
-                  How It Works
+                  <ChefHat className="w-5 h-5" />
+                  Explore Recipes
                 </Button>
-              </div>
-              
-              {/* Trust indicator */}
-              <div className="pt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <Shield className="w-4 h-4" />
-                <span>Your data stays private • No credit card required</span>
               </div>
 
               {/* Stats */}
@@ -182,7 +149,7 @@ const Home = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {features.map((feature, index) => (
                 <Card 
                   key={index}

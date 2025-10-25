@@ -115,27 +115,13 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <div className="flex items-center justify-between mb-2">
-            <CardTitle className="text-2xl">Complete Your Profile</CardTitle>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => onSubmit(form.getValues())}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Skip for now
-            </Button>
+          <div className="flex items-center justify-between mb-4">
+            <CardTitle>Personal Nutrition Questionnaire</CardTitle>
+            <span className="text-sm text-muted-foreground">
+              Step {currentStep} of {totalSteps}
+            </span>
           </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">
-                Step {currentStep} of {totalSteps}
-              </span>
-              <span className="font-semibold text-primary">{Math.round(progress)}% Complete</span>
-            </div>
-            <Progress value={progress} className="w-full h-2" />
-          </div>
+          <Progress value={progress} className="w-full" />
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -506,25 +492,25 @@ const DetailedQuestionnaire: React.FC<DetailedQuestionnaireProps> = ({
                 )}
               </div>
               
-              <div className="flex justify-between items-center gap-3 pt-6 border-t">
+              <div className="flex justify-between pt-6">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={prevStep}
                   disabled={currentStep === 1}
-                  className="flex items-center min-h-[48px] min-w-[120px]"
+                  className="flex items-center"
                 >
                   <ChevronLeft className="mr-2 h-4 w-4" />
                   Previous
                 </Button>
                 
                 {currentStep < totalSteps ? (
-                  <Button type="button" onClick={nextStep} className="flex items-center min-h-[48px] min-w-[120px]">
+                  <Button type="button" onClick={nextStep} className="flex items-center">
                     Next
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button type="submit" className="flex items-center min-h-[48px] min-w-[140px]">
+                  <Button type="submit" className="flex items-center">
                     Complete Setup
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>

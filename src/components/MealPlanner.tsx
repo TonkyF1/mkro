@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Plus, Trash2, ChefHat } from 'lucide-react';
-import { Recipe } from '@/hooks/useRecipes';
+import { Recipe } from '@/data/recipes';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useMealCompletions } from '@/hooks/useMealCompletions';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -137,11 +137,11 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
     const meals = [day.breakfast, day.lunch, day.dinner, day.snack].filter(Boolean) as Recipe[];
     return meals.reduce(
       (totals, meal) => ({
-        calories: totals.calories + (meal.calories || 0),
-        protein: totals.protein + (Number(meal.protein) || 0),
-        carbs: totals.carbs + (Number(meal.carbs) || 0),
-        fats: totals.fats + (Number(meal.fats) || 0),
-        cost: totals.cost + 5
+        calories: totals.calories + meal.calories,
+        protein: totals.protein + meal.protein,
+        carbs: totals.carbs + meal.carbs,
+        fats: totals.fats + meal.fats,
+        cost: totals.cost + meal.estimatedCost
       }),
       { calories: 0, protein: 0, carbs: 0, fats: 0, cost: 0 }
     );
@@ -161,7 +161,7 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
   };
 
   const filteredRecipes = selectedSlot 
-    ? recipes.filter(recipe => recipe.meal_type === selectedSlot.mealType)
+    ? recipes.filter(recipe => recipe.category === selectedSlot.mealType)
     : [];
 
   return (
@@ -211,9 +211,9 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
                             className="mt-1"
                           />
                           <div className="flex items-center gap-2 flex-1">
-                            {day[mealType]!.image_url && (
+                            {day[mealType]!.image && (
                               <img 
-                                src={day[mealType]!.image_url} 
+                                src={day[mealType]!.image} 
                                 alt={day[mealType]!.name}
                                 className="w-8 h-8 rounded object-cover"
                               />
@@ -221,7 +221,7 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
                             <div className="flex-1">
                               <div className="font-medium text-sm">{day[mealType]!.name}</div>
                               <div className="text-xs text-muted-foreground">
-                                {day[mealType]!.calories}kcal • £5.00
+                                {day[mealType]!.calories}kcal • £{day[mealType]!.estimatedCost.toFixed(2)}
                               </div>
                             </div>
                           </div>
@@ -276,7 +276,7 @@ export const MealPlanner: React.FC<MealPlannerProps> = ({
                         </p>
                         <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
                           <span>{recipe.calories}kcal</span>
-                          <span>£5.00</span>
+                          <span>£{recipe.estimatedCost.toFixed(2)}</span>
                         </div>
                       </div>
                     </div>

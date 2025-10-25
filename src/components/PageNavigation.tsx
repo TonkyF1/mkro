@@ -10,18 +10,19 @@ const PageNavigation: React.FC = () => {
   const isPremium = profile?.is_premium || profile?.subscription_status === 'premium';
   
   const navItems = [
-    { path: '/', label: 'Home', shortLabel: 'Home', icon: Home, premium: false },
-    { path: '/planner', label: 'Planner', shortLabel: 'Plan', icon: ChefHat, premium: false },
-    { path: '/nutrition', label: 'Nutrition', shortLabel: 'Diary', icon: Utensils, premium: false },
-    { path: '/exercise', label: 'Exercise', shortLabel: 'Gym', icon: Dumbbell, premium: false },
-    { path: '/coach', label: 'Coach', shortLabel: 'AI', icon: Bot, premium: false },
-    { path: '/profile', label: 'Profile', shortLabel: 'Me', icon: User, premium: false },
+    { path: '/', label: 'Home', shortLabel: 'Home', icon: Home },
+    { path: '/recipes', label: 'Recipes', shortLabel: 'Food', icon: ChefHat },
+    { path: '/nutrition', label: 'Nutrition', shortLabel: 'Diary', icon: Utensils },
+    { path: '/exercise', label: 'Exercise', shortLabel: 'Gym', icon: Dumbbell },
+    { path: '/coach', label: 'Coach', shortLabel: 'AI', icon: Bot },
+    { path: '/reports', label: 'Reports', shortLabel: 'Stats', icon: TrendingUp, premium: true },
+    { path: '/profile', label: 'Profile', shortLabel: 'Me', icon: User },
   ];
 
   return (
-    <nav className="w-full bg-muted/95 backdrop-blur-lg border-t border-border sticky bottom-0 z-40 md:relative md:border-t-0 md:border-b">
+    <nav className="w-full bg-muted/50 border-b border-border">
       <div className="container mx-auto px-1 sm:px-4">
-        <div className="flex items-center justify-around py-3 w-full">
+        <div className="flex items-center justify-around py-2 w-full">
           {navItems.map(({ path, label, shortLabel, icon: Icon, premium }) => {
             const isActive = location.pathname === path;
             const isCoach = path === '/coach';
@@ -31,23 +32,26 @@ const PageNavigation: React.FC = () => {
                 key={path}
                 to={path}
                 className={cn(
-                  "flex flex-col items-center justify-center p-2 sm:p-3 flex-shrink-0 min-w-[60px] sm:min-w-[80px] min-h-[48px] gap-1 text-xs rounded-xl transition-all relative touch-manipulation",
+                  "flex flex-col items-center justify-center p-1 sm:p-2 flex-shrink-0 min-w-0 h-auto gap-0.5 text-xs rounded-md transition-colors relative",
                   isCoach
                     ? isActive
-                      ? "bg-gradient-to-br from-yellow-500 to-yellow-600 text-white shadow-lg scale-105"
-                      : "text-foreground hover:text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-950/20"
+                      ? "bg-gradient-to-br from-yellow-500 to-yellow-600 text-black dark:text-white"
+                      : "text-black dark:text-white hover:text-yellow-600 dark:hover:text-yellow-500"
                     : isActive 
-                      ? "bg-primary text-primary-foreground shadow-lg scale-105" 
-                      : "hover:bg-accent hover:text-accent-foreground hover:scale-105",
+                      ? "bg-primary text-primary-foreground" 
+                      : "hover:bg-accent hover:text-accent-foreground",
                   isPremiumLocked && "opacity-60"
                 )}
               >
-                <Icon className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+                <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                 {isPremiumLocked && (
-                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-background animate-pulse" />
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-amber-500 rounded-full border border-background" />
                 )}
-                <span className="text-[10px] sm:text-xs leading-none font-medium whitespace-nowrap">
+                <span className="hidden xs:inline sm:hidden text-[10px] leading-none">
                   {shortLabel}
+                </span>
+                <span className="hidden sm:inline text-xs leading-none">
+                  {label}
                 </span>
               </NavLink>
             );

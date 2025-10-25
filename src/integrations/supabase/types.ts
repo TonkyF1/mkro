@@ -14,341 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      achievements: {
-        Row: {
-          achievement_id: string
-          achievement_name: string
-          id: string
-          points_awarded: number | null
-          unlocked_at: string | null
-          user_id: string
-        }
-        Insert: {
-          achievement_id: string
-          achievement_name: string
-          id?: string
-          points_awarded?: number | null
-          unlocked_at?: string | null
-          user_id: string
-        }
-        Update: {
-          achievement_id?: string
-          achievement_name?: string
-          id?: string
-          points_awarded?: number | null
-          unlocked_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      ai_plans: {
-        Row: {
-          created_at: string | null
-          end_date: string
-          id: string
-          payload: Json
-          plan_type: string | null
-          start_date: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          end_date: string
-          id?: string
-          payload: Json
-          plan_type?: string | null
-          start_date: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          end_date?: string
-          id?: string
-          payload?: Json
-          plan_type?: string | null
-          start_date?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      challenges: {
-        Row: {
-          challenge_type: string
-          completed_at: string | null
-          created_at: string
-          current_progress: number
-          description: string
-          difficulty: string
-          end_date: string
-          id: string
-          start_date: string
-          status: string
-          target_value: number
-          title: string
-          updated_at: string
-          user_id: string
-          xp_reward: number
-        }
-        Insert: {
-          challenge_type: string
-          completed_at?: string | null
-          created_at?: string
-          current_progress?: number
-          description: string
-          difficulty?: string
-          end_date: string
-          id?: string
-          start_date?: string
-          status?: string
-          target_value: number
-          title: string
-          updated_at?: string
-          user_id: string
-          xp_reward?: number
-        }
-        Update: {
-          challenge_type?: string
-          completed_at?: string | null
-          created_at?: string
-          current_progress?: number
-          description?: string
-          difficulty?: string
-          end_date?: string
-          id?: string
-          start_date?: string
-          status?: string
-          target_value?: number
-          title?: string
-          updated_at?: string
-          user_id?: string
-          xp_reward?: number
-        }
-        Relationships: []
-      }
-      chat_messages: {
-        Row: {
-          created_at: string | null
-          id: string
-          is_user: boolean
-          message: string
-          tokens_used: number | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          is_user: boolean
-          message: string
-          tokens_used?: number | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          is_user?: boolean
-          message?: string
-          tokens_used?: number | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      coach_state: {
-        Row: {
-          adherence_score: number | null
-          created_at: string
-          current_phase: Database["public"]["Enums"]["training_phase"] | null
-          last_checkin_at: string | null
-          next_checkin_at: string | null
-          notes: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          adherence_score?: number | null
-          created_at?: string
-          current_phase?: Database["public"]["Enums"]["training_phase"] | null
-          last_checkin_at?: string | null
-          next_checkin_at?: string | null
-          notes?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          adherence_score?: number | null
-          created_at?: string
-          current_phase?: Database["public"]["Enums"]["training_phase"] | null
-          last_checkin_at?: string | null
-          next_checkin_at?: string | null
-          notes?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      diary_meals: {
-        Row: {
-          created_at: string | null
-          custom_entry: Json | null
-          date: string
-          id: string
-          is_completed: boolean | null
-          meal_slot: string
-          recipe_id: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          custom_entry?: Json | null
-          date: string
-          id?: string
-          is_completed?: boolean | null
-          meal_slot: string
-          recipe_id?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          custom_entry?: Json | null
-          date?: string
-          id?: string
-          is_completed?: boolean | null
-          meal_slot?: string
-          recipe_id?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      events: {
-        Row: {
-          created_at: string
-          id: string
-          kind: Database["public"]["Enums"]["event_kind"]
-          payload: Json | null
-          summary: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          kind: Database["public"]["Enums"]["event_kind"]
-          payload?: Json | null
-          summary: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          kind?: Database["public"]["Enums"]["event_kind"]
-          payload?: Json | null
-          summary?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      exercise_logs: {
-        Row: {
-          calories_burned: number | null
-          created_at: string | null
-          date: string
-          duration_min: number | null
-          exercise_id: string | null
-          id: string
-          notes: string | null
-          reps: number | null
-          sets: number | null
-          user_id: string
-          weight_kg: number | null
-        }
-        Insert: {
-          calories_burned?: number | null
-          created_at?: string | null
-          date: string
-          duration_min?: number | null
-          exercise_id?: string | null
-          id?: string
-          notes?: string | null
-          reps?: number | null
-          sets?: number | null
-          user_id: string
-          weight_kg?: number | null
-        }
-        Update: {
-          calories_burned?: number | null
-          created_at?: string | null
-          date?: string
-          duration_min?: number | null
-          exercise_id?: string | null
-          id?: string
-          notes?: string | null
-          reps?: number | null
-          sets?: number | null
-          user_id?: string
-          weight_kg?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "exercise_logs_exercise_id_fkey"
-            columns: ["exercise_id"]
-            isOneToOne: false
-            referencedRelation: "exercises_library"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      exercises_library: {
-        Row: {
-          cooldown: string | null
-          id: string
-          muscle_groups: string[] | null
-          tips: string | null
-          title: string
-          warmup: string | null
-          youtube_id: string
-        }
-        Insert: {
-          cooldown?: string | null
-          id?: string
-          muscle_groups?: string[] | null
-          tips?: string | null
-          title: string
-          warmup?: string | null
-          youtube_id: string
-        }
-        Update: {
-          cooldown?: string | null
-          id?: string
-          muscle_groups?: string[] | null
-          tips?: string | null
-          title?: string
-          warmup?: string | null
-          youtube_id?: string
-        }
-        Relationships: []
-      }
-      hydration_logs: {
-        Row: {
-          created_at: string | null
-          date: string
-          id: string
-          ml: number
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          date: string
-          id?: string
-          ml: number
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          date?: string
-          id?: string
-          ml?: number
-          user_id?: string
-        }
-        Relationships: []
-      }
       meal_completions: {
         Row: {
           completed: boolean
@@ -424,243 +89,120 @@ export type Database = {
         }
         Relationships: []
       }
-      meals: {
-        Row: {
-          calories: number | null
-          carbs: number | null
-          fats: number | null
-          id: string
-          is_cheat_meal: boolean | null
-          is_fakeaway: boolean | null
-          logged_at: string | null
-          meal_type: string | null
-          name: string
-          protein: number | null
-          user_id: string
-        }
-        Insert: {
-          calories?: number | null
-          carbs?: number | null
-          fats?: number | null
-          id?: string
-          is_cheat_meal?: boolean | null
-          is_fakeaway?: boolean | null
-          logged_at?: string | null
-          meal_type?: string | null
-          name: string
-          protein?: number | null
-          user_id: string
-        }
-        Update: {
-          calories?: number | null
-          carbs?: number | null
-          fats?: number | null
-          id?: string
-          is_cheat_meal?: boolean | null
-          is_fakeaway?: boolean | null
-          logged_at?: string | null
-          meal_type?: string | null
-          name?: string
-          protein?: number | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      metrics: {
-        Row: {
-          bf_pct: number | null
-          calories_avg: number | null
-          created_at: string
-          date: string
-          id: string
-          notes: string | null
-          protein_avg: number | null
-          steps: number | null
-          user_id: string
-          waist_cm: number | null
-          weight_kg: number | null
-          workouts_done: number | null
-        }
-        Insert: {
-          bf_pct?: number | null
-          calories_avg?: number | null
-          created_at?: string
-          date: string
-          id?: string
-          notes?: string | null
-          protein_avg?: number | null
-          steps?: number | null
-          user_id: string
-          waist_cm?: number | null
-          weight_kg?: number | null
-          workouts_done?: number | null
-        }
-        Update: {
-          bf_pct?: number | null
-          calories_avg?: number | null
-          created_at?: string
-          date?: string
-          id?: string
-          notes?: string | null
-          protein_avg?: number | null
-          steps?: number | null
-          user_id?: string
-          waist_cm?: number | null
-          weight_kg?: number | null
-          workouts_done?: number | null
-        }
-        Relationships: []
-      }
-      payments: {
-        Row: {
-          amount: number | null
-          created_at: string | null
-          currency: string | null
-          id: string
-          status: string | null
-          stripe_payment_id: string | null
-          subscription_type: string | null
-          user_id: string
-        }
-        Insert: {
-          amount?: number | null
-          created_at?: string | null
-          currency?: string | null
-          id?: string
-          status?: string | null
-          stripe_payment_id?: string | null
-          subscription_type?: string | null
-          user_id: string
-        }
-        Update: {
-          amount?: number | null
-          created_at?: string | null
-          currency?: string | null
-          id?: string
-          status?: string | null
-          stripe_payment_id?: string | null
-          subscription_type?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      plans: {
-        Row: {
-          created_at: string
-          end_date: string
-          id: string
-          payload: Json
-          plan_type: Database["public"]["Enums"]["plan_type"]
-          start_date: string
-          user_id: string
-          version: number | null
-        }
-        Insert: {
-          created_at?: string
-          end_date: string
-          id?: string
-          payload?: Json
-          plan_type: Database["public"]["Enums"]["plan_type"]
-          start_date: string
-          user_id: string
-          version?: number | null
-        }
-        Update: {
-          created_at?: string
-          end_date?: string
-          id?: string
-          payload?: Json
-          plan_type?: Database["public"]["Enums"]["plan_type"]
-          start_date?: string
-          user_id?: string
-          version?: number | null
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
+          activity_level: string | null
           age: number | null
-          ai_messages_reset_date: string | null
-          ai_messages_today: number | null
-          created_at: string | null
-          diet_type: string | null
-          email: string | null
-          fitness_level: string | null
+          allergies: string[] | null
+          budget_preference: string | null
+          completed_at: string | null
+          cooking_time_preference: string | null
+          created_at: string
+          dietary_preferences: string[] | null
+          eating_out_frequency: string | null
           goal: string | null
+          health_conditions: string[] | null
           height: number | null
+          height_unit: string | null
+          hydration_goal: number | null
           id: string
           is_premium: boolean | null
-          level: string | null
+          kitchen_equipment: string[] | null
+          meal_frequency: number | null
+          motivation_factors: string[] | null
           name: string | null
-          points: number | null
-          streak: number | null
+          sleep_hours: number | null
+          stress_level: number | null
           stripe_customer_id: string | null
-          subscription_end_date: string | null
+          stripe_subscription_id: string | null
+          subscription_expiry: string | null
           subscription_status: string | null
-          target_calories: number | null
+          supplement_usage: string[] | null
           target_carbs: number | null
           target_fats: number | null
           target_protein: number | null
-          updated_at: string | null
+          trial_prompts_used: number | null
+          trial_start_date: string | null
+          updated_at: string
           user_id: string
           weight: number | null
-          workout_preference: string | null
+          weight_unit: string | null
         }
         Insert: {
+          activity_level?: string | null
           age?: number | null
-          ai_messages_reset_date?: string | null
-          ai_messages_today?: number | null
-          created_at?: string | null
-          diet_type?: string | null
-          email?: string | null
-          fitness_level?: string | null
+          allergies?: string[] | null
+          budget_preference?: string | null
+          completed_at?: string | null
+          cooking_time_preference?: string | null
+          created_at?: string
+          dietary_preferences?: string[] | null
+          eating_out_frequency?: string | null
           goal?: string | null
+          health_conditions?: string[] | null
           height?: number | null
+          height_unit?: string | null
+          hydration_goal?: number | null
           id?: string
           is_premium?: boolean | null
-          level?: string | null
+          kitchen_equipment?: string[] | null
+          meal_frequency?: number | null
+          motivation_factors?: string[] | null
           name?: string | null
-          points?: number | null
-          streak?: number | null
+          sleep_hours?: number | null
+          stress_level?: number | null
           stripe_customer_id?: string | null
-          subscription_end_date?: string | null
+          stripe_subscription_id?: string | null
+          subscription_expiry?: string | null
           subscription_status?: string | null
-          target_calories?: number | null
+          supplement_usage?: string[] | null
           target_carbs?: number | null
           target_fats?: number | null
           target_protein?: number | null
-          updated_at?: string | null
+          trial_prompts_used?: number | null
+          trial_start_date?: string | null
+          updated_at?: string
           user_id: string
           weight?: number | null
-          workout_preference?: string | null
+          weight_unit?: string | null
         }
         Update: {
+          activity_level?: string | null
           age?: number | null
-          ai_messages_reset_date?: string | null
-          ai_messages_today?: number | null
-          created_at?: string | null
-          diet_type?: string | null
-          email?: string | null
-          fitness_level?: string | null
+          allergies?: string[] | null
+          budget_preference?: string | null
+          completed_at?: string | null
+          cooking_time_preference?: string | null
+          created_at?: string
+          dietary_preferences?: string[] | null
+          eating_out_frequency?: string | null
           goal?: string | null
+          health_conditions?: string[] | null
           height?: number | null
+          height_unit?: string | null
+          hydration_goal?: number | null
           id?: string
           is_premium?: boolean | null
-          level?: string | null
+          kitchen_equipment?: string[] | null
+          meal_frequency?: number | null
+          motivation_factors?: string[] | null
           name?: string | null
-          points?: number | null
-          streak?: number | null
+          sleep_hours?: number | null
+          stress_level?: number | null
           stripe_customer_id?: string | null
-          subscription_end_date?: string | null
+          stripe_subscription_id?: string | null
+          subscription_expiry?: string | null
           subscription_status?: string | null
-          target_calories?: number | null
+          supplement_usage?: string[] | null
           target_carbs?: number | null
           target_fats?: number | null
           target_protein?: number | null
-          updated_at?: string | null
+          trial_prompts_used?: number | null
+          trial_start_date?: string | null
+          updated_at?: string
           user_id?: string
           weight?: number | null
-          workout_preference?: string | null
+          weight_unit?: string | null
         }
         Relationships: []
       }
@@ -699,61 +241,46 @@ export type Database = {
       }
       recipes: {
         Row: {
-          calories: number | null
-          carbs: number | null
-          category: string | null
-          cook_time: number | null
+          calories: number
+          carbs: number
           created_at: string | null
-          description: string | null
-          fats: number | null
+          dietary_tags: string[]
+          fats: number
           id: string
-          image_url: string | null
-          ingredients: Json | null
-          instructions: string | null
-          is_premium: boolean | null
-          meal_type: string | null
+          ingredients: string[]
+          instructions: string
           name: string
-          protein: number | null
-          servings: number | null
-          tags: string[] | null
+          prep_time: number
+          protein: number
+          servings: number
         }
         Insert: {
-          calories?: number | null
-          carbs?: number | null
-          category?: string | null
-          cook_time?: number | null
+          calories: number
+          carbs: number
           created_at?: string | null
-          description?: string | null
-          fats?: number | null
+          dietary_tags: string[]
+          fats: number
           id?: string
-          image_url?: string | null
-          ingredients?: Json | null
-          instructions?: string | null
-          is_premium?: boolean | null
-          meal_type?: string | null
+          ingredients: string[]
+          instructions: string
           name: string
-          protein?: number | null
-          servings?: number | null
-          tags?: string[] | null
+          prep_time: number
+          protein: number
+          servings: number
         }
         Update: {
-          calories?: number | null
-          carbs?: number | null
-          category?: string | null
-          cook_time?: number | null
+          calories?: number
+          carbs?: number
           created_at?: string | null
-          description?: string | null
-          fats?: number | null
+          dietary_tags?: string[]
+          fats?: number
           id?: string
-          image_url?: string | null
-          ingredients?: Json | null
-          instructions?: string | null
-          is_premium?: boolean | null
-          meal_type?: string | null
+          ingredients?: string[]
+          instructions?: string
           name?: string
-          protein?: number | null
-          servings?: number | null
-          tags?: string[] | null
+          prep_time?: number
+          protein?: number
+          servings?: number
         }
         Relationships: []
       }
@@ -796,45 +323,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_stats: {
-        Row: {
-          challenges_completed: number
-          created_at: string
-          current_streak: number
-          id: string
-          last_activity_date: string | null
-          level: number
-          longest_streak: number
-          total_xp: number
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          challenges_completed?: number
-          created_at?: string
-          current_streak?: number
-          id?: string
-          last_activity_date?: string | null
-          level?: number
-          longest_streak?: number
-          total_xp?: number
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          challenges_completed?: number
-          created_at?: string
-          current_streak?: number
-          id?: string
-          last_activity_date?: string | null
-          level?: number
-          longest_streak?: number
-          total_xp?: number
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       weekly_nutrition_plans: {
         Row: {
           created_at: string
@@ -858,42 +346,6 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
-          week_start?: string
-        }
-        Relationships: []
-      }
-      weekly_reports: {
-        Row: {
-          ai_raw: Json | null
-          badges: string[] | null
-          created_at: string | null
-          id: string
-          suggestions: string | null
-          summary: string | null
-          user_id: string
-          week_end: string
-          week_start: string
-        }
-        Insert: {
-          ai_raw?: Json | null
-          badges?: string[] | null
-          created_at?: string | null
-          id?: string
-          suggestions?: string | null
-          summary?: string | null
-          user_id: string
-          week_end: string
-          week_start: string
-        }
-        Update: {
-          ai_raw?: Json | null
-          badges?: string[] | null
-          created_at?: string | null
-          id?: string
-          suggestions?: string | null
-          summary?: string | null
-          user_id?: string
-          week_end?: string
           week_start?: string
         }
         Relationships: []
@@ -925,148 +377,15 @@ export type Database = {
         }
         Relationships: []
       }
-      weight_logs: {
-        Row: {
-          created_at: string | null
-          date: string
-          id: string
-          user_id: string
-          weight_kg: number
-        }
-        Insert: {
-          created_at?: string | null
-          date: string
-          id?: string
-          user_id: string
-          weight_kg: number
-        }
-        Update: {
-          created_at?: string | null
-          date?: string
-          id?: string
-          user_id?: string
-          weight_kg?: number
-        }
-        Relationships: []
-      }
-      weight_tracking: {
-        Row: {
-          id: string
-          recorded_at: string | null
-          user_id: string
-          weight: number
-        }
-        Insert: {
-          id?: string
-          recorded_at?: string | null
-          user_id: string
-          weight: number
-        }
-        Update: {
-          id?: string
-          recorded_at?: string | null
-          user_id?: string
-          weight?: number
-        }
-        Relationships: []
-      }
-      workout_plans: {
-        Row: {
-          created_at: string | null
-          day_name: string
-          day_number: number
-          duration: number | null
-          exercises: Json | null
-          goal_type: string
-          id: string
-          is_premium: boolean | null
-          workout_name: string
-        }
-        Insert: {
-          created_at?: string | null
-          day_name: string
-          day_number: number
-          duration?: number | null
-          exercises?: Json | null
-          goal_type: string
-          id?: string
-          is_premium?: boolean | null
-          workout_name: string
-        }
-        Update: {
-          created_at?: string | null
-          day_name?: string
-          day_number?: number
-          duration?: number | null
-          exercises?: Json | null
-          goal_type?: string
-          id?: string
-          is_premium?: boolean | null
-          workout_name?: string
-        }
-        Relationships: []
-      }
-      workouts: {
-        Row: {
-          calories_burned: number | null
-          completed_at: string | null
-          duration: number | null
-          exercises: Json | null
-          id: string
-          points_earned: number | null
-          user_id: string
-          workout_type: string | null
-        }
-        Insert: {
-          calories_burned?: number | null
-          completed_at?: string | null
-          duration?: number | null
-          exercises?: Json | null
-          id?: string
-          points_earned?: number | null
-          user_id: string
-          workout_type?: string | null
-        }
-        Update: {
-          calories_burned?: number | null
-          completed_at?: string | null
-          duration?: number | null
-          exercises?: Json | null
-          id?: string
-          points_earned?: number | null
-          user_id?: string
-          workout_type?: string | null
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      fn_day_totals: {
-        Args: { d: string }
-        Returns: {
-          carbs_g: number
-          fat_g: number
-          kcal: number
-          protein_g: number
-        }[]
-      }
-      fn_toggle_meal_complete: {
-        Args: { p_meal: string }
-        Returns: {
-          carbs_g: number
-          fat_g: number
-          kcal: number
-          protein_g: number
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
-      event_kind: "checkin" | "plan_update" | "deload" | "injury_adjust"
-      plan_type: "training" | "nutrition" | "hybrid"
-      training_phase: "base" | "build" | "peak" | "deload"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1193,10 +512,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      event_kind: ["checkin", "plan_update", "deload", "injury_adjust"],
-      plan_type: ["training", "nutrition", "hybrid"],
-      training_phase: ["base", "build", "peak", "deload"],
-    },
+    Enums: {},
   },
 } as const

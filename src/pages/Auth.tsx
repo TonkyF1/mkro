@@ -43,27 +43,28 @@ const Auth = () => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        // Check if user has profile with goal set (indicates onboarding complete)
+        // Check if user has completed questionnaire
         const { data: profile } = await supabase
           .from('profiles')
-          .select('goal')
+          .select('user_id')
           .eq('user_id', user.id)
-          .maybeSingle();
-        navigate(profile?.goal ? '/' : '/onboarding');
+          .single();
+        navigate(profile ? '/' : '/questionnaire');
       }
     };
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state change:', event, session);
       if (event === 'SIGNED_IN' && session) {
-        // Check if onboarding is completed
+        // Check if questionnaire is completed
         supabase
           .from('profiles')
-          .select('goal')
+          .select('user_id')
           .eq('user_id', session.user.id)
-          .maybeSingle()
+          .single()
           .then(({ data }) => {
-            navigate(data?.goal ? '/' : '/onboarding');
+            navigate(data ? '/' : '/questionnaire');
           });
       }
     });
@@ -74,7 +75,7 @@ const Auth = () => {
   const onSignUp = async (data) => {
     setIsLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/onboarding`;
+      const redirectUrl = `${window.location.origin}/questionnaire`;
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -133,22 +134,22 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-accent/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-4">
         <Button
           variant="ghost"
           onClick={() => navigate('/')}
-          className="gap-2 bg-card/80 backdrop-blur-sm"
+          className="gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Home
         </Button>
-        <Card className="w-full shadow-xl border-2">
+        <Card className="w-full">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-foreground">
+          <CardTitle className="text-2xl font-bold">
             {isSignUp ? 'Create Your Account' : 'Welcome Back'}
           </CardTitle>
-          <CardDescription className="text-muted-foreground">
+          <CardDescription>
             {isSignUp
               ? 'Join us to start your personalized nutrition journey'
               : 'Sign in to access your personalized meal plans'}

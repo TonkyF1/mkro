@@ -73,7 +73,7 @@ export const AddToMealPlanModal = ({ recipe, isOpen, onClose, onConfirm }: AddTo
               <span className="font-medium text-sm">{recipe.name}</span>
             </div>
             <div className="text-xs text-muted-foreground">
-              {recipe.calories} cal • {recipe.cook_time || 30} min
+              {recipe.calories} cal • {recipe.prepTime}
             </div>
           </div>
 
