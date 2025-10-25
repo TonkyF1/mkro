@@ -133,22 +133,22 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-accent/20 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-4">
         <Button
           variant="ghost"
           onClick={() => navigate('/')}
-          className="gap-2"
+          className="gap-2 bg-card/80 backdrop-blur-sm"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Home
         </Button>
-        <Card className="w-full">
+        <Card className="w-full shadow-xl border-2">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">
+          <CardTitle className="text-2xl font-bold text-foreground">
             {isSignUp ? 'Create Your Account' : 'Welcome Back'}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-muted-foreground">
             {isSignUp
               ? 'Join us to start your personalized nutrition journey'
               : 'Sign in to access your personalized meal plans'}

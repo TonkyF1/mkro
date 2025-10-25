@@ -85,16 +85,16 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4 flex flex-col">
       {/* Progress Bar */}
       <div className="mb-8">
-        <div className="h-2 bg-surface rounded-full overflow-hidden">
+        <div className="h-2 bg-muted/30 rounded-full overflow-hidden border border-border">
           <div
-            className="h-full gradient-primary transition-all duration-300"
+            className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <p className="text-sm text-muted mt-2 text-center">
+        <p className="text-sm text-foreground font-medium mt-2 text-center">
           Step {step + 1} of {totalSteps}
         </p>
       </div>
@@ -126,12 +126,14 @@ export default function Onboarding() {
                 <p className="text-muted">Choose your primary fitness objective</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                {goals.map((goal) => (
+                 {goals.map((goal) => (
                   <button
                     key={goal}
                     onClick={() => setFormData({ ...formData, goal })}
-                    className={`glass rounded-2xl p-4 hover:scale-[1.02] active:scale-[0.98] transition-all ${
-                      formData.goal === goal ? 'gradient-primary text-white' : 'text-foreground'
+                    className={`rounded-2xl p-4 hover:scale-[1.02] active:scale-[0.98] transition-all font-medium border-2 ${
+                      formData.goal === goal 
+                        ? 'bg-gradient-to-r from-primary to-accent text-white border-primary shadow-lg' 
+                        : 'bg-card text-foreground border-border hover:border-primary/50'
                     }`}
                   >
                     {goal}
@@ -154,7 +156,7 @@ export default function Onboarding() {
                     type="number"
                     value={formData.age}
                     onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                    className="w-full px-4 py-3 bg-surface rounded-xl border border-white/10 text-foreground focus:border-primary focus:outline-none"
+                    className="w-full px-4 py-3 bg-card rounded-xl border-2 border-border text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                     placeholder="25"
                   />
                 </div>
@@ -165,7 +167,7 @@ export default function Onboarding() {
                       type="number"
                       value={formData.weight}
                       onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-                      className="w-full px-4 py-3 bg-surface rounded-xl border border-white/10 text-foreground focus:border-primary focus:outline-none"
+                      className="w-full px-4 py-3 bg-card rounded-xl border-2 border-border text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                       placeholder="75"
                     />
                   </div>
@@ -175,7 +177,7 @@ export default function Onboarding() {
                       type="number"
                       value={formData.height}
                       onChange={(e) => setFormData({ ...formData, height: e.target.value })}
-                      className="w-full px-4 py-3 bg-surface rounded-xl border border-white/10 text-foreground focus:border-primary focus:outline-none"
+                      className="w-full px-4 py-3 bg-card rounded-xl border-2 border-border text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                       placeholder="175"
                     />
                   </div>
@@ -195,8 +197,10 @@ export default function Onboarding() {
                   <button
                     key={level}
                     onClick={() => setFormData({ ...formData, fitness_level: level })}
-                    className={`glass rounded-2xl p-4 hover:scale-[1.02] active:scale-[0.98] transition-all ${
-                      formData.fitness_level === level ? 'gradient-primary text-white' : 'text-foreground'
+                    className={`rounded-2xl p-4 hover:scale-[1.02] active:scale-[0.98] transition-all font-medium border-2 ${
+                      formData.fitness_level === level 
+                        ? 'bg-gradient-to-r from-primary to-accent text-white border-primary shadow-lg' 
+                        : 'bg-card text-foreground border-border hover:border-primary/50'
                     }`}
                   >
                     {level}
@@ -217,8 +221,10 @@ export default function Onboarding() {
                   <button
                     key={diet}
                     onClick={() => setFormData({ ...formData, diet_type: diet })}
-                    className={`glass rounded-2xl p-4 hover:scale-[1.02] active:scale-[0.98] transition-all ${
-                      formData.diet_type === diet ? 'gradient-primary text-white' : 'text-foreground'
+                    className={`rounded-2xl p-4 hover:scale-[1.02] active:scale-[0.98] transition-all font-medium border-2 ${
+                      formData.diet_type === diet 
+                        ? 'bg-gradient-to-r from-primary to-accent text-white border-primary shadow-lg' 
+                        : 'bg-card text-foreground border-border hover:border-primary/50'
                     }`}
                   >
                     {diet}
@@ -239,8 +245,10 @@ export default function Onboarding() {
                   <button
                     key={location}
                     onClick={() => setFormData({ ...formData, workout_preference: location })}
-                    className={`glass rounded-2xl p-4 hover:scale-[1.02] active:scale-[0.98] transition-all ${
-                      formData.workout_preference === location ? 'gradient-primary text-white' : 'text-foreground'
+                    className={`rounded-2xl p-4 hover:scale-[1.02] active:scale-[0.98] transition-all font-medium border-2 ${
+                      formData.workout_preference === location 
+                        ? 'bg-gradient-to-r from-primary to-accent text-white border-primary shadow-lg' 
+                        : 'bg-card text-foreground border-border hover:border-primary/50'
                     }`}
                   >
                     {location}
@@ -257,7 +265,7 @@ export default function Onboarding() {
         {step > 0 && (
           <button
             onClick={() => setStep(step - 1)}
-            className="flex items-center justify-center gap-2 px-6 py-3 glass rounded-xl text-foreground hover:scale-[1.02] active:scale-[0.98] transition-transform"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-card border-2 border-border rounded-xl text-foreground font-medium hover:scale-[1.02] active:scale-[0.98] transition-transform hover:border-primary/50"
           >
             <ChevronLeft size={20} />
             Back
@@ -266,7 +274,7 @@ export default function Onboarding() {
         <button
           onClick={handleNext}
           disabled={!canProceed()}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 gradient-primary rounded-xl text-white font-semibold hover:scale-[1.02] active:scale-[0.98] transition-transform disabled:opacity-50"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-accent rounded-xl text-white font-semibold hover:scale-[1.02] active:scale-[0.98] transition-transform disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
         >
           {step === totalSteps - 1 ? 'Complete' : 'Continue'}
           <ChevronRight size={20} />
